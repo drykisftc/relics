@@ -117,8 +117,6 @@ public class NathenTeleOp extends OpMode{
         robot.motorLeftWheel.setPower(0.0);
         robot.motorRightWheel.setPower(0.0);
 
-
-
         telemetry.update();
     }
 
