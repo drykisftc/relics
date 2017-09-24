@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 /**
  * This is NOT an OpMode
@@ -31,6 +32,10 @@ public class HardwareNathen extends HardwareBase
     public DcMotor motorLeftWheel = null;
     public DcMotor motorRightWheel =null;
 
+    //Servos
+    public Servo jewelArm = null;
+    public Servo jewelHitter = null;
+
     /* Constructor */
     public HardwareNathen(){
 
@@ -49,6 +54,9 @@ public class HardwareNathen extends HardwareBase
         motorRightWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLeftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorRightWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        jewelArm = hwMap.servo.get("jewelArm");
+        jewelHitter = hwMap.servo.get("jewelHitter");
     }
 
     public void stop() {
