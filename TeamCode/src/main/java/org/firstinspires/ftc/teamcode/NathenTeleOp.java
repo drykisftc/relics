@@ -58,7 +58,8 @@ public class NathenTeleOp extends OpMode{
     /* Declare OpMode members. */
     protected HardwareNathen robot = new HardwareNathen();
 
-
+    //public float jewelArmPosition = robot.jewelArm.getPosition();
+    //public float jewelHitterPosition = robot.jewelHitter.getPosition();
 
     double [] wheelPowerLUT = {0.0f, 0.05f, 0.15f, 0.18f, 0.20f,
             0.22f, 0.24f, 0.26f, 0.28f, 0.30f, 0.32f, 0.34f, 0.36f,
@@ -127,6 +128,7 @@ public class NathenTeleOp extends OpMode{
     public void loop() {
 
         joystickWheelControl();
+        jewelArmControl();
         telemetry.update();
     }
 
@@ -149,6 +151,27 @@ public class NathenTeleOp extends OpMode{
         // Send telemetry message to signify robot running;
         telemetry.addData("left",  "%.2f", left);
         telemetry.addData("right", "%.2f", right);
+    }
+
+    public void jewelArmControl() {
+
+        double jewelArmPosition = robot.jewelArm.getPosition();
+        double jewelHitterPosition = robot.jewelHitter.getPosition();
+
+        if (gamepad1.left_bumper) {
+            robot.jewelArm.setPosition(jewelArmPosition + 0.01);
+        } else if (gamepad1.right_bumper) {
+            robot.jewelArm.setPosition(jewelArmPosition - 0.01);
+        }
+
+        if (gamepad1.dpad_left) {
+            robot.jewelHitter.setPosition(jewelHitterPosition + 0.01);
+        } else if (gamepad1.dpad_right) {
+            robot.jewelHitter.setPosition(jewelHitterPosition - 0.01);
+        }
+
+        telemetry.addData("armPosition", "%.2f", jewelArmPosition);
+        telemetry.addData("hitterPosition", "%.2f", jewelHitterPosition);
     }
 
     /*
