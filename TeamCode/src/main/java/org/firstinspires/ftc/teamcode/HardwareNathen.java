@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
@@ -36,6 +38,9 @@ public class HardwareNathen extends HardwareBase
     public Servo jewelArm = null;
     public Servo jewelHitter = null;
 
+    //Sensors
+    //public ColorSensor jewelSensor = null;
+
     /* Constructor */
     public HardwareNathen(){
 
@@ -57,6 +62,8 @@ public class HardwareNathen extends HardwareBase
 
         jewelArm = hwMap.servo.get("jewelArm");
         jewelHitter = hwMap.servo.get("jewelHitter");
+
+        //jewelSensor = hwMap.colorSensor.get("jewelSensor");
     }
 
     public void stop() {
