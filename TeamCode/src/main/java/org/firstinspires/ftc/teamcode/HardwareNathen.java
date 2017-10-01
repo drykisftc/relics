@@ -39,7 +39,8 @@ public class HardwareNathen extends HardwareBase
     public Servo jewelHitter = null;
 
     //Sensors
-    //public ColorSensor jewelSensor = null;
+    public ColorSensor jewelSensor;
+    public DistanceSensor jewelSensorDistance;
 
     /* Constructor */
     public HardwareNathen(){
@@ -64,6 +65,8 @@ public class HardwareNathen extends HardwareBase
         jewelHitter = hwMap.servo.get("jewelHitter");
 
         //jewelSensor = hwMap.colorSensor.get("jewelSensor");
+        jewelSensor = hwMap.get(ColorSensor.class, "jewelSensor");
+        jewelSensorDistance = hwMap.get(DistanceSensor.class, "jewelSensor");
     }
 
     public void stop() {

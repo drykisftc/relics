@@ -37,6 +37,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 /**
  * This file provides basic Telop driving for a Pushbot robot.
  * The code is structured as an Iterative OpMode
@@ -67,6 +69,9 @@ public class NathenTeleOp extends OpMode{
             0.70f, 0.74f, 0.78f, 0.82f, 0.86f, 0.90f, 0.94f, 0.98f,
             1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f,
             1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f};
+
+
+
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -118,6 +123,8 @@ public class NathenTeleOp extends OpMode{
         robot.motorLeftWheel.setPower(0.0);
         robot.motorRightWheel.setPower(0.0);
 
+
+
         telemetry.update();
     }
 
@@ -129,6 +136,7 @@ public class NathenTeleOp extends OpMode{
 
         joystickWheelControl();
         jewelArmControl();
+        readJewelSensor();
         telemetry.update();
     }
 
@@ -158,20 +166,41 @@ public class NathenTeleOp extends OpMode{
         double jewelArmPosition = robot.jewelArm.getPosition();
         double jewelHitterPosition = robot.jewelHitter.getPosition();
 
-        if (gamepad1.left_bumper) {
+        if (gamepad2.left_bumper) {
             robot.jewelArm.setPosition(jewelArmPosition + 0.01);
-        } else if (gamepad1.right_bumper) {
+        } else if (gamepad2.right_bumper) {
             robot.jewelArm.setPosition(jewelArmPosition - 0.01);
         }
 
-        if (gamepad1.dpad_left) {
+        if (gamepad2.dpad_left) {
             robot.jewelHitter.setPosition(jewelHitterPosition + 0.01);
-        } else if (gamepad1.dpad_right) {
+        } else if (gamepad2.dpad_right) {
             robot.jewelHitter.setPosition(jewelHitterPosition - 0.01);
         }
 
         telemetry.addData("armPosition", "%.2f", jewelArmPosition);
         telemetry.addData("hitterPosition", "%.2f", jewelHitterPosition);
+    }
+
+    public void readJewelSensor() {
+
+        int blue = robot.jewelSensor.blue();
+        int red = robot.jewelSensor.red();
+        int green = robot.jewelSensor.green();
+
+        telemetry.addData("jewelSensorRed", red);
+        telemetry.addData("jewelSensorBlue", blue);
+        telemetry.addData("jewelSensorGreen", green);
+        telemetry.addData("jewelSensorDistance", robot.jewelSensorDistance.getDistance(DistanceUnit.CM));
+
+        if (red > blue && red > green) {
+            telemetry.addData("jewelColor", "red");
+        } else if (blue > red && blue > green) {
+            telemetry.addData("jewelColor", "blue");
+        } else {
+            telemetry.addData("jewelColor", "noJewel");
+        }
+
     }
 
     /*

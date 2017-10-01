@@ -98,8 +98,8 @@ public class JewelArmBlueAutoOp extends OpMode {
         jewelArm = robot.jewelArm;
         jewelHitter = robot.jewelHitter;
 
-        jewelSensor = hardwareMap.get(ColorSensor.class, "jewelSensor");
-        jewelSensorDistance = hardwareMap.get(DistanceSensor.class, "jewelSensor");
+        jewelSensor = robot.jewelSensor;
+        jewelSensorDistance = robot.jewelSensorDistance;
 
         jewelArm.setPosition(0.25);
         jewelHitter.setPosition(0.48);
