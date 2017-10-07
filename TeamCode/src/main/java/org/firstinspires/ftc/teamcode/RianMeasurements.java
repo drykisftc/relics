@@ -37,6 +37,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 /**
  * This file provides basic Telop driving for a Pushbot robot.
  * The code is structured as an Iterative OpMode
@@ -52,12 +54,11 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="TeleOp: A Pro Relic", group="Run")
-public class RelicTeleOp extends OpMode{
+@TeleOp(name="TeleOp: Rian Measurement", group="Run")
+public class RianMeasurements extends OpMode{
 
     /* Declare OpMode members. */
-    protected HardwareRelic robot = new HardwareRelic();
-
+    protected HardwareRian robot = new HardwareRian();
 
 
     double [] wheelPowerLUT = {0.0f, 0.05f, 0.15f, 0.18f, 0.20f,
@@ -136,6 +137,8 @@ public class RelicTeleOp extends OpMode{
     public void loop() {
 
         joystickWheelControl();
+        jewelArmControl();
+        measurements();
         telemetry.update();
     }
 
@@ -176,6 +179,41 @@ public class RelicTeleOp extends OpMode{
         // Send telemetry message to signify robot running;
         telemetry.addData("left",  "%.2f", left);
         telemetry.addData("right", "%.2f", right);
+    }
+
+    public void jewelArmControl() {
+
+        double jewelArmPosition = robot.jewelArm.getPosition();
+        double jewelHitterPosition = robot.jewelHitter.getPosition();
+
+        if (gamepad2.left_bumper) {
+            robot.jewelArm.setPosition(jewelArmPosition + 0.01);
+        } else if (gamepad2.right_bumper) {
+            robot.jewelArm.setPosition(jewelArmPosition - 0.01);
+        }
+
+        if (gamepad2.dpad_left) {
+            robot.jewelHitter.setPosition(jewelHitterPosition + 0.01);
+        } else if (gamepad2.dpad_right) {
+            robot.jewelHitter.setPosition(jewelHitterPosition - 0.01);
+        }
+
+        telemetry.addData("armPosition", "%.2f", jewelArmPosition);
+        telemetry.addData("hitterPosition", "%.2f", jewelHitterPosition);
+
+    }
+
+    public void measurements() {
+
+        //measure sensors, servos, and motors
+        telemetry.addData("armDistanceSensor: ", robot.jewelSensorDistance.getDistance(DistanceUnit.CM));
+
+        //motors
+        telemetry.addData("leftBackWheel: ", -robot.motorLeftBackWheel.getCurrentPosition());
+        telemetry.addData("leftFrontWheel: ", -robot.motorLeftFrontWheel.getCurrentPosition());
+        telemetry.addData("rightBackWheel: ", -robot.motorRightBackWheel.getCurrentPosition());
+        telemetry.addData("rightFrontWheel: ", -robot.motorRightFrontWheel.getCurrentPosition());
+
     }
 
     /*

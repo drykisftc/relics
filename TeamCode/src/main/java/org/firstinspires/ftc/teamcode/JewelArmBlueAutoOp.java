@@ -79,7 +79,7 @@ public class JewelArmBlueAutoOp extends OpMode {
     private ColorSensor jewelSensor;
     private DistanceSensor jewelSensorDistance;
 
-    protected HardwareNathen robot = new HardwareNathen();
+    protected HardwareRian robot = new HardwareRian();
 
     private Servo jewelArm;
     private Servo jewelHitter;
@@ -101,8 +101,8 @@ public class JewelArmBlueAutoOp extends OpMode {
         jewelSensor = robot.jewelSensor;
         jewelSensorDistance = robot.jewelSensorDistance;
 
-        jewelArm.setPosition(0.25);
-        jewelHitter.setPosition(0.48);
+        jewelArm.setPosition(0.80);
+        jewelHitter.setPosition(0.50);
 
         telemetry.addData("jewelArm", jewelArm.getPosition());
         telemetry.addData("jewelHitter", jewelHitter.getPosition());
@@ -113,7 +113,6 @@ public class JewelArmBlueAutoOp extends OpMode {
     @Override
     public void start() {
         state = 0;
-
         timeStamp = System.currentTimeMillis();
     }
 
@@ -122,14 +121,14 @@ public class JewelArmBlueAutoOp extends OpMode {
         switch (state) {
             case 0:
 
-                jewelArm.setPosition(0.88);
+                jewelArm.setPosition(0.00);
                 jewelArmPosition = jewelArm.getPosition();
                 jewelHitterPosition = jewelHitter.getPosition();
 
-                if(jewelHitter.getPosition() > 0.40 && jewelHitter.getPosition() < 0.60) {
-                    if (System.currentTimeMillis() - timeStamp > jewelWaitTime && jewelSensor.blue() > jewelSensor.red() && jewelSensor.blue() > jewelSensor.green()) {
+                if(jewelHitter.getPosition() > 0.40 && jewelHitter.getPosition() < 0.60 && System.currentTimeMillis() - timeStamp > jewelWaitTime) {
+                    if (jewelSensor.blue() > jewelSensor.red() && jewelSensor.blue() > jewelSensor.green()) {
                         jewelHitter.setPosition(1.00);
-                    } else if (System.currentTimeMillis() - timeStamp > jewelWaitTime) {
+                    } else {
                         jewelHitter.setPosition(0.00);
                     }
                 }
@@ -150,7 +149,7 @@ public class JewelArmBlueAutoOp extends OpMode {
                 break;
             case 1:
 
-                jewelArm.setPosition(0.75);
+                jewelArm.setPosition(0.15);
 
                 if(System.currentTimeMillis() - timeStamp > 1800) {
                     jewelHitter.setPosition(0.48);
@@ -159,10 +158,6 @@ public class JewelArmBlueAutoOp extends OpMode {
                 break;
             default:
         }
-        /*int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
-        final View relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);*/
-
-
 
         telemetry.update();
     }
