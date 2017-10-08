@@ -121,7 +121,7 @@ public class JewelArmBlueAutoOp extends OpMode {
         switch (state) {
             case 0:
 
-                jewelArm.setPosition(0.00);
+                jewelArm.setPosition(0.15);
                 jewelArmPosition = jewelArm.getPosition();
                 jewelHitterPosition = jewelHitter.getPosition();
 
@@ -149,7 +149,7 @@ public class JewelArmBlueAutoOp extends OpMode {
                 break;
             case 1:
 
-                jewelArm.setPosition(0.15);
+                jewelArm.setPosition(0.30);
 
                 if(System.currentTimeMillis() - timeStamp > 1800) {
                     jewelHitter.setPosition(0.48);

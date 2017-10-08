@@ -208,6 +208,15 @@ public class RianMeasurements extends OpMode{
         //measure sensors, servos, and motors
         telemetry.addData("armDistanceSensor: ", robot.jewelSensorDistance.getDistance(DistanceUnit.CM));
 
+        //jewel color detection
+        if (robot.jewelSensor.blue() > robot.jewelSensor.red() && robot.jewelSensor.blue() > robot.jewelSensor.green()) {
+            telemetry.addData("jewelColor", "blue");
+        } else if (robot.jewelSensor.red() > robot.jewelSensor.green() && robot.jewelSensor.red() > robot.jewelSensor.blue()) {
+            telemetry.addData("jewelColor", "red");
+        } else {
+            telemetry.addData("jewelColor", "noJewel");
+        }
+
         //motors
         telemetry.addData("leftBackWheel: ", -robot.motorLeftBackWheel.getCurrentPosition());
         telemetry.addData("leftFrontWheel: ", -robot.motorLeftFrontWheel.getCurrentPosition());

@@ -36,19 +36,6 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
-import org.firstinspires.ftc.robotcore.external.navigation.VuMarkInstanceId;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 import java.util.Locale;
 
@@ -61,9 +48,9 @@ import java.util.Locale;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@Autonomous(name = "VeforiaAutoOp", group = "Sensor")
+@Autonomous(name = "PlanABlue", group = "AutoOp")
 
-public class VuforiaAutoOp extends OpMode {
+public class autoOpPlanABlue extends OpMode {
 
     /**
      * Note that the REV Robotics Color-Distance incorporates two sensors into one device.
@@ -83,27 +70,18 @@ public class VuforiaAutoOp extends OpMode {
      *
      */
 
-    VuforiaLocalizer vuforia;
-
-    protected HardwareRian robot = new HardwareRian();
-
     private ColorSensor jewelSensor;
     private DistanceSensor jewelSensorDistance;
 
+    protected HardwareRian robot = new HardwareRian();
+
     private Servo jewelArm;
     private Servo jewelHitter;
-
-    protected int cameraMonitorViewId;
-    protected VuforiaLocalizer.Parameters parameters;
-    private VuforiaTrackables relicTrackables;
-    private VuforiaTrackable relicTemplate;
-    private RelicRecoveryVuMark vuMark;
 
     private int state;
     private long timeStamp;
     private double jewelArmPosition;
     private double jewelHitterPosition;
-    private String vumarkImage;
 
     protected long jewelWaitTime = 1000;
 
@@ -120,20 +98,6 @@ public class VuforiaAutoOp extends OpMode {
         jewelArm.setPosition(0.80);
         jewelHitter.setPosition(0.50);
 
-        cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
-
-        parameters.vuforiaLicenseKey = "AVw9AA7/////AAAAGR2dOk5hfEdLl+V9Doao7C5Xp0Wvb2cien7ybTAhAyUTB2iZRO/CMyxlXakNnP3+HqLEMe7nzV+fllHLVQLuSwWmLdDErkjexTZKcgCGQUIZ+Ts6O2m7l+zwVVBH5V5Ah5SJP3jd/P6lvuKJY+DUY0pThAitsP59uD6wkcukMQQXNN+xBPzEBEx/0kt7hS5GJ+qCYDLD1qgCO5KrDuWzYtWjZi3LaGHsO9msvrGiCXYaP9PDRX9ZoWB1tJiHky5HyG/p+ndycmiK6sY9lRymaaJ5fX556ZUKtQX2dOAF7tHgVqsPOhqCV3E3qN6kXnwEqy9KgZ1QQjKJnCR5eLRXmSOqAbKi8ArzrRc3737EpSzK";
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
-
-        relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
-        relicTemplate = relicTrackables.get(0);
-
-        relicTemplate.setName("relicVuMarkTemplate");
-
-        vumarkImage = "unknown";
-
         telemetry.addData("jewelArm", jewelArm.getPosition());
         telemetry.addData("jewelHitter", jewelHitter.getPosition());
         telemetry.update();
@@ -144,8 +108,6 @@ public class VuforiaAutoOp extends OpMode {
     public void start() {
         state = 0;
         timeStamp = System.currentTimeMillis();
-
-        relicTrackables.activate();
     }
 
     @Override
@@ -166,7 +128,7 @@ public class VuforiaAutoOp extends OpMode {
                 }
 
 
-                if (System.currentTimeMillis() - timeStamp > 1500) {
+                if(System.currentTimeMillis() - timeStamp > 1500) {
                     state = 1;
                 }
 
@@ -181,49 +143,21 @@ public class VuforiaAutoOp extends OpMode {
                 break;
             case 1:
 
-                jewelArm.setPosition(0.40);
+                jewelArm.setPosition(0.30);
 
                 if(System.currentTimeMillis() - timeStamp > 1800) {
                     jewelHitter.setPosition(0.50);
-                    state = 2;
                 }
 
                 break;
             case 2:
 
-                //read vumark
-                vuMark = RelicRecoveryVuMark.from(relicTemplate);
 
-                if (vuMark == RelicRecoveryVuMark.LEFT) {
-                    vumarkImage = "left";
-                } else if (vuMark == RelicRecoveryVuMark.RIGHT) {
-                    vumarkImage = "right";
-                } else if (vuMark == RelicRecoveryVuMark.CENTER) {
-                    vumarkImage = "center";
-                }
-
-                telemetry.addData("vumark", vumarkImage);
-
-                //move forward
-                if (!(robot.jewelSensorDistance.getDistance(DistanceUnit.CM) < 20)) {
-                    robot.motorLeftBackWheel.setPower(-0.6);
-                    robot.motorLeftFrontWheel.setPower(-0.6);
-                    robot.motorRightBackWheel.setPower(-0.6);
-                    robot.motorRightFrontWheel.setPower(-0.6);
-                } else {
-                    robot.motorLeftBackWheel.setPower(0);
-                    robot.motorLeftFrontWheel.setPower(0);
-                    robot.motorRightBackWheel.setPower(0);
-                    robot.motorRightFrontWheel.setPower(0);
-
-                    state = 3;
-                }
 
                 break;
             default:
         }
 
         telemetry.update();
-
     }
 }
