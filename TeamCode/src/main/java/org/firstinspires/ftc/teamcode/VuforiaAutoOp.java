@@ -206,10 +206,10 @@ public class VuforiaAutoOp extends OpMode {
 
                 //move forward
                 if (!(robot.jewelSensorDistance.getDistance(DistanceUnit.CM) < 20)) {
-                    robot.motorLeftBackWheel.setPower(-0.6);
-                    robot.motorLeftFrontWheel.setPower(-0.6);
-                    robot.motorRightBackWheel.setPower(-0.6);
-                    robot.motorRightFrontWheel.setPower(-0.6);
+                    robot.motorLeftBackWheel.setPower(-0.3);
+                    robot.motorLeftFrontWheel.setPower(-0.3);
+                    robot.motorRightBackWheel.setPower(-0.3);
+                    robot.motorRightFrontWheel.setPower(-0.3);
                 } else {
                     robot.motorLeftBackWheel.setPower(0);
                     robot.motorLeftFrontWheel.setPower(0);
