@@ -92,7 +92,9 @@ public class NathenTeleOp extends OpMode{
         robot.motorLeftWheel.setPower(0.0);
         robot.motorRightWheel.setPower(0.0);
 
-
+        robot.liftHand.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.liftHand.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.liftHand.setPower(0.0);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("TeleOp", "Hello Vortex");    //
@@ -136,7 +138,7 @@ public class NathenTeleOp extends OpMode{
 
         joystickWheelControl();
         jewelArmControl();
-        readJewelSensor();
+        //readJewelSensor();
         telemetry.update();
     }
 
@@ -163,43 +165,47 @@ public class NathenTeleOp extends OpMode{
 
     public void jewelArmControl() {
 
-        double jewelArmPosition = robot.jewelArm.getPosition();
-        double jewelHitterPosition = robot.jewelHitter.getPosition();
+        double leftHandPositiont = robot.leftHand.getPosition();
+        double rightHandPosition = robot.rightHand.getPosition();
 
-        if (gamepad2.left_bumper) {
-            robot.jewelArm.setPosition(jewelArmPosition + 0.01);
-        } else if (gamepad2.right_bumper) {
-            robot.jewelArm.setPosition(jewelArmPosition - 0.01);
+        if (gamepad1.left_bumper) {
+            robot.leftHand.setPosition(0.5);
+            robot.rightHand.setPosition(0.5);
+        } else if (gamepad1.right_bumper) {
+            robot.leftHand.setPosition(0.85);
+            robot.rightHand.setPosition(0.15);
         }
 
-        if (gamepad2.dpad_left) {
-            robot.jewelHitter.setPosition(jewelHitterPosition + 0.01);
-        } else if (gamepad2.dpad_right) {
-            robot.jewelHitter.setPosition(jewelHitterPosition - 0.01);
+        if (gamepad1.dpad_left) {
+            robot.liftHand.setPower(0.1);
+        } else if (gamepad1.dpad_right) {
+            robot.liftHand.setPower(-0.1);
+        } else {
+            robot.liftHand.setPower(0);
         }
 
-        telemetry.addData("armPosition", "%.2f", jewelArmPosition);
-        telemetry.addData("hitterPosition", "%.2f", jewelHitterPosition);
+        telemetry.addData("armPosition", "%.2f", leftHandPositiont);
+        telemetry.addData("hitterPosition", "%.2f", rightHandPosition);
     }
 
     public void readJewelSensor() {
 
-        int blue = robot.jewelSensor.blue();
-        int red = robot.jewelSensor.red();
-        int green = robot.jewelSensor.green();
-
-        telemetry.addData("jewelSensorRed", red);
-        telemetry.addData("jewelSensorBlue", blue);
-        telemetry.addData("jewelSensorGreen", green);
-        telemetry.addData("jewelSensorDistance", robot.jewelSensorDistance.getDistance(DistanceUnit.CM));
-
-        if (red > blue && red > green) {
-            telemetry.addData("jewelColor", "red");
-        } else if (blue > red && blue > green) {
-            telemetry.addData("jewelColor", "blue");
-        } else {
-            telemetry.addData("jewelColor", "noJewel");
-        }
+//        int blue = robot.jewelSensor.blue();
+//        int red = robot.jewelSensor.red();
+//        int green = robot.jewelSensor.green();
+//
+//        telemetry.addData("jewelSensorRed", red);
+//        telemetry.addData("jewelSensorBlue", blue);
+//        telemetry.addData("jewelSensorGreen", green);
+//        telemetry.addData("jewelSensorDistance", robot.jewelSensorDistance.getDistance(DistanceUnit.CM));
+//
+//        if (red > blue && red > green) {
+//            telemetry.addData("jewelColor", "red");
+//        } else if (blue > red && blue > green) {
+//            telemetry.addData("jewelColor", "blue");
+//        } else {
+//            telemetry.addData("jewelColor", "noJewel");
+//        }
 
     }
 

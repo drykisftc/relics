@@ -2,9 +2,12 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import java.util.concurrent.DelayQueue;
 
 /**
  * This is NOT an OpMode
@@ -32,15 +35,16 @@ public class HardwareNathen extends HardwareBase
 {
     // DC Motors
     public DcMotor motorLeftWheel = null;
-    public DcMotor motorRightWheel =null;
+    public DcMotor motorRightWheel = null;
+    public DcMotor liftHand = null;
 
     //Servos
-    public Servo jewelArm = null;
-    public Servo jewelHitter = null;
+    public Servo leftHand = null;
+    public Servo rightHand = null;
 
     //Sensors
-    public ColorSensor jewelSensor;
-    public DistanceSensor jewelSensorDistance;
+    //public ColorSensor jewelSensor;
+    //public DistanceSensor jewelSensorDistance;
 
     /* Constructor */
     public HardwareNathen(){
@@ -61,21 +65,27 @@ public class HardwareNathen extends HardwareBase
         motorLeftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorRightWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        jewelArm = hwMap.servo.get("jewelArm");
-        jewelHitter = hwMap.servo.get("jewelHitter");
+        liftHand = hwMap.dcMotor.get("liftHand");
+        liftHand.setDirection(DcMotor.Direction.FORWARD);
+        liftHand.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftHand.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        //jewelSensor = hwMap.colorSensor.get("jewelSensor");
-        jewelSensor = hwMap.get(ColorSensor.class, "jewelSensor");
-        jewelSensorDistance = hwMap.get(DistanceSensor.class, "jewelSensor");
+        leftHand = hwMap.servo.get("leftHand");
+        rightHand = hwMap.servo.get("rightHand");
+
+
+        //jewelSensor = hwMap.get(ColorSensor.class, "jewelSensor");
+        //jewelSensorDistance = hwMap.get(DistanceSensor.class, "jewelSensor");
     }
 
     public void stop() {
         motorLeftWheel.setPower(0.0);
         motorRightWheel.setPower(0.0);
-
+        liftHand.setPower(0.0);
 
         motorLeftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorRightWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftHand.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
     }
 }
