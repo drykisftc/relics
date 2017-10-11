@@ -150,7 +150,7 @@ public class RelicTeleOp extends OpMode{
         float diagonal1 = parallel + diagonal;
         float diagonal2 = -parallel + diagonal;
 
-        if (parallel != 0 || diagonal != 0) {
+        if (Math.abs(parallel) > 0.05 || Math.abs(diagonal) > 0.05) {
 
             //parallel and diagonal movement
             diagonal1 = Range.clip(diagonal1, -1, 1);

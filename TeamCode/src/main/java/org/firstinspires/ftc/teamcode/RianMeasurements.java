@@ -54,14 +54,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="TeleOp: A Pro Nathen", group="Run")
-public class NathenTeleOp extends OpMode{
+@TeleOp(name="TeleOp: Rian Measurement", group="Run")
+public class RianMeasurements extends OpMode{
 
     /* Declare OpMode members. */
-    protected HardwareNathen robot = new HardwareNathen();
+    protected HardwareRian robot = new HardwareRian();
 
-    //public float jewelArmPosition = robot.jewelArm.getPosition();
-    //public float jewelHitterPosition = robot.jewelHitter.getPosition();
 
     double [] wheelPowerLUT = {0.0f, 0.05f, 0.15f, 0.18f, 0.20f,
             0.22f, 0.24f, 0.26f, 0.28f, 0.30f, 0.32f, 0.34f, 0.36f,
@@ -69,9 +67,6 @@ public class NathenTeleOp extends OpMode{
             0.70f, 0.74f, 0.78f, 0.82f, 0.86f, 0.90f, 0.94f, 0.98f,
             1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f,
             1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f};
-
-
-
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -85,16 +80,14 @@ public class NathenTeleOp extends OpMode{
         robot.init(hardwareMap);
 
         // wheels
-        robot.motorLeftWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorRightWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorLeftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorRightWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorLeftWheel.setPower(0.0);
-        robot.motorRightWheel.setPower(0.0);
+        robot.motorLeftBackWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motorRightBackWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motorLeftBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.motorRightBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.motorLeftBackWheel.setPower(0.0);
+        robot.motorRightBackWheel.setPower(0.0);
 
-        robot.liftHand.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.liftHand.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.liftHand.setPower(0.0);
+
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("TeleOp", "Hello Vortex");    //
@@ -118,12 +111,19 @@ public class NathenTeleOp extends OpMode{
     public void start() {
 
         // wheels
-        robot.motorLeftWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorRightWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorLeftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorRightWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorLeftWheel.setPower(0.0);
-        robot.motorRightWheel.setPower(0.0);
+        robot.motorLeftBackWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motorRightBackWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motorLeftBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.motorRightBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.motorLeftBackWheel.setPower(0.0);
+        robot.motorRightBackWheel.setPower(0.0);
+
+        robot.motorLeftFrontWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motorRightFrontWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motorLeftFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.motorRightFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.motorLeftFrontWheel.setPower(0.0);
+        robot.motorRightFrontWheel.setPower(0.0);
 
 
 
@@ -138,24 +138,42 @@ public class NathenTeleOp extends OpMode{
 
         joystickWheelControl();
         jewelArmControl();
-        //readJewelSensor();
+        measurements();
         telemetry.update();
     }
 
     public void joystickWheelControl() {
 
         // Mecanum wheel driving system (note: The joystick goes negative when pushed forwards, so negate it)
-        float throttle = -gamepad1.left_stick_y;
-        float direction = gamepad1.left_stick_x;
-        float right = throttle - direction;
-        float left = throttle + direction;
+        float direction = gamepad1.right_stick_x;
+        float parallel = -gamepad1.left_stick_x;
+        float diagonal = gamepad1.left_stick_y;
+        float right = -direction;
+        float left = direction;
+        float diagonal1 = parallel + diagonal;
+        float diagonal2 = -parallel + diagonal;
 
+        if (Math.abs(parallel) > 0.05 || Math.abs(diagonal) > 0.05) {
 
-        // clip the right/left values so that the values never exceed +/- 1
-        right = Range.clip(right, -1, 1);
-        left = Range.clip(left, -1, 1);
-        robot.motorLeftWheel.setPower(-left);
-        robot.motorRightWheel.setPower(-right);
+            //parallel and diagonal movement
+            diagonal1 = Range.clip(diagonal1, -1, 1);
+            diagonal2 = Range.clip(diagonal2, -1, 1);
+            robot.motorLeftBackWheel.setPower(diagonal2);
+            robot.motorLeftFrontWheel.setPower(diagonal1);
+            robot.motorRightBackWheel.setPower(diagonal1);
+            robot.motorRightFrontWheel.setPower(diagonal2);
+
+        } else {
+
+            // clip the right/left values so that the values never exceed +/- 1
+            right = Range.clip(right, -1, 1);
+            left = Range.clip(left, -1, 1);
+            robot.motorLeftBackWheel.setPower(-left);
+            robot.motorLeftFrontWheel.setPower(-left);
+            robot.motorRightBackWheel.setPower(-right);
+            robot.motorRightFrontWheel.setPower(-right);
+
+        }
 
 
         // Send telemetry message to signify robot running;
@@ -165,47 +183,45 @@ public class NathenTeleOp extends OpMode{
 
     public void jewelArmControl() {
 
-        double leftHandPositiont = robot.leftHand.getPosition();
-        double rightHandPosition = robot.rightHand.getPosition();
+        double jewelArmPosition = robot.jewelArm.getPosition();
+        double jewelHitterPosition = robot.jewelHitter.getPosition();
 
-        if (gamepad1.left_bumper) {
-            robot.leftHand.setPosition(0.5);
-            robot.rightHand.setPosition(0.5);
-        } else if (gamepad1.right_bumper) {
-            robot.leftHand.setPosition(0.85);
-            robot.rightHand.setPosition(0.15);
+        if (gamepad2.left_bumper) {
+            robot.jewelArm.setPosition(jewelArmPosition + 0.01);
+        } else if (gamepad2.right_bumper) {
+            robot.jewelArm.setPosition(jewelArmPosition - 0.01);
         }
 
-        if (gamepad1.dpad_left) {
-            robot.liftHand.setPower(0.1);
-        } else if (gamepad1.dpad_right) {
-            robot.liftHand.setPower(-0.1);
-        } else {
-            robot.liftHand.setPower(0);
+        if (gamepad2.dpad_left) {
+            robot.jewelHitter.setPosition(jewelHitterPosition + 0.01);
+        } else if (gamepad2.dpad_right) {
+            robot.jewelHitter.setPosition(jewelHitterPosition - 0.01);
         }
 
-        telemetry.addData("armPosition", "%.2f", leftHandPositiont);
-        telemetry.addData("hitterPosition", "%.2f", rightHandPosition);
+        telemetry.addData("armPosition", "%.2f", jewelArmPosition);
+        telemetry.addData("hitterPosition", "%.2f", jewelHitterPosition);
+
     }
 
-    public void readJewelSensor() {
+    public void measurements() {
 
-//        int blue = robot.jewelSensor.blue();
-//        int red = robot.jewelSensor.red();
-//        int green = robot.jewelSensor.green();
-//
-//        telemetry.addData("jewelSensorRed", red);
-//        telemetry.addData("jewelSensorBlue", blue);
-//        telemetry.addData("jewelSensorGreen", green);
-//        telemetry.addData("jewelSensorDistance", robot.jewelSensorDistance.getDistance(DistanceUnit.CM));
-//
-//        if (red > blue && red > green) {
-//            telemetry.addData("jewelColor", "red");
-//        } else if (blue > red && blue > green) {
-//            telemetry.addData("jewelColor", "blue");
-//        } else {
-//            telemetry.addData("jewelColor", "noJewel");
-//        }
+        //measure sensors, servos, and motors
+        telemetry.addData("armDistanceSensor: ", robot.jewelSensorDistance.getDistance(DistanceUnit.CM));
+
+        //jewel color detection
+        if (robot.jewelSensor.blue() > robot.jewelSensor.red() && robot.jewelSensor.blue() > robot.jewelSensor.green()) {
+            telemetry.addData("jewelColor", "blue");
+        } else if (robot.jewelSensor.red() > robot.jewelSensor.green() && robot.jewelSensor.red() > robot.jewelSensor.blue()) {
+            telemetry.addData("jewelColor", "red");
+        } else {
+            telemetry.addData("jewelColor", "noJewel");
+        }
+
+        //motors
+        telemetry.addData("leftBackWheel: ", -robot.motorLeftBackWheel.getCurrentPosition());
+        telemetry.addData("leftFrontWheel: ", -robot.motorLeftFrontWheel.getCurrentPosition());
+        telemetry.addData("rightBackWheel: ", -robot.motorRightBackWheel.getCurrentPosition());
+        telemetry.addData("rightFrontWheel: ", -robot.motorRightFrontWheel.getCurrentPosition());
 
     }
 
