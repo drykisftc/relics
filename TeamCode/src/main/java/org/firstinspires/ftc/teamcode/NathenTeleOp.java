@@ -96,9 +96,17 @@ public class NathenTeleOp extends OpMode{
         robot.liftHand.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.liftHand.setPower(0.0);
 
+        robot.leftHand.setPosition(0.0);
+        robot.rightHand.setPosition(1.0);
+        robot.leftLiftWheel1.setPower(0.0);
+        robot.leftLiftWheel2.setPower(0.0);
+        robot.rightLiftWheel1.setPower(0.0);
+        robot.rightLiftWheel2.setPower(0.0);
+
         // Send telemetry message to signify robot waiting;
         telemetry.addData("TeleOp", "Hello Vortex");    //
         updateTelemetry(telemetry);
+
     }
 
     /*
@@ -125,8 +133,6 @@ public class NathenTeleOp extends OpMode{
         robot.motorLeftWheel.setPower(0.0);
         robot.motorRightWheel.setPower(0.0);
 
-
-
         telemetry.update();
     }
 
@@ -138,6 +144,7 @@ public class NathenTeleOp extends OpMode{
 
         joystickWheelControl();
         glyphArmControl();
+        glyphWheelControl();
         //readJewelSensor();
         telemetry.update();
     }
@@ -176,6 +183,29 @@ public class NathenTeleOp extends OpMode{
             robot.liftHand.setPower(-0.1);
         } else {
             robot.liftHand.setPower(0);
+        }
+    }
+
+    public void glyphWheelControl() {
+
+        if (gamepad1.left_bumper) {
+            // up
+            robot.leftLiftWheel1.setPower(1.0);
+            robot.leftLiftWheel2.setPower(1.0);
+            robot.rightLiftWheel1.setPower(-1.0);
+            robot.rightLiftWheel2.setPower(-1.0);
+
+        } else if (gamepad1.right_bumper) {
+            //down
+            robot.leftLiftWheel1.setPower(-1.0);
+            robot.leftLiftWheel2.setPower(-1.0);
+            robot.rightLiftWheel1.setPower(1.0);
+            robot.rightLiftWheel2.setPower(1.0);
+        } else {
+            robot.leftLiftWheel1.setPower(0.0);
+            robot.leftLiftWheel2.setPower(0.0);
+            robot.rightLiftWheel1.setPower(0.0);
+            robot.rightLiftWheel2.setPower(0.0);
         }
     }
 
