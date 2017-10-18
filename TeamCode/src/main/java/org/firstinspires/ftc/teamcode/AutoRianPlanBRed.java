@@ -66,7 +66,7 @@ public class AutoRianPlanBRed extends AutoRianPlanABlue {
 
                 break;
             case 2:
-                // back up, stop at the correct glyph row (left, center, right)
+                // move forward, stop at the correct glyph row (left, center, right)
                 break;
 
             case 3:
@@ -75,7 +75,7 @@ public class AutoRianPlanBRed extends AutoRianPlanABlue {
                 robot.navigation.heading = angles.firstAngle;
                 //gravity  = robot.imu.getGravity();
 
-                // turn 180
+                // turn 0
                 float turnPower = robot.navigation.getMaintainHeadingPower(fGlyphTurnAngle);
                 if (Math.abs(turnPower) < 0.01) {
                     state = 4;
@@ -83,7 +83,7 @@ public class AutoRianPlanBRed extends AutoRianPlanABlue {
 
                 break;
             case 4:
-                // move right
+                // move left
                 break;
             case 5:
                 // move straight

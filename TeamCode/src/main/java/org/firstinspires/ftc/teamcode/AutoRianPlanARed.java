@@ -45,7 +45,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@Autonomous(name = "RianPlanA_Red", group = "Rian")
+@Autonomous(name = "Rian_PlanA_Red", group = "Rian")
 
 public class AutoRianPlanARed extends AutoRianPlanABlue {
 
@@ -75,7 +75,7 @@ public class AutoRianPlanARed extends AutoRianPlanABlue {
                 robot.navigation.heading = angles.firstAngle;
                 //gravity  = robot.imu.getGravity();
 
-                // turn 180
+                // turn 90
                 float turnPower = robot.navigation.getMaintainHeadingPower(fGlyphTurnAngle);
                 if (Math.abs(turnPower) < 0.01) {
                     state = 4;
