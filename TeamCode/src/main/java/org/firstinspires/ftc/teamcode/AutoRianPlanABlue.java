@@ -35,7 +35,11 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.Locale;
 
@@ -48,7 +52,7 @@ import java.util.Locale;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@Autonomous(name = "PlanABlue", group = "Rain")
+@Autonomous(name = "RianPlanABlue", group = "Rain")
 
 public class AutoRianPlanABlue extends OpMode {
 
@@ -84,6 +88,8 @@ public class AutoRianPlanABlue extends OpMode {
     private double jewelHitterPosition;
 
     protected long jewelWaitTime = 1000;
+
+    protected float fGlyphTurnAngle = 90;
 
     @Override
     public void init() {
@@ -149,14 +155,24 @@ public class AutoRianPlanABlue extends OpMode {
 
                 break;
             case 2:
-                 // move slowly and detect cryto at same time
+                 // move slowly and detect crypto at same time
+
                 break;
             case 3:
                 // keep straight, stop at the correct glyph row (left, center, right)
                 break;
 
             case 4:
+                // get heading
+                Orientation angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                robot.navigation.heading = angles.firstAngle;
+                //gravity  = robot.imu.getGravity();
+
                 // turn right 90 degree
+                float turnPower = robot.navigation.getMaintainHeadingPower(fGlyphTurnAngle);
+                if (Math.abs(turnPower) < 0.01) {
+                    state = 5;
+                }
 
                 break;
             case 5:
