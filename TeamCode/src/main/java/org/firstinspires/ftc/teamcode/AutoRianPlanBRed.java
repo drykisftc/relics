@@ -30,18 +30,11 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
-import java.util.Locale;
 
 /*
  * This is an example LinearOpMode that shows how to use
@@ -52,68 +45,14 @@ import java.util.Locale;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@Autonomous(name = "RianPlanA_Blue", group = "Rian")
+@Autonomous(name = "RianPlanB_Red", group = "Rian")
 
-public class AutoRianPlanABlue extends OpMode {
-
-    /**
-     * Note that the REV Robotics Color-Distance incorporates two sensors into one device.
-     * It has a light/distance (range) sensor.  It also has an RGB color sensor.
-     * The light/distance sensor saturates at around 2" (5cm).  This means that targets that are 2"
-     * or closer will display the same value for distance/light detected.
-     *
-     * Although you configure a single REV Robotics Color-Distance sensor in your configuration file,
-     * you can treat the sensor as two separate sensors that share the same name in your op mode.
-     *
-     * In this example, we represent the detected color by a hue, saturation, and value color
-     * model (see https://en.wikipedia.org/wiki/HSL_and_HSV).  We change the background
-     * color of the screen to match the detected color.
-     *
-     * In this example, we  also use the distance sensor to display the distance
-     * to the target object.  Note that the distance sensor saturates at around 2" (5 cm).
-     *
-     */
-
-    protected ColorSensor jewelSensor = null;
-    protected DistanceSensor jewelSensorDistance= null;
-
-    protected HardwareRian robot= null;
-
-    protected Servo jewelArm= null;
-    protected Servo jewelHitter= null;
-
-    protected int state;
-    protected long timeStamp;
-
-    protected float fGlyphTurnAngle = 90;
-
-    protected JewelKicker jewelKicker= null;
-
-    @Override
-    public void init() {
-        robot = new HardwareRian();
-        robot.init(hardwareMap);
-
-        jewelArm = robot.jewelArm;
-        jewelHitter = robot.jewelHitter;
-
-        jewelSensor = robot.jewelSensor;
-        jewelSensorDistance = robot.jewelSensorDistance;
-
-        jewelKicker = new JewelKicker(jewelSensor,jewelSensorDistance,jewelArm,jewelHitter,telemetry);
-        jewelKicker.init();
-
-        telemetry.addData("jewelArm", jewelArm.getPosition());
-        telemetry.addData("jewelHitter", jewelHitter.getPosition());
-        telemetry.update();
-    }
-
+public class AutoRianPlanBRed extends AutoRianPlanABlue {
 
     @Override
     public void start() {
-        state = 0;
-        timeStamp = System.currentTimeMillis();
-        jewelKicker.start();
+        super.start();
+        fGlyphTurnAngle = 0.0f;
     }
 
     @Override
@@ -123,7 +62,7 @@ public class AutoRianPlanABlue extends OpMode {
                 // jewel handling
                 state = jewelKicker.loop(0,1);
             case 1:
-                 //detect crypto
+                 // detect crypto
 
                 break;
             case 2:
@@ -136,7 +75,7 @@ public class AutoRianPlanABlue extends OpMode {
                 robot.navigation.heading = angles.firstAngle;
                 //gravity  = robot.imu.getGravity();
 
-                // turn right 90 degree
+                // turn 180
                 float turnPower = robot.navigation.getMaintainHeadingPower(fGlyphTurnAngle);
                 if (Math.abs(turnPower) < 0.01) {
                     state = 4;
@@ -144,12 +83,15 @@ public class AutoRianPlanABlue extends OpMode {
 
                 break;
             case 4:
-                // move straight
+                // move right
                 break;
             case 5:
-                // release the glyph
+                // move straight
                 break;
             case 6:
+                // release the glyph
+                break;
+            case 7:
                 // stop
                 break;
             default:
