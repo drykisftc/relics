@@ -6,10 +6,11 @@ public class HardwareBase
 {
 
     HardwareMap hwMap           =  null;
+    Navigation navigation = null;
 
     /* Constructor */
     public HardwareBase(){
-
+        navigation = new Navigation();
     }
 
     /* Initialize standard Hardware interfaces */
