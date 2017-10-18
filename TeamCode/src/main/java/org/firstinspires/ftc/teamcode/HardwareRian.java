@@ -55,8 +55,8 @@ public class HardwareRian extends HardwareBase
     public DistanceSensor jewelSensorDistance = null;
 
     // Orientation sensor
-    BNO055IMU imu;
-    Orientation angles;
+    BNO055IMU imu = null;
+    Orientation angles = null;
 
     /* Constructor */
     public HardwareRian(){

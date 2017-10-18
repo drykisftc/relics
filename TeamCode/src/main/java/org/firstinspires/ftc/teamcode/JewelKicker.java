@@ -35,6 +35,7 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -43,18 +44,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.Locale;
 
-/*
- * This is an example LinearOpMode that shows how to use
- * the REV Robotics Color-Distance Sensor.
- *
- * It assumes the sensor is configured with the name "sensor_color_distance".
- *
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
- */
-@Autonomous(name = "RianPlanABlue", group = "Rian")
-
-public class AutoRianPlanABlue extends OpMode {
+class JewelKicker {
 
     /**
      * Note that the REV Robotics Color-Distance incorporates two sensors into one device.
@@ -74,87 +64,89 @@ public class AutoRianPlanABlue extends OpMode {
      *
      */
 
-    protected ColorSensor jewelSensor = null;
-    protected DistanceSensor jewelSensorDistance= null;
+    private ColorSensor jewelSensor;
+    private DistanceSensor jewelSensorDistance;
+    private Servo jewelArm;
+    private Servo jewelHitter;
 
-    protected HardwareRian robot= null;
+    private int state;
+    private long timeStamp;
+    private double jewelArmRestPosition = 0.8;
+    private double jewelArmActionPosition = 0.15;
+    private double jewelHitterRestPosition =0.5;
+    private double jewelHitterBluePosition = 1.0;
+    private double jewelHitterRedPosition = 0.0;
+    private Telemetry telemetry;
 
-    protected Servo jewelArm= null;
-    protected Servo jewelHitter= null;
+    private long jewelWaitTime = 1000;
 
-    protected int state;
-    protected long timeStamp;
-
-    protected float fGlyphTurnAngle = 90;
-
-    protected JewelKicker jewelKicker= null;
-
-    @Override
-    public void init() {
-        robot = new HardwareRian();
-        robot.init(hardwareMap);
-
-        jewelArm = robot.jewelArm;
-        jewelHitter = robot.jewelHitter;
-
-        jewelSensor = robot.jewelSensor;
-        jewelSensorDistance = robot.jewelSensorDistance;
-
-        jewelKicker = new JewelKicker(jewelSensor,jewelSensorDistance,jewelArm,jewelHitter,telemetry);
-        jewelKicker.init();
-
-        telemetry.addData("jewelArm", jewelArm.getPosition());
-        telemetry.addData("jewelHitter", jewelHitter.getPosition());
-        telemetry.update();
+    JewelKicker (ColorSensor c,
+                 DistanceSensor d,
+                 Servo arm,
+                 Servo h,
+                 Telemetry t) {
+        jewelSensor = c;
+        jewelSensorDistance = d;
+        jewelArm = arm;
+        jewelHitter = h;
+        telemetry = t;
     }
 
+    public void init() {
+        jewelArm.setPosition(jewelArmRestPosition); // 0.8
+        jewelHitter.setPosition(jewelHitterRestPosition); // 0.5
+    }
 
-    @Override
     public void start() {
         state = 0;
         timeStamp = System.currentTimeMillis();
-        jewelKicker.start();
     }
 
-    @Override
-    public void loop() {
+    public int loop(int callerStartState, int callerEndState) {
+        int returnState = callerStartState;
         switch (state) {
             case 0:
-                // jewel handling
-                state = jewelKicker.loop(0,1);
+                jewelArm.setPosition(jewelArmActionPosition);
+                if(jewelHitter.getPosition() > 0.40
+                        && jewelHitter.getPosition() < 0.60
+                        && System.currentTimeMillis() - timeStamp > jewelWaitTime) {
+                    if (jewelSensor.blue() > jewelSensor.red() && jewelSensor.blue() > jewelSensor.green()) {
+                        jewelHitter.setPosition(jewelHitterBluePosition);
+                        timeStamp = System.currentTimeMillis();
+                        state = 1;
+                    } else if (jewelSensor.red() > jewelSensor.blue() && jewelSensor.red() > jewelSensor.green()) {
+                        jewelHitter.setPosition(jewelHitterRedPosition);
+                        timeStamp = System.currentTimeMillis();
+                        state = 1;
+                    }
+                }
+                telemetry.addData("Distance (cm)", String.format(Locale.US, "%.02f", jewelSensorDistance.getDistance(DistanceUnit.CM)));
+                telemetry.addData("Red  ", jewelSensor.red());
+                telemetry.addData("Green", jewelSensor.green());
+                telemetry.addData("Blue ", jewelSensor.blue());
+                telemetry.addData("ArmPosition", jewelArm.getPosition());
+                telemetry.addData("HitterPosition", jewelHitter.getPosition());
+                telemetry.addData("State", state);
+                break;
             case 1:
-                 // move slowly and detect crypto at same time
-
+                if(System.currentTimeMillis() - timeStamp > 1500) {
+                    state = 2;
+                    timeStamp = System.currentTimeMillis();
+                }
                 break;
             case 2:
-                // keep straight, stop at the correct glyph row (left, center, right)
-                break;
-
-            case 3:
-                // get heading
-                Orientation angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                robot.navigation.heading = angles.firstAngle;
-                //gravity  = robot.imu.getGravity();
-
-                // turn right 90 degree
-                float turnPower = robot.navigation.getMaintainHeadingPower(fGlyphTurnAngle);
-                if (Math.abs(turnPower) < 0.01) {
-                    state = 4;
+                jewelArm.setPosition(0.30);
+                if(System.currentTimeMillis() - timeStamp > 1500) {
+                    jewelHitter.setPosition(0.50);
+                    state = 3;
                 }
-
-                break;
-            case 4:
-                // move straight
-                break;
-            case 5:
-                // release the glyph
-                break;
-            case 6:
-                // stop
                 break;
             default:
+                returnState = callerEndState;
+                break;
         }
 
         telemetry.update();
+        return returnState;
     }
 }
