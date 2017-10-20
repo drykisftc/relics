@@ -61,9 +61,9 @@ import java.util.Locale;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@Autonomous(name = "PlanABlue", group = "BlueAuto")
+@Autonomous(name = "VeforiaAutoOp", group = "Sensor")
 
-public class AutoOpPlanABlue extends OpMode {
+public class VuforiaAutoOp extends OpMode {
 
     /**
      * Note that the REV Robotics Color-Distance incorporates two sensors into one device.
