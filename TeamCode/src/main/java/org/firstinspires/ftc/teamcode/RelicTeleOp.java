@@ -172,7 +172,6 @@ public class RelicTeleOp extends OpMode{
 
         }
 
-
         // Send telemetry message to signify robot running;
         telemetry.addData("left",  "%.2f", left);
         telemetry.addData("right", "%.2f", right);

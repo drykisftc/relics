@@ -96,9 +96,17 @@ public class NathenTeleOp extends OpMode{
         robot.liftHand.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.liftHand.setPower(0.0);
 
+        robot.leftHand.setPosition(0.0);
+        robot.rightHand.setPosition(1.0);
+        robot.leftLiftWheel1.setPower(0.0);
+        robot.leftLiftWheel2.setPower(0.0);
+        robot.rightLiftWheel1.setPower(0.0);
+        robot.rightLiftWheel2.setPower(0.0);
+
         // Send telemetry message to signify robot waiting;
         telemetry.addData("TeleOp", "Hello Vortex");    //
         updateTelemetry(telemetry);
+
     }
 
     /*
@@ -125,8 +133,6 @@ public class NathenTeleOp extends OpMode{
         robot.motorLeftWheel.setPower(0.0);
         robot.motorRightWheel.setPower(0.0);
 
-
-
         telemetry.update();
     }
 
@@ -137,7 +143,8 @@ public class NathenTeleOp extends OpMode{
     public void loop() {
 
         joystickWheelControl();
-        jewelArmControl();
+        glyphArmControl();
+        glyphWheelControl();
         //readJewelSensor();
         telemetry.update();
     }
@@ -163,29 +170,43 @@ public class NathenTeleOp extends OpMode{
         telemetry.addData("right", "%.2f", right);
     }
 
-    public void jewelArmControl() {
+    public void glyphArmControl() {
 
-        double leftHandPositiont = robot.leftHand.getPosition();
-        double rightHandPosition = robot.rightHand.getPosition();
+        float triggerPos = gamepad1.right_trigger/1.5f;
 
-        if (gamepad1.left_bumper) {
-            robot.leftHand.setPosition(0.5);
-            robot.rightHand.setPosition(0.5);
-        } else if (gamepad1.right_bumper) {
-            robot.leftHand.setPosition(0.85);
-            robot.rightHand.setPosition(0.15);
-        }
+        robot.leftHand.setPosition(triggerPos);
+        robot.rightHand.setPosition(1-triggerPos);
 
-        if (gamepad1.dpad_left) {
+        if (gamepad1.right_stick_y>0.05) {
             robot.liftHand.setPower(0.1);
-        } else if (gamepad1.dpad_right) {
+        } else if (gamepad1.right_stick_y<-0.05) {
             robot.liftHand.setPower(-0.1);
         } else {
             robot.liftHand.setPower(0);
         }
+    }
 
-        telemetry.addData("armPosition", "%.2f", leftHandPositiont);
-        telemetry.addData("hitterPosition", "%.2f", rightHandPosition);
+    public void glyphWheelControl() {
+
+        if (gamepad1.left_bumper) {
+            // up
+            robot.leftLiftWheel1.setPower(1.0);
+            robot.leftLiftWheel2.setPower(1.0);
+            robot.rightLiftWheel1.setPower(-1.0);
+            robot.rightLiftWheel2.setPower(-1.0);
+
+        } else if (gamepad1.right_bumper) {
+            //down
+            robot.leftLiftWheel1.setPower(-1.0);
+            robot.leftLiftWheel2.setPower(-1.0);
+            robot.rightLiftWheel1.setPower(1.0);
+            robot.rightLiftWheel2.setPower(1.0);
+        } else {
+            robot.leftLiftWheel1.setPower(0.0);
+            robot.leftLiftWheel2.setPower(0.0);
+            robot.rightLiftWheel1.setPower(0.0);
+            robot.rightLiftWheel2.setPower(0.0);
+        }
     }
 
     public void readJewelSensor() {
