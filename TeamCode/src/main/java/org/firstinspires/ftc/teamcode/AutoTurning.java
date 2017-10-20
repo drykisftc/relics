@@ -48,9 +48,9 @@ import java.util.Locale;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@Autonomous(name = "PlanABlue", group = "AutoOp")
+@Autonomous(name = "TurningTest", group = "AutoOp")
 
-public class autoOpPlanABlue extends OpMode {
+public class AutoTurning extends OpMode {
 
     /**
      * Note that the REV Robotics Color-Distance incorporates two sensors into one device.
@@ -70,36 +70,24 @@ public class autoOpPlanABlue extends OpMode {
      *
      */
 
-    private ColorSensor jewelSensor;
-    private DistanceSensor jewelSensorDistance;
-
     protected HardwareRian robot = new HardwareRian();
 
-    private Servo jewelArm;
-    private Servo jewelHitter;
+    private final float axleDistance = 19;
+
+    private int turnAngle = 90;
 
     private int state;
     private long timeStamp;
-    private double jewelArmPosition;
-    private double jewelHitterPosition;
-
-    protected long jewelWaitTime = 1000;
+    private int left;
+    private int right;
+    private float turnDistance;
 
     @Override
     public void init() {
         robot.init(hardwareMap);
 
-        jewelArm = robot.jewelArm;
-        jewelHitter = robot.jewelHitter;
 
-        jewelSensor = robot.jewelSensor;
-        jewelSensorDistance = robot.jewelSensorDistance;
 
-        jewelArm.setPosition(0.80);
-        jewelHitter.setPosition(0.50);
-
-        telemetry.addData("jewelArm", jewelArm.getPosition());
-        telemetry.addData("jewelHitter", jewelHitter.getPosition());
         telemetry.update();
     }
 
@@ -115,49 +103,25 @@ public class autoOpPlanABlue extends OpMode {
         switch (state) {
             case 0:
 
-                jewelArm.setPosition(0.15);
-                jewelArmPosition = jewelArm.getPosition();
-                jewelHitterPosition = jewelHitter.getPosition();
-
-                if(jewelHitter.getPosition() > 0.40 && jewelHitter.getPosition() < 0.60 && System.currentTimeMillis() - timeStamp > jewelWaitTime) {
-                    if (jewelSensor.blue() > jewelSensor.red() && jewelSensor.blue() > jewelSensor.green()) {
-                        jewelHitter.setPosition(1.00);
-                    } else {
-                        jewelHitter.setPosition(0.00);
-                    }
-                }
-
-
-                if(System.currentTimeMillis() - timeStamp > 1500) {
-                    state = 1;
-                }
-
-                telemetry.addData("Distance (cm)", String.format(Locale.US, "%.02f", jewelSensorDistance.getDistance(DistanceUnit.CM)));
-                telemetry.addData("Red  ", jewelSensor.red());
-                telemetry.addData("Green", jewelSensor.green());
-                telemetry.addData("Blue ", jewelSensor.blue());
-                telemetry.addData("ArmPosition", jewelArm.getPosition());
-                telemetry.addData("HitterPosition", jewelHitter.getPosition());
-                telemetry.addData("State", state);
+                turnDistance = getTurnDistance(turnAngle, axleDistance);
+                state ++;
 
                 break;
             case 1:
 
-                jewelArm.setPosition(0.30);
 
-                if(System.currentTimeMillis() - timeStamp > 1800) {
-                    jewelHitter.setPosition(0.50);
-                }
-
-                break;
-            case 2:
-
-
-
-                break;
             default:
         }
 
         telemetry.update();
     }
+
+    float getTurnAngle (float leftDistance, float rightDistance, float axleDistance){
+        return (float)((360 * rightDistance * (leftDistance - rightDistance)) / (2 * 3.14 * axleDistance * rightDistance));
+    }
+
+    float getTurnDistance (float angle, float axleDistance){
+        return (float)(axleDistance * angle * 3.14) / 360;
+    }
+
 }
