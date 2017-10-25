@@ -143,7 +143,7 @@ public class NathenTeleOp extends OpMode{
     public void loop() {
 
         joystickWheelControl();
-        glyphArmControl();
+        //glyphArmControl();
         glyphWheelControl();
         //readJewelSensor();
         telemetry.update();
@@ -192,21 +192,30 @@ public class NathenTeleOp extends OpMode{
             // up
             robot.leftLiftWheel1.setPower(1.0);
             robot.leftLiftWheel2.setPower(1.0);
+            robot.leftLiftWheel3.setPower(1.0);
             robot.rightLiftWheel1.setPower(-1.0);
             robot.rightLiftWheel2.setPower(-1.0);
+            robot.rightLiftWheel3.setPower(-1.0);
 
         } else if (gamepad1.right_bumper) {
             //down
             robot.leftLiftWheel1.setPower(-1.0);
             robot.leftLiftWheel2.setPower(-1.0);
+            robot.leftLiftWheel3.setPower(-1.0);
             robot.rightLiftWheel1.setPower(1.0);
             robot.rightLiftWheel2.setPower(1.0);
+            robot.rightLiftWheel3.setPower(1.0);
         } else {
             robot.leftLiftWheel1.setPower(0.0);
             robot.leftLiftWheel2.setPower(0.0);
+            robot.leftLiftWheel3.setPower(0.0);
             robot.rightLiftWheel1.setPower(0.0);
             robot.rightLiftWheel2.setPower(0.0);
+            robot.rightLiftWheel3.setPower(0.0);
         }
+
+        robot.beltServo.setPower(gamepad1.right_stick_y);
+
     }
 
     public void readJewelSensor() {

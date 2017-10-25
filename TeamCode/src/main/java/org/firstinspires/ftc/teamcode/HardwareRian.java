@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -50,6 +51,16 @@ public class HardwareRian extends HardwareBase
     public Servo jewelArm = null;
     public Servo jewelHitter = null;
 
+    public CRServo leftLiftWheel1 = null;
+    public CRServo leftLiftWheel2 = null;
+    public CRServo leftLiftWheel3 = null;
+
+    public CRServo rightLiftWheel1 = null;
+    public CRServo rightLiftWheel2 = null;
+    public CRServo rightLiftWheel3 = null;
+
+    public CRServo beltServo = null;
+
     //sensors
     public ColorSensor jewelSensor = null;
     public DistanceSensor jewelSensorDistance = null;
@@ -91,6 +102,16 @@ public class HardwareRian extends HardwareBase
 
         jewelSensor = hwMap.get(ColorSensor.class, "jewelSensor");
         jewelSensorDistance = hwMap.get(DistanceSensor.class, "jewelSensor");
+
+        leftLiftWheel1 = hwMap.crservo.get("leftLiftWheel1");
+        leftLiftWheel2 = hwMap.crservo.get("leftLiftWheel2");
+        leftLiftWheel3 = hwMap.crservo.get("leftLiftWheel3");
+
+        rightLiftWheel1 = hwMap.crservo.get("rightLiftWheel1");
+        rightLiftWheel2 = hwMap.crservo.get("rightLiftWheel2");
+        rightLiftWheel3 = hwMap.crservo.get("rightLiftWheel3");
+
+        beltServo = hwMap.crservo.get("beltServo");
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;

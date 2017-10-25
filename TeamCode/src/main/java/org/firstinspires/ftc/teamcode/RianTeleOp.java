@@ -86,7 +86,12 @@ public class RianTeleOp extends OpMode{
         robot.motorLeftBackWheel.setPower(0.0);
         robot.motorRightBackWheel.setPower(0.0);
 
-
+        robot.motorLeftFrontWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motorRightFrontWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motorLeftFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.motorRightFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.motorLeftFrontWheel.setPower(0.0);
+        robot.motorRightFrontWheel.setPower(0.0);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("TeleOp", "Hello Vortex");    //
@@ -136,6 +141,7 @@ public class RianTeleOp extends OpMode{
     public void loop() {
 
         joystickWheelControl();
+        glyphWheelControl();
         telemetry.update();
     }
 
@@ -177,6 +183,41 @@ public class RianTeleOp extends OpMode{
         // Send telemetry message to signify robot running;
         telemetry.addData("left",  "%.2f", left);
         telemetry.addData("right", "%.2f", right);
+    }
+
+    public void glyphWheelControl() {
+
+        if (gamepad1.left_bumper) {
+            // up
+            robot.leftLiftWheel1.setPower(1.0);
+            robot.leftLiftWheel2.setPower(1.0);
+            robot.leftLiftWheel3.setPower(1.0);
+            robot.rightLiftWheel1.setPower(-1.0);
+            robot.rightLiftWheel2.setPower(-1.0);
+            robot.rightLiftWheel3.setPower(-1.0);
+            robot.beltServo.setPower(0.0);
+
+        } else if (gamepad1.right_bumper) {
+            //down
+            robot.leftLiftWheel1.setPower(-1.0);
+            robot.leftLiftWheel2.setPower(-1.0);
+            robot.leftLiftWheel3.setPower(-1.0);
+            robot.rightLiftWheel1.setPower(1.0);
+            robot.rightLiftWheel2.setPower(1.0);
+            robot.rightLiftWheel3.setPower(1.0);
+            robot.beltServo.setPower(-1.0);
+
+        } else {
+            robot.leftLiftWheel1.setPower(0.0);
+            robot.leftLiftWheel2.setPower(0.0);
+            robot.leftLiftWheel3.setPower(0.0);
+            robot.rightLiftWheel1.setPower(0.0);
+            robot.rightLiftWheel2.setPower(0.0);
+            robot.rightLiftWheel3.setPower(0.0);
+            robot.beltServo.setPower(0.0);
+
+        }
+
     }
 
     /*
