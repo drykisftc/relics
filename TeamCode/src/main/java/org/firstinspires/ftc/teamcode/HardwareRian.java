@@ -5,6 +5,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -46,6 +47,7 @@ public class HardwareRian extends HardwareBase
     public DcMotor motorRightBackWheel =null;
     public DcMotor motorLeftFrontWheel = null;
     public DcMotor motorRightFrontWheel =null;
+    public DcMotor liftMotor = null;
 
     //servos
     public Servo jewelArm = null;
@@ -97,6 +99,11 @@ public class HardwareRian extends HardwareBase
         motorLeftFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorRightFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        liftMotor = hwMap.dcMotor.get("liftMotor");
+        liftMotor.setDirection(DcMotor.Direction.FORWARD);
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         jewelHitter = hwMap.servo.get("jewelHitter");
         jewelArm = hwMap.servo.get("jewelArm");
 
@@ -135,11 +142,14 @@ public class HardwareRian extends HardwareBase
         motorLeftFrontWheel.setPower(0.0);
         motorRightFrontWheel.setPower(0.0);
 
+        liftMotor.setPower(0.0);
 
         motorLeftBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorRightBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorLeftFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorRightFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     String formatAngle(AngleUnit angleUnit, double angle) {

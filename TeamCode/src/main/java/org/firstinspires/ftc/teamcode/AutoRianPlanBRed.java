@@ -47,12 +47,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  */
 @Autonomous(name = "RianPlanB_Red", group = "Rian")
 
-public class AutoRianPlanBRed extends AutoRianPlanABlue {
+public class AutoRianPlanBRed extends AutoRianPlanARed {
 
     @Override
     public void start() {
         super.start();
-        fGlyphTurnAngle = 0.0f;
+        fGlyphTurnAngle = 180.0f;
     }
 
     @Override
@@ -66,7 +66,7 @@ public class AutoRianPlanBRed extends AutoRianPlanABlue {
 
                 break;
             case 2:
-                // move forward, stop at the correct glyph row (left, center, right)
+                // back up, stop at the correct glyph row (left, center, right)
                 break;
 
             case 3:
@@ -75,7 +75,7 @@ public class AutoRianPlanBRed extends AutoRianPlanABlue {
                 robot.navigation.heading = angles.firstAngle;
                 //gravity  = robot.imu.getGravity();
 
-                // turn 0
+                // turn 180
                 float turnPower = robot.navigation.getMaintainHeadingPower(fGlyphTurnAngle);
                 if (Math.abs(turnPower) < 0.01) {
                     state = 4;
@@ -83,7 +83,7 @@ public class AutoRianPlanBRed extends AutoRianPlanABlue {
 
                 break;
             case 4:
-                // move left
+                // move right
                 break;
             case 5:
                 // move straight

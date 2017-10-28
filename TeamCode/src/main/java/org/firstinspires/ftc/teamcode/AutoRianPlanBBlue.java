@@ -30,10 +30,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -51,12 +47,12 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  */
 @Autonomous(name = "RianPlanB_Blue", group = "Rian")
 
-public class AutoRianPlanBBlue extends AutoRianPlanABlue {
+public class AutoRianPlanBBlue extends AutoRianPlanARed {
 
     @Override
     public void start() {
         super.start();
-        fGlyphTurnAngle = 180.0f;
+        fGlyphTurnAngle = 0.0f;
     }
 
     @Override
@@ -70,7 +66,7 @@ public class AutoRianPlanBBlue extends AutoRianPlanABlue {
 
                 break;
             case 2:
-                // back up, stop at the correct glyph row (left, center, right)
+                // move forward, stop at the correct glyph row (left, center, right)
                 break;
 
             case 3:
@@ -79,7 +75,7 @@ public class AutoRianPlanBBlue extends AutoRianPlanABlue {
                 robot.navigation.heading = angles.firstAngle;
                 //gravity  = robot.imu.getGravity();
 
-                // turn 180
+                // turn 0
                 float turnPower = robot.navigation.getMaintainHeadingPower(fGlyphTurnAngle);
                 if (Math.abs(turnPower) < 0.01) {
                     state = 4;
@@ -87,7 +83,7 @@ public class AutoRianPlanBBlue extends AutoRianPlanABlue {
 
                 break;
             case 4:
-                // move right
+                // move left
                 break;
             case 5:
                 // move straight

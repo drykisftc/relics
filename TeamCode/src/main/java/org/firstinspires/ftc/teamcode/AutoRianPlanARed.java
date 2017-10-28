@@ -30,11 +30,22 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.hardware.bosch.BNO055IMU;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 /*
  * This is an example LinearOpMode that shows how to use
@@ -47,43 +58,260 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  */
 @Autonomous(name = "Rian_PlanA_Red", group = "Rian")
 
-public class AutoRianPlanARed extends AutoRianPlanABlue {
+public class AutoRianPlanARed extends OpMode {
+
+    /**
+     * Note that the REV Robotics Color-Distance incorporates two sensors into one device.
+     * It has a light/distance (range) sensor.  It also has an RGB color sensor.
+     * The light/distance sensor saturates at around 2" (5cm).  This means that targets that are 2"
+     * or closer will display the same value for distance/light detected.
+     *
+     * Although you configure a single REV Robotics Color-Distance sensor in your configuration file,
+     * you can treat the sensor as two separate sensors that share the same name in your op mode.
+     *
+     * In this example, we represent the detected color by a hue, saturation, and value color
+     * model (see https://en.wikipedia.org/wiki/HSL_and_HSV).  We change the background
+     * color of the screen to match the detected color.
+     *
+     * In this example, we  also use the distance sensor to display the distance
+     * to the target object.  Note that the distance sensor saturates at around 2" (5 cm).
+     *
+     */
+
+    VuforiaLocalizer vuforia;
+
+    protected int cameraMonitorViewId;
+    protected VuforiaLocalizer.Parameters parameters;
+    protected VuforiaTrackables relicTrackables;
+    protected VuforiaTrackable relicTemplate;
+    protected RelicRecoveryVuMark vuMark;
+    protected String vumarkImage = "unknown";
+
+    protected ColorSensor jewelSensor = null;
+    protected DistanceSensor jewelSensorDistance= null;
+    protected BNO055IMU imuSensor = null;
+
+    protected HardwareRian robot= null;
+
+    protected Servo jewelArm= null;
+    protected Servo jewelHitter= null;
+
+    protected float axleDistance;
+
+    protected int state;
+    protected long timeStamp;
+    protected float wheelDistanceAverageStamp;
+    protected float wheelDistanceAverage;
+
+    protected float fGlyphTurnAngle = 90;
+    protected int cryptoBoxStopDistance = 20;
+    protected double vuforiaDetectingSpeed = 0.3;
+    protected double adjustingSpeed;
+    protected int leftColumnDistance = 1000;
+    protected int centerColumnDistance = 800;
+    protected int rightColumnDistance = 600;
+
+    protected JewelKicker jewelKicker= null;
+
+    @Override
+    public void init() {
+        robot = new HardwareRian();
+        robot.init(hardwareMap);
+
+        jewelArm = robot.jewelArm;
+        jewelHitter = robot.jewelHitter;
+
+        jewelSensor = robot.jewelSensor;
+        jewelSensorDistance = robot.jewelSensorDistance;
+        imuSensor = robot.imu;
+
+        jewelKicker = new JewelKicker(jewelSensor,jewelSensorDistance,jewelArm,jewelHitter,telemetry);
+        jewelKicker.init();
+
+        cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+
+        parameters.vuforiaLicenseKey = "AVw9AA7/////AAAAGR2dOk5hfEdLl+V9Doao7C5Xp0Wvb2cien7ybTAhAyUTB2iZRO/CMyxlXakNnP3+HqLEMe7nzV+fllHLVQLuSwWmLdDErkjexTZKcgCGQUIZ+Ts6O2m7l+zwVVBH5V5Ah5SJP3jd/P6lvuKJY+DUY0pThAitsP59uD6wkcukMQQXNN+xBPzEBEx/0kt7hS5GJ+qCYDLD1qgCO5KrDuWzYtWjZi3LaGHsO9msvrGiCXYaP9PDRX9ZoWB1tJiHky5HyG/p+ndycmiK6sY9lRymaaJ5fX556ZUKtQX2dOAF7tHgVqsPOhqCV3E3qN6kXnwEqy9KgZ1QQjKJnCR5eLRXmSOqAbKi8ArzrRc3737EpSzK";
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
+        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
+
+        relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
+        relicTemplate = relicTrackables.get(0);
+
+        relicTemplate.setName("relicVuMarkTemplate");
+
+        telemetry.addData("jewelArm", jewelArm.getPosition());
+        telemetry.addData("jewelHitter", jewelHitter.getPosition());
+        telemetry.update();
+    }
+
 
     @Override
     public void start() {
-        super.start();
-        fGlyphTurnAngle = 90f;
+        state = 4;
+        timeStamp = System.currentTimeMillis();
+        jewelKicker.start();
     }
 
     @Override
     public void loop() {
         switch (state) {
             case 0:
+
                 // jewel handling
                 state = jewelKicker.loop(0,1);
+
+                break;
             case 1:
-                 // detect crypto
+
+                //read vumark
+                vuMark = RelicRecoveryVuMark.from(relicTemplate);
+
+                if (vuMark == RelicRecoveryVuMark.LEFT) {
+                    vumarkImage = "left";
+                } else if (vuMark == RelicRecoveryVuMark.RIGHT) {
+                    vumarkImage = "right";
+                } else if (vuMark == RelicRecoveryVuMark.CENTER) {
+                    vumarkImage = "center";
+                }
+
+                telemetry.addData("vumark", vumarkImage);
+
+                //move forward
+                if (!(robot.jewelSensorDistance.getDistance(DistanceUnit.CM) < cryptoBoxStopDistance)) {
+
+                    moveAtSpeed(vuforiaDetectingSpeed);
+
+                } else {
+
+                    moveAtSpeed(0);
+                    state = 2;
+                }
 
                 break;
             case 2:
-                // move forward, stop at the correct glyph row (left, center, right)
+                // get to a good position (20 cm from crypto box)
+                telemetry.addData("Distance", robot.jewelSensorDistance.getDistance(DistanceUnit.CM));
+
+                if (robot.jewelSensorDistance.getDistance(DistanceUnit.CM) < 19) {
+
+                    adjustingSpeed = -0.1;
+
+                } else if (robot.jewelSensorDistance.getDistance(DistanceUnit.CM) > 21) {
+
+                    adjustingSpeed = 0.1;
+
+                } else if (robot.jewelSensorDistance.getDistance(DistanceUnit.CM) < 22 && robot.jewelSensorDistance.getDistance(DistanceUnit.CM) > 18) {
+
+                    adjustingSpeed = 0.0;
+                    moveAtSpeed(0.0);
+                    wheelDistanceAverageStamp = (robot.motorLeftBackWheel.getCurrentPosition() +
+                            robot.motorLeftFrontWheel.getCurrentPosition() +
+                            robot.motorRightBackWheel.getCurrentPosition() +
+                            robot.motorRightFrontWheel.getCurrentPosition())/4;
+                    robot.jewelArm.setPosition(0.8);
+                    state = 3;
+
+                }
+
+                /*if (Math.abs(adjustingSpeed) <= 0.05) {
+
+                    adjustingSpeed = 0.0;
+                    moveAtSpeed(0.0);
+                    wheelDistanceAverageStamp = (robot.motorLeftBackWheel.getCurrentPosition() +
+                                                 robot.motorLeftFrontWheel.getCurrentPosition() +
+                                                 robot.motorRightBackWheel.getCurrentPosition() +
+                                                 robot.motorRightFrontWheel.getCurrentPosition())/4;
+                    robot.jewelArm.setPosition(0.8);
+                    state = 3;
+
+                }*/
+
+                moveAtSpeed(adjustingSpeed);
+
                 break;
-
             case 3:
-                // get heading
-                Orientation angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                robot.navigation.heading = angles.firstAngle;
-                //gravity  = robot.imu.getGravity();
+                // go forward to the correct crypto box
 
-                // turn 90
-                float turnPower = robot.navigation.getMaintainHeadingPower(fGlyphTurnAngle);
-                if (Math.abs(turnPower) < 0.01) {
-                    state = 4;
+                wheelDistanceAverage = (robot.motorLeftBackWheel.getCurrentPosition() +
+                                        robot.motorLeftFrontWheel.getCurrentPosition() +
+                                        robot.motorRightBackWheel.getCurrentPosition() +
+                                        robot.motorRightFrontWheel.getCurrentPosition())/4;
+
+                if (vumarkImage == "left") {
+                    //left
+                    if (Math.abs(wheelDistanceAverage - wheelDistanceAverageStamp) < leftColumnDistance) {
+
+                        moveAtSpeed(1.0);
+
+                    } else {
+
+                        moveAtSpeed(0.0);
+                        state = 4;
+
+                    }
+
+                } else if (vumarkImage == "center") {
+                    //center
+                    if (Math.abs(wheelDistanceAverage - wheelDistanceAverageStamp) < centerColumnDistance) {
+
+                        moveAtSpeed(1.0);
+
+                    } else {
+
+                        moveAtSpeed(0.0);
+                        state = 4;
+
+                    }
+
+                } else if (vumarkImage == "right") {
+                    //right
+                    if (Math.abs(wheelDistanceAverage - wheelDistanceAverageStamp) < rightColumnDistance) {
+
+                        moveAtSpeed(1.0);
+
+                    } else {
+
+                        moveAtSpeed(0.0);
+                        state = 4;
+
+                    }
+
+                } else {
+                    //fail to detect vumark
+                    if (Math.abs(wheelDistanceAverage - wheelDistanceAverageStamp) < rightColumnDistance) {
+
+                        moveAtSpeed(1.0);
+
+                    } else {
+
+                        moveAtSpeed(0.0);
+                        state = 4;
+
+                    }
+
                 }
 
                 break;
             case 4:
-                // move right
+                /*// get heading
+                Orientation angles = imuSensor.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                robot.navigation.heading = angles.firstAngle;
+                //gravity  = robot.imu.getGravity();
+
+                // turn right 90 degree
+                float turnPower = robot.navigation.getMaintainHeadingPower(fGlyphTurnAngle);
+                if (Math.abs(turnPower) < 0.01) {
+                    state = 5;
+                }
+
+                robot.motorLeftFrontWheel.setPower(turnPower);
+                robot.motorLeftBackWheel.setPower(turnPower);
+                robot.motorRightFrontWheel.setPower(-turnPower);
+                robot.motorRightBackWheel.setPower(-turnPower);*/
+
+
+
                 break;
             case 5:
                 // move straight
@@ -97,6 +325,23 @@ public class AutoRianPlanARed extends AutoRianPlanABlue {
             default:
         }
 
+        telemetry.addData("state", state);
         telemetry.update();
     }
+
+    public float getTurnDistance (float angle, float axleDistance){
+        // if the res is positive, set left Motor move forward (right turn),
+        // other wise (left turn)
+        return (float)(axleDistance * angle * 3.14) / 360;
+    }
+
+    public void moveAtSpeed (double speed){
+
+        robot.motorLeftBackWheel.setPower(speed);
+        robot.motorLeftFrontWheel.setPower(speed);
+        robot.motorRightBackWheel.setPower(speed);
+        robot.motorRightFrontWheel.setPower(speed);
+
+    }
+
 }
