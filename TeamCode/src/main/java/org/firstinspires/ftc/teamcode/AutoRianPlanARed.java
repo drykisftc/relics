@@ -148,7 +148,7 @@ public class AutoRianPlanARed extends OpMode {
 
     @Override
     public void start() {
-        state = 4;
+        state = 0;
         timeStamp = System.currentTimeMillis();
         jewelKicker.start();
     }

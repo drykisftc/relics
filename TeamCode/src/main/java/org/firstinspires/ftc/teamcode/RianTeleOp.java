@@ -58,7 +58,7 @@ public class RianTeleOp extends OpMode{
     /* Declare OpMode members. */
     protected HardwareRian robot = new HardwareRian();
 
-    protected int liftHeightLimit = 1000;
+    protected int liftHeightLimit = 5000;
 
     double [] wheelPowerLUT = {0.0f, 0.05f, 0.15f, 0.18f, 0.20f,
             0.22f, 0.24f, 0.26f, 0.28f, 0.30f, 0.32f, 0.34f, 0.36f,
@@ -96,6 +96,8 @@ public class RianTeleOp extends OpMode{
         robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.liftMotor.setPower(0.0);
+
+        robot.jewelArm.setPosition(0.8);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("TeleOp", "Hello Vortex");    //
@@ -195,7 +197,7 @@ public class RianTeleOp extends OpMode{
     public void glyphWheelControl() {
 
         if (gamepad1.left_bumper) {
-            // up
+            //down
             robot.leftLiftWheel1.setPower(1.0);
             robot.leftLiftWheel2.setPower(1.0);
             robot.leftLiftWheel3.setPower(1.0);
@@ -205,7 +207,7 @@ public class RianTeleOp extends OpMode{
             robot.beltServo.setPower(0.0);
 
         } else if (gamepad1.right_bumper) {
-            //down
+            //up
             robot.leftLiftWheel1.setPower(-1.0);
             robot.leftLiftWheel2.setPower(-1.0);
             robot.leftLiftWheel3.setPower(-1.0);
@@ -231,7 +233,11 @@ public class RianTeleOp extends OpMode{
 
         float liftPower = gamepad2.left_stick_y;
 
-        if (robot.liftMotor.getCurrentPosition() < liftHeightLimit && robot.liftMotor.getCurrentPosition() > -liftHeightLimit) {
+        robot.liftMotor.setPower(liftPower);
+
+        telemetry.addData("liftHeight", robot.liftMotor.getCurrentPosition());
+
+        /*if (robot.liftMotor.getCurrentPosition() < liftHeightLimit && robot.liftMotor.getCurrentPosition() > -liftHeightLimit) {
 
             if (gamepad1.dpad_up) {
 
@@ -271,7 +277,7 @@ public class RianTeleOp extends OpMode{
 
             }
 
-        }
+        }*/
 
     }
 

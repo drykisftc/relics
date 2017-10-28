@@ -102,7 +102,7 @@ class JewelKicker {
         timeStamp = System.currentTimeMillis();
     }
 
-    public int loop(int callerStartState, int callerEndState) {
+    public int loop (int callerStartState, int callerEndState) {
         int returnState = callerStartState;
         switch (state) {
             case 0:
