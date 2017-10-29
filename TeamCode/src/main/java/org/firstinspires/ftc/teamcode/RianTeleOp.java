@@ -58,7 +58,7 @@ public class RianTeleOp extends OpMode{
     /* Declare OpMode members. */
     protected HardwareRian robot = new HardwareRian();
 
-
+    protected int liftHeightLimit = 1000;
 
     double [] wheelPowerLUT = {0.0f, 0.05f, 0.15f, 0.18f, 0.20f,
             0.22f, 0.24f, 0.26f, 0.28f, 0.30f, 0.32f, 0.34f, 0.36f,
@@ -86,7 +86,16 @@ public class RianTeleOp extends OpMode{
         robot.motorLeftBackWheel.setPower(0.0);
         robot.motorRightBackWheel.setPower(0.0);
 
+        robot.motorLeftFrontWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motorRightFrontWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motorLeftFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.motorRightFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.motorLeftFrontWheel.setPower(0.0);
+        robot.motorRightFrontWheel.setPower(0.0);
 
+        robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.liftMotor.setPower(0.0);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("TeleOp", "Hello Vortex");    //
@@ -124,7 +133,9 @@ public class RianTeleOp extends OpMode{
         robot.motorLeftFrontWheel.setPower(0.0);
         robot.motorRightFrontWheel.setPower(0.0);
 
-
+        robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.liftMotor.setPower(0.0);
 
         telemetry.update();
     }
@@ -136,17 +147,20 @@ public class RianTeleOp extends OpMode{
     public void loop() {
 
         joystickWheelControl();
+        glyphWheelControl();
+        glyphLiftControl();
         telemetry.update();
     }
 
     public void joystickWheelControl() {
 
         // Mecanum wheel driving system (note: The joystick goes negative when pushed forwards, so negate it)
+        float throttle = -gamepad1.right_stick_y;
         float direction = gamepad1.right_stick_x;
         float parallel = -gamepad1.left_stick_x;
         float diagonal = gamepad1.left_stick_y;
-        float right = -direction;
-        float left = direction;
+        float right = throttle - direction;
+        float left = throttle + direction;
         float diagonal1 = parallel + diagonal;
         float diagonal2 = -parallel + diagonal;
 
@@ -155,20 +169,20 @@ public class RianTeleOp extends OpMode{
             //parallel and diagonal movement
             diagonal1 = Range.clip(diagonal1, -1, 1);
             diagonal2 = Range.clip(diagonal2, -1, 1);
-            robot.motorLeftBackWheel.setPower(diagonal2);
-            robot.motorLeftFrontWheel.setPower(diagonal1);
-            robot.motorRightBackWheel.setPower(diagonal1);
-            robot.motorRightFrontWheel.setPower(diagonal2);
+            robot.motorLeftBackWheel.setPower(-diagonal2);
+            robot.motorLeftFrontWheel.setPower(-diagonal1);
+            robot.motorRightBackWheel.setPower(-diagonal1);
+            robot.motorRightFrontWheel.setPower(-diagonal2);
 
         } else {
 
             // clip the right/left values so that the values never exceed +/- 1
             right = Range.clip(right, -1, 1);
             left = Range.clip(left, -1, 1);
-            robot.motorLeftBackWheel.setPower(-left);
-            robot.motorLeftFrontWheel.setPower(-left);
-            robot.motorRightBackWheel.setPower(-right);
-            robot.motorRightFrontWheel.setPower(-right);
+            robot.motorLeftBackWheel.setPower(left);
+            robot.motorLeftFrontWheel.setPower(left);
+            robot.motorRightBackWheel.setPower(right);
+            robot.motorRightFrontWheel.setPower(right);
 
         }
 
@@ -176,6 +190,89 @@ public class RianTeleOp extends OpMode{
         // Send telemetry message to signify robot running;
         telemetry.addData("left",  "%.2f", left);
         telemetry.addData("right", "%.2f", right);
+    }
+
+    public void glyphWheelControl() {
+
+        if (gamepad1.left_bumper) {
+            // up
+            robot.leftLiftWheel1.setPower(1.0);
+            robot.leftLiftWheel2.setPower(1.0);
+            robot.leftLiftWheel3.setPower(1.0);
+            robot.rightLiftWheel1.setPower(-1.0);
+            robot.rightLiftWheel2.setPower(-1.0);
+            robot.rightLiftWheel3.setPower(-1.0);
+            robot.beltServo.setPower(0.0);
+
+        } else if (gamepad1.right_bumper) {
+            //down
+            robot.leftLiftWheel1.setPower(-1.0);
+            robot.leftLiftWheel2.setPower(-1.0);
+            robot.leftLiftWheel3.setPower(-1.0);
+            robot.rightLiftWheel1.setPower(1.0);
+            robot.rightLiftWheel2.setPower(1.0);
+            robot.rightLiftWheel3.setPower(1.0);
+            robot.beltServo.setPower(-1.0);
+
+        } else {
+            robot.leftLiftWheel1.setPower(0.0);
+            robot.leftLiftWheel2.setPower(0.0);
+            robot.leftLiftWheel3.setPower(0.0);
+            robot.rightLiftWheel1.setPower(0.0);
+            robot.rightLiftWheel2.setPower(0.0);
+            robot.rightLiftWheel3.setPower(0.0);
+            robot.beltServo.setPower(0.0);
+
+        }
+
+    }
+
+    public void glyphLiftControl () {
+
+        float liftPower = gamepad2.left_stick_y;
+
+        if (robot.liftMotor.getCurrentPosition() < liftHeightLimit && robot.liftMotor.getCurrentPosition() > -liftHeightLimit) {
+
+            if (gamepad1.dpad_up) {
+
+                robot.liftMotor.setPower(0.6);
+
+            } else if (gamepad1.dpad_down) {
+
+                robot.liftMotor.setPower(-0.6);
+
+            } else {
+
+                robot.liftMotor.setPower(liftPower);
+
+            }
+
+        } else if (liftPower < 0 && robot.liftMotor.getCurrentPosition() > liftHeightLimit) {
+
+            if (gamepad1.dpad_down) {
+
+                robot.liftMotor.setPower(-0.6);
+
+            } else {
+
+                robot.liftMotor.setPower(liftPower);
+
+            }
+
+        } else if (liftPower > 0 && robot.liftMotor.getCurrentPosition() < -liftHeightLimit) {
+
+            if (gamepad1.dpad_down) {
+
+                robot.liftMotor.setPower(-0.6);
+
+            } else {
+
+                robot.liftMotor.setPower(liftPower);
+
+            }
+
+        }
+
     }
 
     /*
