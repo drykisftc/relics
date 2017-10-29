@@ -59,6 +59,8 @@ public class RianTeleOp extends OpMode{
     protected HardwareRian robot = new HardwareRian();
 
     protected int liftHeightLimit = 1000;
+    protected int liftMotorPosition = 0;
+    protected double liftMotorHolderPower = 0.3;
 
     double [] wheelPowerLUT = {0.0f, 0.05f, 0.15f, 0.18f, 0.20f,
             0.22f, 0.24f, 0.26f, 0.28f, 0.30f, 0.32f, 0.34f, 0.36f,
@@ -272,8 +274,28 @@ public class RianTeleOp extends OpMode{
             }
 
         }
-
     }
+
+    public void glyphLiftControl2 () {
+        if ( gamepad1.dpad_up) {
+            liftMotorPosition = robot.liftMotor.getCurrentPosition();
+            if (liftMotorPosition < liftHeightLimit) {
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.liftMotor.setPower(0.6);
+            }
+        } else if ( gamepad1.dpad_down) {
+            liftMotorPosition = robot.liftMotor.getCurrentPosition();
+            if (liftMotorPosition > -liftHeightLimit) {
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.liftMotor.setPower(-0.6);
+            }
+        } else {
+                // hold position
+                VortexUtils.moveMotorByEncoder(robot.liftMotor, liftMotorPosition, liftMotorHolderPower);
+        }
+        telemetry.addData("right arm pos ", "%6d", liftMotorPosition);
+    }
+
 
     /*
      * Code to run ONCE after the driver hits STOP
