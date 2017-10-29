@@ -233,51 +233,19 @@ public class RianTeleOp extends OpMode{
 
         float liftPower = gamepad2.left_stick_y;
 
-        robot.liftMotor.setPower(liftPower);
+        if (gamepad1.dpad_up && robot.liftMotor.getCurrentPosition() < liftHeightLimit) {
 
-        telemetry.addData("liftHeight", robot.liftMotor.getCurrentPosition());
+            robot.liftMotor.setPower(0.6);
 
-        /*if (robot.liftMotor.getCurrentPosition() < liftHeightLimit && robot.liftMotor.getCurrentPosition() > -liftHeightLimit) {
+        } else if (gamepad1.dpad_down && robot.liftMotor.getCurrentPosition() > -liftHeightLimit) {
 
-            if (gamepad1.dpad_up) {
+            robot.liftMotor.setPower(-0.6);
 
-                robot.liftMotor.setPower(0.6);
+        } else if ((liftPower < 0 && robot.liftMotor.getCurrentPosition() > -liftHeightLimit) || (liftPower > 0 && robot.liftMotor.getCurrentPosition() < liftHeightLimit)) {
 
-            } else if (gamepad1.dpad_down) {
+            robot.liftMotor.setPower(liftPower);
 
-                robot.liftMotor.setPower(-0.6);
-
-            } else {
-
-                robot.liftMotor.setPower(liftPower);
-
-            }
-
-        } else if (liftPower < 0 && robot.liftMotor.getCurrentPosition() > liftHeightLimit) {
-
-            if (gamepad1.dpad_down) {
-
-                robot.liftMotor.setPower(-0.6);
-
-            } else {
-
-                robot.liftMotor.setPower(liftPower);
-
-            }
-
-        } else if (liftPower > 0 && robot.liftMotor.getCurrentPosition() < -liftHeightLimit) {
-
-            if (gamepad1.dpad_down) {
-
-                robot.liftMotor.setPower(-0.6);
-
-            } else {
-
-                robot.liftMotor.setPower(liftPower);
-
-            }
-
-        }*/
+        }
 
     }
 
