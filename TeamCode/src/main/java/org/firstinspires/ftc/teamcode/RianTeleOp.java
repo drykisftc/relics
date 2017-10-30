@@ -58,7 +58,7 @@ public class RianTeleOp extends OpMode{
     /* Declare OpMode members. */
     protected HardwareRian robot = new HardwareRian();
 
-    protected int liftHeightLimit = 1000;
+    protected int liftHeightLimit = 4000;
     protected int liftMotorPosition = 0;
     protected double liftMotorHolderPower = 0.3;
 
@@ -98,6 +98,8 @@ public class RianTeleOp extends OpMode{
         robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.liftMotor.setPower(0.0);
+
+        robot.jewelArm.setPosition(0.8);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("TeleOp", "Hello Vortex");    //
@@ -150,7 +152,9 @@ public class RianTeleOp extends OpMode{
 
         joystickWheelControl();
         glyphWheelControl();
-        glyphLiftControl();
+        glyphDebug();
+        //glyphLiftControl();
+        glyphLiftControl2();
         telemetry.update();
     }
 
@@ -196,7 +200,7 @@ public class RianTeleOp extends OpMode{
 
     public void glyphWheelControl() {
 
-        if (gamepad1.left_bumper) {
+        if (gamepad2.dpad_up) {
             // up
             robot.leftLiftWheel1.setPower(1.0);
             robot.leftLiftWheel2.setPower(1.0);
@@ -206,7 +210,7 @@ public class RianTeleOp extends OpMode{
             robot.rightLiftWheel3.setPower(-1.0);
             robot.beltServo.setPower(0.0);
 
-        } else if (gamepad1.right_bumper) {
+        } else if (gamepad2.dpad_down) {
             //down
             robot.leftLiftWheel1.setPower(-1.0);
             robot.leftLiftWheel2.setPower(-1.0);
@@ -216,14 +220,35 @@ public class RianTeleOp extends OpMode{
             robot.rightLiftWheel3.setPower(1.0);
             robot.beltServo.setPower(-1.0);
 
-        } else {
-            robot.leftLiftWheel1.setPower(0.0);
-            robot.leftLiftWheel2.setPower(0.0);
-            robot.leftLiftWheel3.setPower(0.0);
-            robot.rightLiftWheel1.setPower(0.0);
-            robot.rightLiftWheel2.setPower(0.0);
-            robot.rightLiftWheel3.setPower(0.0);
+        } else if (gamepad1.right_bumper) {
+
+            robot.leftLiftWheel1.setPower(1.0);
+            robot.leftLiftWheel2.setPower(1.0);
+            robot.leftLiftWheel3.setPower(1.0);
+            robot.rightLiftWheel1.setPower(-1.0);
+            robot.rightLiftWheel2.setPower(-1.0);
+            robot.rightLiftWheel3.setPower(-1.0);
             robot.beltServo.setPower(0.0);
+
+        } else if (gamepad1.left_bumper) {
+
+            robot.leftLiftWheel1.setPower(-1.0);
+            robot.leftLiftWheel2.setPower(-1.0);
+            robot.leftLiftWheel3.setPower(-1.0);
+            robot.rightLiftWheel1.setPower(1.0);
+            robot.rightLiftWheel2.setPower(1.0);
+            robot.rightLiftWheel3.setPower(1.0);
+            robot.beltServo.setPower(-1.0);
+
+        } else {
+                robot.leftLiftWheel1.setPower(0.0);
+                robot.leftLiftWheel2.setPower(0.0);
+                robot.leftLiftWheel3.setPower(0.0);
+                robot.rightLiftWheel1.setPower(0.0);
+                robot.rightLiftWheel2.setPower(0.0);
+                robot.rightLiftWheel3.setPower(0.0);
+                robot.beltServo.setPower(0.0);
+
 
         }
 
@@ -277,25 +302,83 @@ public class RianTeleOp extends OpMode{
     }
 
     public void glyphLiftControl2 () {
-        if ( gamepad1.dpad_up) {
+        if ((gamepad2.right_stick_y > -liftHeightLimit && gamepad2.right_stick_y < 0) || (gamepad2.right_stick_y < liftHeightLimit && gamepad2.right_stick_y > 0)) {
+
             liftMotorPosition = robot.liftMotor.getCurrentPosition();
+
+            robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.liftMotor.setPower(gamepad2.right_stick_y);
+
+        } else if (gamepad1.dpad_up) {
+
+            liftMotorPosition = robot.liftMotor.getCurrentPosition();
+
             if (liftMotorPosition < liftHeightLimit) {
+
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 robot.liftMotor.setPower(0.6);
+
             }
-        } else if ( gamepad1.dpad_down) {
+
+        } else if (gamepad1.dpad_down) {
+
             liftMotorPosition = robot.liftMotor.getCurrentPosition();
+
             if (liftMotorPosition > -liftHeightLimit) {
+
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 robot.liftMotor.setPower(-0.6);
+
             }
+
         } else {
                 // hold position
                 VortexUtils.moveMotorByEncoder(robot.liftMotor, liftMotorPosition, liftMotorHolderPower);
         }
+
         telemetry.addData("right arm pos ", "%6d", liftMotorPosition);
     }
 
+    public void glyphDebug () {
+        // fixing when glyph is stuck
+        if (gamepad2.dpad_left) {
+
+            robot.leftLiftWheel1.setPower(1.0);
+            robot.leftLiftWheel2.setPower(1.0);
+            robot.leftLiftWheel3.setPower(1.0);
+            robot.rightLiftWheel1.setPower(1.0);
+            robot.rightLiftWheel2.setPower(1.0);
+            robot.rightLiftWheel3.setPower(1.0);
+
+        } else if (gamepad2.dpad_right) {
+
+            robot.leftLiftWheel1.setPower(-1.0);
+            robot.leftLiftWheel2.setPower(-1.0);
+            robot.leftLiftWheel3.setPower(-1.0);
+            robot.rightLiftWheel1.setPower(-1.0);
+            robot.rightLiftWheel2.setPower(-1.0);
+            robot.rightLiftWheel3.setPower(-1.0);
+
+        } else if (gamepad1.left_trigger > 0.5) {
+
+            robot.leftLiftWheel1.setPower(1.0);
+            robot.leftLiftWheel2.setPower(1.0);
+            robot.leftLiftWheel3.setPower(1.0);
+            robot.rightLiftWheel1.setPower(1.0);
+            robot.rightLiftWheel2.setPower(1.0);
+            robot.rightLiftWheel3.setPower(1.0);
+
+        } else if (gamepad1.right_trigger > 0.5) {
+
+            robot.leftLiftWheel1.setPower(-1.0);
+            robot.leftLiftWheel2.setPower(-1.0);
+            robot.leftLiftWheel3.setPower(-1.0);
+            robot.rightLiftWheel1.setPower(-1.0);
+            robot.rightLiftWheel2.setPower(-1.0);
+            robot.rightLiftWheel3.setPower(-1.0);
+
+        }
+    }
 
     /*
      * Code to run ONCE after the driver hits STOP

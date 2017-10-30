@@ -158,20 +158,20 @@ public class RianMeasurements extends OpMode{
             //parallel and diagonal movement
             diagonal1 = Range.clip(diagonal1, -1, 1);
             diagonal2 = Range.clip(diagonal2, -1, 1);
-            robot.motorLeftBackWheel.setPower(diagonal2);
-            robot.motorLeftFrontWheel.setPower(diagonal1);
-            robot.motorRightBackWheel.setPower(diagonal1);
-            robot.motorRightFrontWheel.setPower(diagonal2);
+            robot.motorLeftBackWheel.setPower(-diagonal2);
+            robot.motorLeftFrontWheel.setPower(-diagonal1);
+            robot.motorRightBackWheel.setPower(-diagonal1);
+            robot.motorRightFrontWheel.setPower(-diagonal2);
 
         } else {
 
             // clip the right/left values so that the values never exceed +/- 1
             right = Range.clip(right, -1, 1);
             left = Range.clip(left, -1, 1);
-            robot.motorLeftBackWheel.setPower(-left);
-            robot.motorLeftFrontWheel.setPower(-left);
-            robot.motorRightBackWheel.setPower(-right);
-            robot.motorRightFrontWheel.setPower(-right);
+            robot.motorLeftBackWheel.setPower(left);
+            robot.motorLeftFrontWheel.setPower(left);
+            robot.motorRightBackWheel.setPower(right);
+            robot.motorRightFrontWheel.setPower(right);
 
         }
 
