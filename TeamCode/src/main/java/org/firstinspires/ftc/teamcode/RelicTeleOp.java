@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -53,12 +54,11 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name="TeleOp: A Pro Relic", group="Run")
+@Disabled
 public class RelicTeleOp extends OpMode{
 
     /* Declare OpMode members. */
     protected HardwareRelic robot = new HardwareRelic();
-
-
 
     double [] wheelPowerLUT = {0.0f, 0.05f, 0.15f, 0.18f, 0.20f,
             0.22f, 0.24f, 0.26f, 0.28f, 0.30f, 0.32f, 0.34f, 0.36f,

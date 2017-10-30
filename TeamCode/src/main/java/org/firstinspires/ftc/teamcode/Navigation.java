@@ -17,6 +17,8 @@ public class Navigation {
     PIDControl pidControlSpeed;
     PIDControl pidControlHeading;
 
+    int turnState = 0;
+
     public Navigation() {
 
         // distance control
@@ -87,5 +89,22 @@ public class Navigation {
         lastHeadingTimestamp = System.currentTimeMillis();
         pidControlHeading.reset();
     }
+
+    public void resetTurn(){
+    }
+
+
+//    public int turnByEncoder () {
+//        switch (turnState) {
+//            case 0:
+//
+//            case 1:
+//                // detect crypto
+//
+//                break;
+//            case 2:
+//
+//        return 1;
+//    }
 
 }
