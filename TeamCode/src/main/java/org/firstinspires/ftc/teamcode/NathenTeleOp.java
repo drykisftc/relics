@@ -58,7 +58,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class NathenTeleOp extends OpMode{
 
     /* Declare OpMode members. */
-    protected HardwareNathen robot = new HardwareNathen();
+    protected HardwareNathen robot = null;
 
     //public float jewelArmPosition = robot.jewelArm.getPosition();
     //public float jewelHitterPosition = robot.jewelHitter.getPosition();
@@ -70,14 +70,17 @@ public class NathenTeleOp extends OpMode{
             1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f,
             1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f};
 
-
-
+    protected int liftHeightLimit = 3000;
+    protected int liftMotorPosition = 0;
+    protected double liftMotorHolderPower = 0.3;
 
     /*
      * Code to run ONCE when the driver hits INIT
      */
     @Override
     public void init() {
+
+        robot = new HardwareNathen();
 
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
@@ -92,9 +95,9 @@ public class NathenTeleOp extends OpMode{
         robot.motorLeftWheel.setPower(0.0);
         robot.motorRightWheel.setPower(0.0);
 
-        robot.liftHand.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.liftHand.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.liftHand.setPower(0.0);
+        robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.liftMotor.setPower(0.0);
 
         robot.leftHand.setPosition(0.0);
         robot.rightHand.setPosition(1.0);
@@ -139,7 +142,8 @@ public class NathenTeleOp extends OpMode{
     public void loop() {
 
         joystickWheelControl();
-        glyphArmControl();
+        glyphHandControl();
+        glyphLiftControl();
         //readJewelSensor();
         telemetry.update();
     }
@@ -147,11 +151,10 @@ public class NathenTeleOp extends OpMode{
     public void joystickWheelControl() {
 
         // Mecanum wheel driving system (note: The joystick goes negative when pushed forwards, so negate it)
-        float throttle = -gamepad1.left_stick_y;
-        float direction = gamepad1.left_stick_x;
+        float throttle = -gamepad1.right_stick_y;
+        float direction = gamepad1.right_stick_x;
         float right = throttle - direction;
         float left = throttle + direction;
-
 
         // clip the right/left values so that the values never exceed +/- 1
         right = Range.clip(right, -1, 1);
@@ -165,42 +168,42 @@ public class NathenTeleOp extends OpMode{
         telemetry.addData("right", "%.2f", right);
     }
 
-    public void glyphArmControl() {
+    public void glyphHandControl() {
 
         float triggerPos = gamepad1.right_trigger/1.5f;
 
         robot.leftHand.setPosition(triggerPos);
         robot.rightHand.setPosition(1-triggerPos);
 
-        if (gamepad1.right_stick_y>0.05) {
-            robot.liftHand.setPower(0.1);
-        } else if (gamepad1.right_stick_y<-0.05) {
-            robot.liftHand.setPower(-0.1);
+    }
+
+    public void glyphLiftControl () {
+        if ( gamepad1.dpad_up) {
+            liftMotorPosition = robot.liftMotor.getCurrentPosition();
+            if (liftMotorPosition < liftHeightLimit) {
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.liftMotor.setPower(liftMotorHolderPower);
+            } else {
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.liftMotor.setPower(0.0);
+            }
+        } else if ( gamepad1.dpad_down) {
+            liftMotorPosition = robot.liftMotor.getCurrentPosition();
+            if (liftMotorPosition > -liftHeightLimit) {
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.liftMotor.setPower(-liftMotorHolderPower);
+            } else {
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.liftMotor.setPower(0.0);
+            }
         } else {
-            robot.liftHand.setPower(0);
+            // hold position
+            VortexUtils.moveMotorByEncoder(robot.liftMotor, liftMotorPosition, liftMotorHolderPower);
         }
+        telemetry.addData("right arm pos ", "%6d", liftMotorPosition);
     }
 
-    public void readJewelSensor() {
 
-//        int blue = robot.jewelSensor.blue();
-//        int red = robot.jewelSensor.red();
-//        int green = robot.jewelSensor.green();
-//
-//        telemetry.addData("jewelSensorRed", red);
-//        telemetry.addData("jewelSensorBlue", blue);
-//        telemetry.addData("jewelSensorGreen", green);
-//        telemetry.addData("jewelSensorDistance", robot.jewelSensorDistance.getDistance(DistanceUnit.CM));
-//
-//        if (red > blue && red > green) {
-//            telemetry.addData("jewelColor", "red");
-//        } else if (blue > red && blue > green) {
-//            telemetry.addData("jewelColor", "blue");
-//        } else {
-//            telemetry.addData("jewelColor", "noJewel");
-//        }
-
-    }
 
     /*
      * Code to run ONCE after the driver hits STOP
