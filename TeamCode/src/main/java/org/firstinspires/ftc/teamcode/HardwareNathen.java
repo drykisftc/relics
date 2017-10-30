@@ -37,7 +37,7 @@ public class HardwareNathen extends HardwareBase
     // DC Motors
     public DcMotor motorLeftWheel = null;
     public DcMotor motorRightWheel = null;
-    public DcMotor liftHand = null;
+    public DcMotor liftMotor = null;
 
     //Servos
     public Servo leftHand = null;
@@ -66,10 +66,10 @@ public class HardwareNathen extends HardwareBase
         motorLeftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorRightWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        liftHand = hwMap.dcMotor.get("liftHand");
-        liftHand.setDirection(DcMotor.Direction.FORWARD);
-        liftHand.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        liftHand.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftMotor = hwMap.dcMotor.get("liftMotor");
+        liftMotor.setDirection(DcMotor.Direction.FORWARD);
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         leftHand = hwMap.servo.get("leftHand");
         rightHand = hwMap.servo.get("rightHand");
@@ -81,11 +81,11 @@ public class HardwareNathen extends HardwareBase
     public void stop() {
         motorLeftWheel.setPower(0.0);
         motorRightWheel.setPower(0.0);
-        liftHand.setPower(0.0);
+        liftMotor.setPower(0.0);
 
         motorLeftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorRightWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        liftHand.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
     }
 }
