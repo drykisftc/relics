@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -45,6 +46,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 /*
@@ -96,20 +98,27 @@ public class AutoRianPlanARed extends OpMode {
     protected Servo jewelArm= null;
     protected Servo jewelHitter= null;
 
-    protected float axleDistance;
+    protected float axleDiagonalDistance;
 
     protected int state;
     protected long timeStamp;
     protected float wheelDistanceAverageStamp;
     protected float wheelDistanceAverage;
+    protected int columnDistance;
+    protected int leftBackStamp;
+    protected int leftFrontStamp;
+    protected int rightBackStamp;
+    protected int rightFrontStamp;
 
     protected float fGlyphTurnAngle = 90;
     protected int cryptoBoxStopDistance = 20;
-    protected double vuforiaDetectingSpeed = 0.3;
+    protected double vuforiaDetectingSpeed = 0.2;
     protected double adjustingSpeed;
-    protected int leftColumnDistance = 1000;
-    protected int centerColumnDistance = 800;
-    protected int rightColumnDistance = 600;
+    protected int rightColumnDistance = 2600;
+    protected int centerColumnDistance = 3350;
+    protected int leftColumnDistance = 3950;
+    protected int cryptoBoxDistance = 500;
+    protected float axleDistance = 18.1f;
 
     protected JewelKicker jewelKicker= null;
 
@@ -137,7 +146,6 @@ public class AutoRianPlanARed extends OpMode {
 
         relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
         relicTemplate = relicTrackables.get(0);
-
         relicTemplate.setName("relicVuMarkTemplate");
 
         telemetry.addData("jewelArm", jewelArm.getPosition());
@@ -148,9 +156,11 @@ public class AutoRianPlanARed extends OpMode {
 
     @Override
     public void start() {
-        state = 4;
+        state = 0;
         timeStamp = System.currentTimeMillis();
+        vumarkImage = "Unknown";
         jewelKicker.start();
+        relicTrackables.activate();
     }
 
     @Override
@@ -159,7 +169,17 @@ public class AutoRianPlanARed extends OpMode {
             case 0:
 
                 // jewel handling
-                state = jewelKicker.loop(0,1);
+                state = jewelKicker.loop(0, 1, "red");
+
+                vuMark = RelicRecoveryVuMark.from(relicTemplate);
+
+                if (vuMark == RelicRecoveryVuMark.LEFT) {
+                    vumarkImage = "left";
+                } else if (vuMark == RelicRecoveryVuMark.RIGHT) {
+                    vumarkImage = "right";
+                } else if (vuMark == RelicRecoveryVuMark.CENTER) {
+                    vumarkImage = "center";
+                }
 
                 break;
             case 1:
@@ -174,11 +194,42 @@ public class AutoRianPlanARed extends OpMode {
                 } else if (vuMark == RelicRecoveryVuMark.CENTER) {
                     vumarkImage = "center";
                 }
+                OpenGLMatrix pose = ((VuforiaTrackableDefaultListener)relicTemplate.getListener()).getPose();
+                telemetry.addData("Pose", format(pose));
 
-                telemetry.addData("vumark", vumarkImage);
+                //move forward with encoder
+                wheelDistanceAverage = (robot.motorLeftBackWheel.getCurrentPosition() +
+                                            robot.motorLeftFrontWheel.getCurrentPosition() +
+                                            robot.motorRightBackWheel.getCurrentPosition() +
+                                            robot.motorRightFrontWheel.getCurrentPosition())/4;
+
+                if (vumarkImage == "left") {
+                    columnDistance = leftColumnDistance;
+                } else if (vumarkImage == "center") {
+                    columnDistance = centerColumnDistance;
+                } else if (vumarkImage == "right") {
+                    columnDistance = rightColumnDistance;
+                } else {
+                    columnDistance = rightColumnDistance;
+                }
+
+                if (wheelDistanceAverage < columnDistance) {
+
+                    moveAtSpeed(vuforiaDetectingSpeed);
+
+                } else {
+
+                    moveAtSpeed(0.0);
+                    leftBackStamp = robot.motorLeftBackWheel.getCurrentPosition();
+                    leftFrontStamp = robot.motorLeftFrontWheel.getCurrentPosition();
+                    rightBackStamp = robot.motorRightBackWheel.getCurrentPosition();
+                    rightFrontStamp = robot.motorRightFrontWheel.getCurrentPosition();
+                    state = 4;
+
+                }
 
                 //move forward
-                if (!(robot.jewelSensorDistance.getDistance(DistanceUnit.CM) < cryptoBoxStopDistance)) {
+                /*if (!(robot.jewelSensorDistance.getDistance(DistanceUnit.CM) < cryptoBoxStopDistance)) {
 
                     moveAtSpeed(vuforiaDetectingSpeed);
 
@@ -186,111 +237,7 @@ public class AutoRianPlanARed extends OpMode {
 
                     moveAtSpeed(0);
                     state = 2;
-                }
-
-                break;
-            case 2:
-                // get to a good position (20 cm from crypto box)
-                telemetry.addData("Distance", robot.jewelSensorDistance.getDistance(DistanceUnit.CM));
-
-                if (robot.jewelSensorDistance.getDistance(DistanceUnit.CM) < 19) {
-
-                    adjustingSpeed = -0.1;
-
-                } else if (robot.jewelSensorDistance.getDistance(DistanceUnit.CM) > 21) {
-
-                    adjustingSpeed = 0.1;
-
-                } else if (robot.jewelSensorDistance.getDistance(DistanceUnit.CM) < 22 && robot.jewelSensorDistance.getDistance(DistanceUnit.CM) > 18) {
-
-                    adjustingSpeed = 0.0;
-                    moveAtSpeed(0.0);
-                    wheelDistanceAverageStamp = (robot.motorLeftBackWheel.getCurrentPosition() +
-                            robot.motorLeftFrontWheel.getCurrentPosition() +
-                            robot.motorRightBackWheel.getCurrentPosition() +
-                            robot.motorRightFrontWheel.getCurrentPosition())/4;
-                    robot.jewelArm.setPosition(0.8);
-                    state = 3;
-
-                }
-
-                /*if (Math.abs(adjustingSpeed) <= 0.05) {
-
-                    adjustingSpeed = 0.0;
-                    moveAtSpeed(0.0);
-                    wheelDistanceAverageStamp = (robot.motorLeftBackWheel.getCurrentPosition() +
-                                                 robot.motorLeftFrontWheel.getCurrentPosition() +
-                                                 robot.motorRightBackWheel.getCurrentPosition() +
-                                                 robot.motorRightFrontWheel.getCurrentPosition())/4;
-                    robot.jewelArm.setPosition(0.8);
-                    state = 3;
-
                 }*/
-
-                moveAtSpeed(adjustingSpeed);
-
-                break;
-            case 3:
-                // go forward to the correct crypto box
-
-                wheelDistanceAverage = (robot.motorLeftBackWheel.getCurrentPosition() +
-                                        robot.motorLeftFrontWheel.getCurrentPosition() +
-                                        robot.motorRightBackWheel.getCurrentPosition() +
-                                        robot.motorRightFrontWheel.getCurrentPosition())/4;
-
-                if (vumarkImage == "left") {
-                    //left
-                    if (Math.abs(wheelDistanceAverage - wheelDistanceAverageStamp) < leftColumnDistance) {
-
-                        moveAtSpeed(1.0);
-
-                    } else {
-
-                        moveAtSpeed(0.0);
-                        state = 4;
-
-                    }
-
-                } else if (vumarkImage == "center") {
-                    //center
-                    if (Math.abs(wheelDistanceAverage - wheelDistanceAverageStamp) < centerColumnDistance) {
-
-                        moveAtSpeed(1.0);
-
-                    } else {
-
-                        moveAtSpeed(0.0);
-                        state = 4;
-
-                    }
-
-                } else if (vumarkImage == "right") {
-                    //right
-                    if (Math.abs(wheelDistanceAverage - wheelDistanceAverageStamp) < rightColumnDistance) {
-
-                        moveAtSpeed(1.0);
-
-                    } else {
-
-                        moveAtSpeed(0.0);
-                        state = 4;
-
-                    }
-
-                } else {
-                    //fail to detect vumark
-                    if (Math.abs(wheelDistanceAverage - wheelDistanceAverageStamp) < rightColumnDistance) {
-
-                        moveAtSpeed(1.0);
-
-                    } else {
-
-                        moveAtSpeed(0.0);
-                        state = 4;
-
-                    }
-
-                }
 
                 break;
             case 4:
@@ -310,22 +257,81 @@ public class AutoRianPlanARed extends OpMode {
                 robot.motorRightFrontWheel.setPower(-turnPower);
                 robot.motorRightBackWheel.setPower(-turnPower);*/
 
+                if ((robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp + robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp > 3575) && (robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp < -3575)) {
 
+                    turnAtSpeed(0.0);
+                    wheelDistanceAverageStamp = (robot.motorLeftBackWheel.getCurrentPosition() +
+                            robot.motorLeftFrontWheel.getCurrentPosition() +
+                            robot.motorRightBackWheel.getCurrentPosition() +
+                            robot.motorRightFrontWheel.getCurrentPosition())/4;
+                    telemetry.addData("left", robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp + robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp);
+                    telemetry.addData("left", robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp);
+                    state = 5;
+
+                } else {
+
+                    turnAtSpeed(0.5);
+                }
 
                 break;
             case 5:
                 // move straight
+
+                wheelDistanceAverage = (robot.motorLeftBackWheel.getCurrentPosition() +
+                        robot.motorLeftFrontWheel.getCurrentPosition() +
+                        robot.motorRightBackWheel.getCurrentPosition() +
+                        robot.motorRightFrontWheel.getCurrentPosition())/4;
+
+                if (wheelDistanceAverage - wheelDistanceAverageStamp < cryptoBoxDistance) {
+
+                    moveAtSpeed(0.5);
+
+                } else {
+
+                    moveAtSpeed(0.0);
+                    timeStamp = System.currentTimeMillis();
+                    state = 6;
+
+                }
+
                 break;
             case 6:
                 // release the glyph
+
+                time = System.currentTimeMillis();
+
+                if (time - timeStamp < 2000) {
+
+                    robot.leftLiftWheel1.setPower(1.0);
+                    robot.leftLiftWheel2.setPower(1.0);
+                    robot.leftLiftWheel3.setPower(1.0);
+                    robot.rightLiftWheel1.setPower(-1.0);
+                    robot.rightLiftWheel2.setPower(-1.0);
+                    robot.rightLiftWheel3.setPower(-1.0);
+
+                } else {
+
+                    robot.leftLiftWheel1.setPower(0.0);
+                    robot.leftLiftWheel2.setPower(0.0);
+                    robot.leftLiftWheel3.setPower(0.0);
+                    robot.rightLiftWheel1.setPower(0.0);
+                    robot.rightLiftWheel2.setPower(0.0);
+                    robot.rightLiftWheel3.setPower(0.0);
+
+                }
+
                 break;
             case 7:
+
+                robot.stop();
+
                 // stop
                 break;
             default:
         }
 
         telemetry.addData("state", state);
+        telemetry.addData("vumark", vumarkImage);
         telemetry.update();
     }
 
@@ -335,13 +341,26 @@ public class AutoRianPlanARed extends OpMode {
         return (float)(axleDistance * angle * 3.14) / 360;
     }
 
-    public void moveAtSpeed (double speed){
+    public void moveAtSpeed (double speed) {
 
         robot.motorLeftBackWheel.setPower(speed);
         robot.motorLeftFrontWheel.setPower(speed);
         robot.motorRightBackWheel.setPower(speed);
         robot.motorRightFrontWheel.setPower(speed);
 
+    }
+
+    public void turnAtSpeed (double speed) {
+
+        robot.motorLeftBackWheel.setPower(speed);
+        robot.motorLeftFrontWheel.setPower(speed);
+        robot.motorRightBackWheel.setPower(-speed);
+        robot.motorRightFrontWheel.setPower(-speed);
+
+    }
+
+    String format(OpenGLMatrix transformationMatrix) {
+        return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
     }
 
 }

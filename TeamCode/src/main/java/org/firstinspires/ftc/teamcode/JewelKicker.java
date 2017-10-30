@@ -102,7 +102,7 @@ class JewelKicker {
         timeStamp = System.currentTimeMillis();
     }
 
-    public int loop(int callerStartState, int callerEndState) {
+    public int loop (int callerStartState, int callerEndState, String teamColor) {
         int returnState = callerStartState;
         switch (state) {
             case 0:
@@ -111,11 +111,19 @@ class JewelKicker {
                         && jewelHitter.getPosition() < 0.60
                         && System.currentTimeMillis() - timeStamp > jewelWaitTime) {
                     if (jewelSensor.blue() > jewelSensor.red() && jewelSensor.blue() > jewelSensor.green()) {
-                        jewelHitter.setPosition(jewelHitterBluePosition);
+                        if(teamColor == "blue") {
+                            jewelHitter.setPosition(jewelHitterBluePosition);
+                        } else {
+                            jewelHitter.setPosition(jewelHitterRedPosition);
+                        }
                         timeStamp = System.currentTimeMillis();
                         state = 1;
                     } else if (jewelSensor.red() > jewelSensor.blue() && jewelSensor.red() > jewelSensor.green()) {
-                        jewelHitter.setPosition(jewelHitterRedPosition);
+                        if(teamColor == "red") {
+                            jewelHitter.setPosition(jewelHitterBluePosition);
+                        } else {
+                            jewelHitter.setPosition(jewelHitterRedPosition);
+                        }
                         timeStamp = System.currentTimeMillis();
                         state = 1;
                     }
@@ -135,7 +143,7 @@ class JewelKicker {
                 }
                 break;
             case 2:
-                jewelArm.setPosition(0.30);
+                jewelArm.setPosition(0.80);
                 if(System.currentTimeMillis() - timeStamp > 1500) {
                     jewelHitter.setPosition(0.50);
                     state = 3;
