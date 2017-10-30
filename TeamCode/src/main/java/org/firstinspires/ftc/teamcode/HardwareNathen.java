@@ -43,16 +43,6 @@ public class HardwareNathen extends HardwareBase
     public Servo leftHand = null;
     public Servo rightHand = null;
 
-    public CRServo leftLiftWheel1 = null;
-    public CRServo leftLiftWheel2 = null;
-    public CRServo leftLiftWheel3 = null;
-
-    public CRServo rightLiftWheel1 = null;
-    public CRServo rightLiftWheel2 = null;
-    public CRServo rightLiftWheel3 = null;
-
-    public CRServo beltServo = null;
-
     //Sensors
     //public ColorSensor jewelSensor;
     //public DistanceSensor jewelSensorDistance;
@@ -83,16 +73,6 @@ public class HardwareNathen extends HardwareBase
 
         leftHand = hwMap.servo.get("leftHand");
         rightHand = hwMap.servo.get("rightHand");
-
-        leftLiftWheel1 = hwMap.crservo.get("leftLiftWheel1");
-        leftLiftWheel2 = hwMap.crservo.get("leftLiftWheel2");
-        leftLiftWheel3 = hwMap.crservo.get("leftLiftWheel3");
-
-        rightLiftWheel1 = hwMap.crservo.get("rightLiftWheel1");
-        rightLiftWheel2 = hwMap.crservo.get("rightLiftWheel2");
-        rightLiftWheel3 = hwMap.crservo.get("rightLiftWheel3");
-
-        beltServo = hwMap.crservo.get("beltServo");
 
         //jewelSensor = hwMap.get(ColorSensor.class, "jewelSensor");
         //jewelSensorDistance = hwMap.get(DistanceSensor.class, "jewelSensor");

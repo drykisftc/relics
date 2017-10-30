@@ -58,7 +58,9 @@ public class RianTeleOp extends OpMode{
     /* Declare OpMode members. */
     protected HardwareRian robot = new HardwareRian();
 
-    protected int liftHeightLimit = 5000;
+    protected int liftHeightLimit = 1000;
+    protected int liftMotorPosition = 0;
+    protected double liftMotorHolderPower = 0.3;
 
     double [] wheelPowerLUT = {0.0f, 0.05f, 0.15f, 0.18f, 0.20f,
             0.22f, 0.24f, 0.26f, 0.28f, 0.30f, 0.32f, 0.34f, 0.36f,
@@ -96,8 +98,6 @@ public class RianTeleOp extends OpMode{
         robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.liftMotor.setPower(0.0);
-
-        robot.jewelArm.setPosition(0.8);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("TeleOp", "Hello Vortex");    //
@@ -197,7 +197,7 @@ public class RianTeleOp extends OpMode{
     public void glyphWheelControl() {
 
         if (gamepad1.left_bumper) {
-            //down
+            // up
             robot.leftLiftWheel1.setPower(1.0);
             robot.leftLiftWheel2.setPower(1.0);
             robot.leftLiftWheel3.setPower(1.0);
@@ -207,7 +207,7 @@ public class RianTeleOp extends OpMode{
             robot.beltServo.setPower(0.0);
 
         } else if (gamepad1.right_bumper) {
-            //up
+            //down
             robot.leftLiftWheel1.setPower(-1.0);
             robot.leftLiftWheel2.setPower(-1.0);
             robot.leftLiftWheel3.setPower(-1.0);
@@ -233,21 +233,69 @@ public class RianTeleOp extends OpMode{
 
         float liftPower = gamepad2.left_stick_y;
 
-        if (gamepad1.dpad_up && robot.liftMotor.getCurrentPosition() < liftHeightLimit) {
+        if (robot.liftMotor.getCurrentPosition() < liftHeightLimit && robot.liftMotor.getCurrentPosition() > -liftHeightLimit) {
 
-            robot.liftMotor.setPower(0.6);
+            if (gamepad1.dpad_up) {
 
-        } else if (gamepad1.dpad_down && robot.liftMotor.getCurrentPosition() > -liftHeightLimit) {
+                robot.liftMotor.setPower(0.6);
 
-            robot.liftMotor.setPower(-0.6);
+            } else if (gamepad1.dpad_down) {
 
-        } else if ((liftPower < 0 && robot.liftMotor.getCurrentPosition() > -liftHeightLimit) || (liftPower > 0 && robot.liftMotor.getCurrentPosition() < liftHeightLimit)) {
+                robot.liftMotor.setPower(-0.6);
 
-            robot.liftMotor.setPower(liftPower);
+            } else {
+
+                robot.liftMotor.setPower(liftPower);
+
+            }
+
+        } else if (liftPower < 0 && robot.liftMotor.getCurrentPosition() > liftHeightLimit) {
+
+            if (gamepad1.dpad_down) {
+
+                robot.liftMotor.setPower(-0.6);
+
+            } else {
+
+                robot.liftMotor.setPower(liftPower);
+
+            }
+
+        } else if (liftPower > 0 && robot.liftMotor.getCurrentPosition() < -liftHeightLimit) {
+
+            if (gamepad1.dpad_down) {
+
+                robot.liftMotor.setPower(-0.6);
+
+            } else {
+
+                robot.liftMotor.setPower(liftPower);
+
+            }
 
         }
-
     }
+
+    public void glyphLiftControl2 () {
+        if ( gamepad1.dpad_up) {
+            liftMotorPosition = robot.liftMotor.getCurrentPosition();
+            if (liftMotorPosition < liftHeightLimit) {
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.liftMotor.setPower(0.6);
+            }
+        } else if ( gamepad1.dpad_down) {
+            liftMotorPosition = robot.liftMotor.getCurrentPosition();
+            if (liftMotorPosition > -liftHeightLimit) {
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.liftMotor.setPower(-0.6);
+            }
+        } else {
+                // hold position
+                VortexUtils.moveMotorByEncoder(robot.liftMotor, liftMotorPosition, liftMotorHolderPower);
+        }
+        telemetry.addData("right arm pos ", "%6d", liftMotorPosition);
+    }
+
 
     /*
      * Code to run ONCE after the driver hits STOP

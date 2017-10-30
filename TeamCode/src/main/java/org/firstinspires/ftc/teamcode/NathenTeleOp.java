@@ -98,10 +98,6 @@ public class NathenTeleOp extends OpMode{
 
         robot.leftHand.setPosition(0.0);
         robot.rightHand.setPosition(1.0);
-        robot.leftLiftWheel1.setPower(0.0);
-        robot.leftLiftWheel2.setPower(0.0);
-        robot.rightLiftWheel1.setPower(0.0);
-        robot.rightLiftWheel2.setPower(0.0);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("TeleOp", "Hello Vortex");    //
@@ -143,8 +139,7 @@ public class NathenTeleOp extends OpMode{
     public void loop() {
 
         joystickWheelControl();
-        //glyphArmControl();
-        glyphWheelControl();
+        glyphArmControl();
         //readJewelSensor();
         telemetry.update();
     }
@@ -184,38 +179,6 @@ public class NathenTeleOp extends OpMode{
         } else {
             robot.liftHand.setPower(0);
         }
-    }
-
-    public void glyphWheelControl() {
-
-        if (gamepad1.left_bumper) {
-            // up
-            robot.leftLiftWheel1.setPower(1.0);
-            robot.leftLiftWheel2.setPower(1.0);
-            robot.leftLiftWheel3.setPower(1.0);
-            robot.rightLiftWheel1.setPower(-1.0);
-            robot.rightLiftWheel2.setPower(-1.0);
-            robot.rightLiftWheel3.setPower(-1.0);
-
-        } else if (gamepad1.right_bumper) {
-            //down
-            robot.leftLiftWheel1.setPower(-1.0);
-            robot.leftLiftWheel2.setPower(-1.0);
-            robot.leftLiftWheel3.setPower(-1.0);
-            robot.rightLiftWheel1.setPower(1.0);
-            robot.rightLiftWheel2.setPower(1.0);
-            robot.rightLiftWheel3.setPower(1.0);
-        } else {
-            robot.leftLiftWheel1.setPower(0.0);
-            robot.leftLiftWheel2.setPower(0.0);
-            robot.leftLiftWheel3.setPower(0.0);
-            robot.rightLiftWheel1.setPower(0.0);
-            robot.rightLiftWheel2.setPower(0.0);
-            robot.rightLiftWheel3.setPower(0.0);
-        }
-
-        robot.beltServo.setPower(gamepad1.right_stick_y);
-
     }
 
     public void readJewelSensor() {
