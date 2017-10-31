@@ -77,6 +77,7 @@ public class HardwareRian extends HardwareBase
     }
 
     /* Initialize standard Hardware interfaces */
+    @Override
     public void init(HardwareMap ahwMap) {
 
         super.init(ahwMap);
@@ -135,6 +136,31 @@ public class HardwareRian extends HardwareBase
         imu.initialize(parameters);
     }
 
+    @Override
+    public void start () {
+        // wheels
+        motorLeftBackWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorRightBackWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorLeftBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorRightBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorLeftBackWheel.setPower(0.0);
+        motorRightBackWheel.setPower(0.0);
+
+        motorLeftFrontWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorRightFrontWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorLeftFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorRightFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorLeftFrontWheel.setPower(0.0);
+        motorRightFrontWheel.setPower(0.0);
+
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftMotor.setPower(0.0);
+
+        jewelArm.setPosition(0.8);
+    }
+
+    @Override
     public void stop() {
 
         motorLeftBackWheel.setPower(0.0);

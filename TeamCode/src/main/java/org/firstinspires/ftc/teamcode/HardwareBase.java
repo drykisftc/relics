@@ -9,7 +9,7 @@ public class HardwareBase
 
     /* Constructor */
     public HardwareBase(){
-       
+
     }
 
     /* Initialize standard Hardware interfaces */
@@ -17,7 +17,9 @@ public class HardwareBase
         hwMap = ahwMap;
     }
 
-    public void reset () {
+    public void start() {}
 
-    }
+    public void reset () {}
+
+    public void stop() {}
 }

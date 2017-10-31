@@ -80,27 +80,6 @@ public class RianTeleOp extends OpMode{
          */
         robot.init(hardwareMap);
 
-        // wheels
-        robot.motorLeftBackWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorRightBackWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorLeftBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorRightBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorLeftBackWheel.setPower(0.0);
-        robot.motorRightBackWheel.setPower(0.0);
-
-        robot.motorLeftFrontWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorRightFrontWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorLeftFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorRightFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorLeftFrontWheel.setPower(0.0);
-        robot.motorRightFrontWheel.setPower(0.0);
-
-        robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.liftMotor.setPower(0.0);
-
-        robot.jewelArm.setPosition(0.8);
-
         // Send telemetry message to signify robot waiting;
         telemetry.addData("TeleOp", "Hello Vortex");    //
         updateTelemetry(telemetry);
@@ -121,26 +100,7 @@ public class RianTeleOp extends OpMode{
      */
     @Override
     public void start() {
-
-        // wheels
-        robot.motorLeftBackWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorRightBackWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorLeftBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorRightBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorLeftBackWheel.setPower(0.0);
-        robot.motorRightBackWheel.setPower(0.0);
-
-        robot.motorLeftFrontWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorRightFrontWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorLeftFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorRightFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorLeftFrontWheel.setPower(0.0);
-        robot.motorRightFrontWheel.setPower(0.0);
-
-        robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.liftMotor.setPower(0.0);
-
+        robot.start();
         telemetry.update();
     }
 

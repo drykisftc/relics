@@ -160,6 +160,7 @@ public class AutoRianPlanARed extends OpMode {
 
     @Override
     public void start() {
+        robot.start();
         state = 0;
         timeStamp = System.currentTimeMillis();
         vumarkImage = "Unknown";

@@ -56,20 +56,26 @@ public class HardwareNathen extends HardwareBase
     //public ColorSensor jewelSensor;
     //public DistanceSensor jewelSensorDistance;
 
+    // limits
+    int liftHeightLimit = 4000;
+    int liftMotorPosition = 0;
+    double liftMotorHolderPower = 0.3;
+
     /* Constructor */
     public HardwareNathen(){
 
     }
 
     /* Initialize standard Hardware interfaces */
+    @Override
     public void init(HardwareMap ahwMap) {
 
         super.init(ahwMap);
 
         motorLeftWheel = hwMap.dcMotor.get("leftWheel");
         motorRightWheel = hwMap.dcMotor.get("rightWheel");
-        motorLeftWheel.setDirection(DcMotor.Direction.FORWARD);  // 40 to 1 andymark motor
-        motorRightWheel.setDirection(DcMotor.Direction.REVERSE); // 40 to 1 andymark motor
+        motorLeftWheel.setDirection(DcMotor.Direction.REVERSE);  // 40 to 1 andymark motor
+        motorRightWheel.setDirection(DcMotor.Direction.FORWARD); // 40 to 1 andymark motor
         motorLeftWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorRightWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLeftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -87,12 +93,37 @@ public class HardwareNathen extends HardwareBase
         jewelArm = hwMap.servo.get("jewelArm");
 
         jewelSensor = hwMap.colorSensor.get("jewelSensor");
+        jewelSensor.enableLed(true);
 
         gyro = (ModernRoboticsI2cGyro)hwMap.gyroSensor.get("gyro");
 
-
     }
 
+    @Override
+    public void start() {
+        // wheels
+        motorLeftWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorRightWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        motorLeftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorRightWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorLeftWheel.setPower(0.0);
+        motorRightWheel.setPower(0.0);
+
+        liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        liftMotor.setPower(0.0);
+
+        leftHand.setPosition(0.0);
+        rightHand.setPosition(1.0);
+
+        // init positions
+        jewelArm.setPosition(0.8);
+        jewelHitter.setPosition(0.5);
+        leftHand.setPosition(1.0);
+        rightHand.setPosition(0.0);
+    }
+
+    @Override
     public void stop() {
         motorLeftWheel.setPower(0.0);
         motorRightWheel.setPower(0.0);

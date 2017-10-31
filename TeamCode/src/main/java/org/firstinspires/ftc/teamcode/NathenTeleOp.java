@@ -35,6 +35,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -70,10 +71,6 @@ public class NathenTeleOp extends OpMode{
             1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f,
             1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f};
 
-    protected int liftHeightLimit = 3000;
-    protected int liftMotorPosition = 0;
-    protected double liftMotorHolderPower = 0.3;
-
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -87,24 +84,7 @@ public class NathenTeleOp extends OpMode{
          */
         robot.init(hardwareMap);
 
-        // wheels
-        robot.motorLeftWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorRightWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorLeftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorRightWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorLeftWheel.setPower(0.0);
-        robot.motorRightWheel.setPower(0.0);
-
-        robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.liftMotor.setPower(0.0);
-
-        robot.leftHand.setPosition(0.0);
-        robot.rightHand.setPosition(1.0);
-
-        // init positions
-        robot.jewelArm.setPosition(0.8);
-        robot.jewelHitter.setPosition(0.5);
+        robot.start();
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("TeleOp", "Hello Vortex");    //
@@ -127,16 +107,7 @@ public class NathenTeleOp extends OpMode{
     @Override
     public void start() {
 
-        // wheels
-        robot.motorLeftWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorRightWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorLeftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorRightWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorLeftWheel.setPower(0.0);
-        robot.motorRightWheel.setPower(0.0);
-
-        robot.jewelSensor.enableLed(true);
-
+        robot.jewelSensor.enableLed(false);
         telemetry.update();
     }
 
@@ -164,8 +135,8 @@ public class NathenTeleOp extends OpMode{
         // clip the right/left values so that the values never exceed +/- 1
         right = Range.clip(right, -1, 1);
         left = Range.clip(left, -1, 1);
-        robot.motorLeftWheel.setPower(-left);
-        robot.motorRightWheel.setPower(-right);
+        robot.motorLeftWheel.setPower(left);
+        robot.motorRightWheel.setPower(right);
 
 
         // Send telemetry message to signify robot running;
@@ -194,28 +165,28 @@ public class NathenTeleOp extends OpMode{
 
     public void glyphLiftControl () {
         if ( gamepad1.dpad_up) {
-            liftMotorPosition = robot.liftMotor.getCurrentPosition();
-            if (liftMotorPosition < liftHeightLimit) {
+            robot.liftMotorPosition = robot.liftMotor.getCurrentPosition();
+            if (robot.liftMotorPosition < robot.liftHeightLimit) {
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                robot.liftMotor.setPower(liftMotorHolderPower);
+                robot.liftMotor.setPower(robot.liftMotorHolderPower);
             } else {
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 robot.liftMotor.setPower(0.0);
             }
         } else if ( gamepad1.dpad_down) {
-            liftMotorPosition = robot.liftMotor.getCurrentPosition();
-            if (liftMotorPosition > -liftHeightLimit) {
+            robot.liftMotorPosition = robot.liftMotor.getCurrentPosition();
+            if (robot.liftMotorPosition > -robot.liftHeightLimit) {
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                robot.liftMotor.setPower(-liftMotorHolderPower);
+                robot.liftMotor.setPower(-robot.liftMotorHolderPower);
             } else {
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 robot.liftMotor.setPower(0.0);
             }
         } else {
             // hold position
-            VortexUtils.moveMotorByEncoder(robot.liftMotor, liftMotorPosition, liftMotorHolderPower);
+            VortexUtils.moveMotorByEncoder(robot.liftMotor, robot.liftMotorPosition, robot.liftMotorHolderPower);
         }
-        telemetry.addData("right arm pos ", "%6d", liftMotorPosition);
+        telemetry.addData("right arm pos ", "%6d", robot.liftMotorPosition);
     }
 
 

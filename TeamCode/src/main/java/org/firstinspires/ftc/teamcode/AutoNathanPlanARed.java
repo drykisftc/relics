@@ -54,7 +54,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@Autonomous(name = "Nathen_PlanA_Red_T", group = "Nathen")
+@Autonomous(name = "Nathen_PlanA_Red", group = "Nathen")
 public class AutoNathanPlanARed extends OpMode {
 
     /**
@@ -121,14 +121,13 @@ public class AutoNathanPlanARed extends OpMode {
     public void init() {
         robot = new HardwareNathen();
         robot.init(hardwareMap);
+        robot.start();
 
         jewelArm = robot.jewelArm;
         jewelHitter = robot.jewelHitter;
 
         jewelSensor = robot.jewelSensor;
         jewelSensorDistance = robot.jewelSensorDistance;
-        //imuSensor = robot.imu;
-
         jewelKicker = new JewelKicker(jewelSensor,jewelArm,jewelHitter,telemetry);
         jewelKicker.init();
 
@@ -150,6 +149,9 @@ public class AutoNathanPlanARed extends OpMode {
         DcMotor [] rightMotors = new DcMotor[1];
         rightMotors[0] = robot.motorRightWheel;
 
+        jewelKicker.jewelArmActionPosition= 0.0;
+        jewelKicker.jewelArmRestPosition= 1.0;
+
         telemetry.addData("jewelArm", jewelArm.getPosition());
         telemetry.addData("jewelHitter", jewelHitter.getPosition());
         telemetry.update();
@@ -158,6 +160,7 @@ public class AutoNathanPlanARed extends OpMode {
 
     @Override
     public void start() {
+        robot.start();
         state = 0;
         timeStamp = System.currentTimeMillis();
         vumarkImage = "Unknown";
