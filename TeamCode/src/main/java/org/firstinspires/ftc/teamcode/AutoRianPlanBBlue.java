@@ -72,11 +72,11 @@ public class AutoRianPlanBBlue extends AutoRianPlanARed {
             case 3:
                 // get heading
                 Orientation angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                robot.navigation.heading = angles.firstAngle;
+                navigation.heading = angles.firstAngle;
                 //gravity  = robot.imu.getGravity();
 
                 // turn 0
-                float turnPower = robot.navigation.getMaintainHeadingPower(fGlyphTurnAngle);
+                float turnPower = navigation.getMaintainHeadingPower(fGlyphTurnAngle);
                 if (Math.abs(turnPower) < 0.01) {
                     state = 4;
                 }

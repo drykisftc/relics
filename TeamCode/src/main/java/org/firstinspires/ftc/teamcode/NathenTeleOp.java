@@ -102,6 +102,10 @@ public class NathenTeleOp extends OpMode{
         robot.leftHand.setPosition(0.0);
         robot.rightHand.setPosition(1.0);
 
+        // init positions
+        robot.jewelArm.setPosition(0.8);
+        robot.jewelHitter.setPosition(0.5);
+
         // Send telemetry message to signify robot waiting;
         telemetry.addData("TeleOp", "Hello Vortex");    //
         updateTelemetry(telemetry);
@@ -117,7 +121,6 @@ public class NathenTeleOp extends OpMode{
 
     }
 
-
     /*
      * Code to run ONCE when the driver hits PLAY
      */
@@ -131,6 +134,8 @@ public class NathenTeleOp extends OpMode{
         robot.motorRightWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.motorLeftWheel.setPower(0.0);
         robot.motorRightWheel.setPower(0.0);
+
+        robot.jewelSensor.enableLed(true);
 
         telemetry.update();
     }
@@ -172,8 +177,18 @@ public class NathenTeleOp extends OpMode{
 
         float triggerPos = gamepad1.right_trigger/1.5f;
 
-        robot.leftHand.setPosition(triggerPos);
-        robot.rightHand.setPosition(1-triggerPos);
+        robot.leftHand.setPosition(1-triggerPos);
+        robot.rightHand.setPosition(triggerPos);
+
+        if (gamepad1.left_bumper) {
+            robot.leftHand.setPosition(1.0);
+            robot.rightHand.setPosition(0);
+        }
+
+        if (gamepad1.right_bumper) {
+            robot.leftHand.setPosition(0.4);
+            robot.rightHand.setPosition(0.6);
+        }
 
     }
 

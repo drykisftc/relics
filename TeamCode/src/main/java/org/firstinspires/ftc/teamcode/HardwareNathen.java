@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -43,6 +44,14 @@ public class HardwareNathen extends HardwareBase
     public Servo leftHand = null;
     public Servo rightHand = null;
 
+    public ColorSensor jewelSensor = null;
+    public DistanceSensor jewelSensorDistance = null;
+
+    public Servo jewelArm = null;
+    public Servo jewelHitter = null;
+
+    ModernRoboticsI2cGyro gyro = null;
+
     //Sensors
     //public ColorSensor jewelSensor;
     //public DistanceSensor jewelSensorDistance;
@@ -74,8 +83,14 @@ public class HardwareNathen extends HardwareBase
         leftHand = hwMap.servo.get("leftHand");
         rightHand = hwMap.servo.get("rightHand");
 
-        //jewelSensor = hwMap.get(ColorSensor.class, "jewelSensor");
-        //jewelSensorDistance = hwMap.get(DistanceSensor.class, "jewelSensor");
+        jewelHitter = hwMap.servo.get("jewelHitter");
+        jewelArm = hwMap.servo.get("jewelArm");
+
+        jewelSensor = hwMap.colorSensor.get("jewelSensor");
+
+        gyro = (ModernRoboticsI2cGyro)hwMap.gyroSensor.get("gyro");
+
+
     }
 
     public void stop() {

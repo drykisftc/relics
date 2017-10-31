@@ -1,5 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.DcMotor;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 /**
  * Created by hfu on 10/17/17.
  */
@@ -18,8 +22,16 @@ public class Navigation {
     PIDControl pidControlHeading;
 
     int turnState = 0;
+    int turnDistanceRightWheel = 0;
+    int leftWheelLandMark = 0;
+    int rightWheelLandMark= 0;
+    float currentTurnAngle =0.0f;
+    int convergeCount = 0;
+    float angleErrorTolerance = 0.5f;
 
-    public Navigation() {
+    Telemetry telemetry = null;
+
+    public Navigation(Telemetry t) {
 
         // distance control
         pidControlDistance = new PIDControl();
@@ -37,15 +49,18 @@ public class Navigation {
 
         //heading control
         pidControlHeading = new PIDControl();
-        pidControlHeading.setKp(0.0001f);
-        pidControlHeading.setKi(0.0001f);
-        pidControlHeading.setKd(0.0001f);
+        pidControlHeading.setKp(0.05f);
+        pidControlHeading.setKi(0.001f);
+        pidControlHeading.setKd(0.001f);
         pidControlHeading.setMaxIntegralError(2.0f/pidControlHeading.fKp);
 
         // update time stamp
         lastDistanceTimestamp= System.currentTimeMillis();
         lastSpeedTimestamp=lastDistanceTimestamp;
         lastHeadingTimestamp=lastDistanceTimestamp;
+
+        // other objects
+        telemetry = t;
     }
 
     /**
@@ -90,21 +105,197 @@ public class Navigation {
         pidControlHeading.reset();
     }
 
-    public void resetTurn(){
+    public void resetTurn(DcMotor [] leftMs, DcMotor [] rightMs){
+        leftWheelLandMark  =0;
+        for ( int i =0; i < leftMs.length; i++ ){
+            leftWheelLandMark += leftMs[i].getCurrentPosition();
+        }
+        leftWheelLandMark /= leftMs.length;
+        rightWheelLandMark  =0;
+        for ( int i =0; i < rightMs.length; i++ ){
+            rightWheelLandMark += rightMs[i].getCurrentPosition();
+        }
+        rightWheelLandMark /= rightMs.length;
+        resetHeadingControl();
+
+        convergeCount =0;
+        turnState =0;
     }
 
+    public int turnByEncoderOpenLoop (double power, float angle,
+                                      float axleLength,
+                                      DcMotor [] leftMs, DcMotor[] rightMs) {
+        switch (turnState) {
+            case 0:
+                // compute encoder distance
+                turnDistanceRightWheel = (int)getTurnDistanceRightWheel (angle,axleLength);
+                turnState = 1;
+                break;
+            case 1:
+                // wait until encoders reach the distance
+                int lD =0;
+                for ( int i =0; i < leftMs.length; i++ ){
+                    lD += leftMs[i].getCurrentPosition();
+                }
+                lD = lD/leftMs.length - leftWheelLandMark;
+                boolean leftDone= false;
+                if (-turnDistanceRightWheel > 0) {
+                    if (lD > -turnDistanceRightWheel) {
+                        for ( int i =0; i < leftMs.length; i++ ) {
+                            leftMs[i].setPower(0.0);
+                        }
+                        leftDone = true;
+                    } else {
+                        for ( int i =0; i < leftMs.length; i++ ) {
+                            leftMs[i].setPower(-power);
+                        }
+                    }
+                } else {
+                    if (lD < -turnDistanceRightWheel) {
+                        for ( int i =0; i < leftMs.length; i++ ) {
+                            leftMs[i].setPower(0.0);
+                        }
+                        leftDone = true;
+                    } else {
+                        for ( int i =0; i < leftMs.length; i++ ) {
+                            leftMs[i].setPower(power);
+                        }
+                    }
+                }
+                int rD = 0;
+                for ( int i =0; i < rightMs.length; i++ ) {
+                    rD += rightMs[i].getCurrentPosition();
+                }
+                rD = rD/rightMs.length - rightWheelLandMark;
+                boolean rightDone= false;
+                if (turnDistanceRightWheel > 0) {
+                    if (rD > turnDistanceRightWheel) {
+                         for ( int i =0; i < rightMs.length; i++ ) {
+                             rightMs[i].setPower(0.0);
+                         }
+                        rightDone = true;
+                    } else {
+                         for ( int i =0; i < rightMs.length; i++ ) {
+                             rightMs[i].setPower(power);
+                         }
+                    }
+                } else {
+                    if (rD < turnDistanceRightWheel) {
+                        for ( int i =0; i < leftMs.length; i++ ) {
+                            rightMs[i].setPower(0.0);
+                        }
+                        rightDone = true;
+                    } else {
+                         for ( int i =0; i < rightMs.length; i++ ) {
+                             rightMs[i].setPower(-power);
+                         }
+                    }
+                }
+                if ( leftDone && rightDone) {
+                    turnState = 2;
+                }
+                break;
+            default:
+                return 0;
+        }
+        return 1;
+    }
 
-//    public int turnByEncoder () {
-//        switch (turnState) {
-//            case 0:
-//
-//            case 1:
-//                // detect crypto
-//
-//                break;
-//            case 2:
-//
-//        return 1;
-//    }
+    public int turnByEncoderCloseLoop (double power, float targetAngle,
+                                      float axleLength,
+                                      DcMotor [] leftMs, DcMotor [] rightMs) {
+        switch (turnState) {
+            case 0:
+                // get current turn angle
+                int lD = 0;
+                for ( int i =0; i < leftMs.length; i++ ) {
+                    lD += leftMs[i].getCurrentPosition();
+                }
+                lD = lD/leftMs.length - leftWheelLandMark;
+                int rD = 0;
+                for ( int i =0; i < rightMs.length; i++ ) {
+                    rD += rightMs[i].getCurrentPosition();
+                }
+                rD = rD/rightMs.length-rightWheelLandMark;
+                currentTurnAngle = getTurnAngle (lD, rD, axleLength);
+                turnState = 1;
+                break;
+            case 1:
+
+                float errorAngle = (targetAngle-currentTurnAngle)%360;
+
+                if (Math.abs(errorAngle) < angleErrorTolerance) {
+                    convergeCount ++;
+                } else {
+                    convergeCount = 0;
+                }
+
+                if (convergeCount > 3) {
+                    turnState = 1;
+                }
+
+                // adjust power
+                long currentT = System.currentTimeMillis();
+                float powerDiff = pidControlHeading.update(errorAngle,
+                        currentT-lastHeadingTimestamp);
+                lastHeadingTimestamp = currentT;
+                for ( int i =0; i < leftMs.length; i++ ) {
+                   leftMs[i].setPower(power+powerDiff);
+                }
+                for ( int i =0; i < rightMs.length; i++ ) {
+                   rightMs[i].setPower(power-powerDiff);
+                }
+                break;
+            default:
+                return 0;
+        }
+        return 1;
+    }
+
+    public int turnByGyroCloseLoop (double power, float currentAngle,
+                                    float targetAngle, float axleLength,
+                                    DcMotor [] leftMs, DcMotor [] rightMs) {
+        switch (turnState) {
+            case 0:
+                float errorAngle = (targetAngle-currentAngle)%360;
+
+                if (Math.abs(errorAngle) < angleErrorTolerance) {
+                    convergeCount ++;
+                } else {
+                    convergeCount = 0;
+                }
+
+                if (convergeCount > 3) {
+                    turnState = 1;
+                }
+
+                // adjust power
+                long currentT = System.currentTimeMillis();
+                float powerDiff = pidControlHeading.update(errorAngle,
+                        currentT-lastHeadingTimestamp);
+                lastHeadingTimestamp = currentT;
+                for ( int i =0; i < leftMs.length; i++ ) {
+                    leftMs[i].setPower(power+powerDiff);
+                }
+                for ( int i =0; i < rightMs.length; i++ ) {
+                    rightMs[i].setPower(power-powerDiff);
+                }
+                break;
+            default:
+                return 0;
+        }
+        return 1;
+    }
+
+    // left turn is positive
+    float getTurnAngle (float leftDistance, float rightDistance, float axleDistance){
+        return (float)((360 * rightDistance * (rightDistance - leftDistance)) / (2 * 3.14 * axleDistance * rightDistance));
+    }
+
+    // if the result is positive, set right Motor move forward (left turn),
+    // other wise (right turn)
+    float getTurnDistanceRightWheel (float angle, float axleDistance){
+        return (float)(axleDistance * angle * 3.14) / 360;
+    }
 
 }

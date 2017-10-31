@@ -29,20 +29,16 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.hardware.bosch.BNO055IMU;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
@@ -58,9 +54,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@Autonomous(name = "Rian_PlanA_Red", group = "Rian")
-
-public class AutoRianPlanARed extends OpMode {
+@Autonomous(name = "Nathen_PlanA_Red_T", group = "Nathen")
+public class AutoNathanPlanARed extends OpMode {
 
     /**
      * Note that the REV Robotics Color-Distance incorporates two sensors into one device.
@@ -93,7 +88,7 @@ public class AutoRianPlanARed extends OpMode {
     protected DistanceSensor jewelSensorDistance= null;
     protected BNO055IMU imuSensor = null;
 
-    protected HardwareRian robot= null;
+    protected HardwareNathen robot= null;
 
     protected Servo jewelArm= null;
     protected Servo jewelHitter= null;
@@ -106,9 +101,7 @@ public class AutoRianPlanARed extends OpMode {
     protected float wheelDistanceAverage;
     protected int columnDistance;
     protected int leftBackStamp;
-    protected int leftFrontStamp;
     protected int rightBackStamp;
-    protected int rightFrontStamp;
 
     protected float fGlyphTurnAngle = 90;
     protected int cryptoBoxStopDistance = 20;
@@ -126,7 +119,7 @@ public class AutoRianPlanARed extends OpMode {
 
     @Override
     public void init() {
-        robot = new HardwareRian();
+        robot = new HardwareNathen();
         robot.init(hardwareMap);
 
         jewelArm = robot.jewelArm;
@@ -134,7 +127,7 @@ public class AutoRianPlanARed extends OpMode {
 
         jewelSensor = robot.jewelSensor;
         jewelSensorDistance = robot.jewelSensorDistance;
-        imuSensor = robot.imu;
+        //imuSensor = robot.imu;
 
         jewelKicker = new JewelKicker(jewelSensor,jewelArm,jewelHitter,telemetry);
         jewelKicker.init();
@@ -151,6 +144,11 @@ public class AutoRianPlanARed extends OpMode {
         relicTemplate.setName("relicVuMarkTemplate");
 
         navigation = new Navigation(telemetry);
+
+        DcMotor [] leftMotors = new DcMotor[1];
+        leftMotors[0] = robot.motorLeftWheel;
+        DcMotor [] rightMotors = new DcMotor[1];
+        rightMotors[0] = robot.motorRightWheel;
 
         telemetry.addData("jewelArm", jewelArm.getPosition());
         telemetry.addData("jewelHitter", jewelHitter.getPosition());
@@ -202,10 +200,8 @@ public class AutoRianPlanARed extends OpMode {
                 telemetry.addData("Pose", format(pose));
 
                 //move forward with encoder
-                wheelDistanceAverage = (robot.motorLeftBackWheel.getCurrentPosition() +
-                                            robot.motorLeftFrontWheel.getCurrentPosition() +
-                                            robot.motorRightBackWheel.getCurrentPosition() +
-                                            robot.motorRightFrontWheel.getCurrentPosition())/4;
+                wheelDistanceAverage = (robot.motorLeftWheel.getCurrentPosition() +
+                                            robot.motorRightWheel.getCurrentPosition())/2;
 
                 if (vumarkImage == "left") {
                     columnDistance = leftColumnDistance;
@@ -224,24 +220,12 @@ public class AutoRianPlanARed extends OpMode {
                 } else {
 
                     moveAtSpeed(0.0);
-                    leftBackStamp = robot.motorLeftBackWheel.getCurrentPosition();
-                    leftFrontStamp = robot.motorLeftFrontWheel.getCurrentPosition();
-                    rightBackStamp = robot.motorRightBackWheel.getCurrentPosition();
-                    rightFrontStamp = robot.motorRightFrontWheel.getCurrentPosition();
+                    leftBackStamp = robot.motorLeftWheel.getCurrentPosition();
+                    rightBackStamp = robot.motorRightWheel.getCurrentPosition();
+
                     state = 4;
 
                 }
-
-                //move forward
-                /*if (!(robot.jewelSensorDistance.getDistance(DistanceUnit.CM) < cryptoBoxStopDistance)) {
-
-                    moveAtSpeed(vuforiaDetectingSpeed);
-
-                } else {
-
-                    moveAtSpeed(0);
-                    state = 2;
-                }*/
 
                 break;
             case 4:
@@ -257,34 +241,18 @@ public class AutoRianPlanARed extends OpMode {
                 }
 
                 robot.motorLeftFrontWheel.setPower(turnPower);
-                robot.motorLeftBackWheel.setPower(turnPower);
+                robot.motorLeftWheel.setPower(turnPower);
                 robot.motorRightFrontWheel.setPower(-turnPower);
-                robot.motorRightBackWheel.setPower(-turnPower);*/
+                robot.motorRightWheel.setPower(-turnPower);*/
 
-                if ((robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp + robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp > 3575) && (robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp < -3575)) {
-
-                    turnAtSpeed(0.0);
-                    wheelDistanceAverageStamp = (robot.motorLeftBackWheel.getCurrentPosition() +
-                            robot.motorLeftFrontWheel.getCurrentPosition() +
-                            robot.motorRightBackWheel.getCurrentPosition() +
-                            robot.motorRightFrontWheel.getCurrentPosition())/4;
-                    telemetry.addData("left", robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp + robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp);
-                    telemetry.addData("left", robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp);
-                    state = 5;
-
-                } else {
-
-                    turnAtSpeed(0.5);
-                }
+                //navigation.
 
                 break;
             case 5:
                 // move straight
 
-                wheelDistanceAverage = (robot.motorLeftBackWheel.getCurrentPosition() +
-                        robot.motorLeftFrontWheel.getCurrentPosition() +
-                        robot.motorRightBackWheel.getCurrentPosition() +
-                        robot.motorRightFrontWheel.getCurrentPosition())/4;
+                wheelDistanceAverage = (robot.motorLeftWheel.getCurrentPosition() +
+                        robot.motorRightWheel.getCurrentPosition())/2;
 
                 if (wheelDistanceAverage - wheelDistanceAverageStamp < cryptoBoxDistance) {
 
@@ -306,21 +274,10 @@ public class AutoRianPlanARed extends OpMode {
 
                 if (time - timeStamp < 2000) {
 
-                    robot.leftLiftWheel1.setPower(1.0);
-                    robot.leftLiftWheel2.setPower(1.0);
-                    robot.leftLiftWheel3.setPower(1.0);
-                    robot.rightLiftWheel1.setPower(-1.0);
-                    robot.rightLiftWheel2.setPower(-1.0);
-                    robot.rightLiftWheel3.setPower(-1.0);
+
 
                 } else {
 
-                    robot.leftLiftWheel1.setPower(0.0);
-                    robot.leftLiftWheel2.setPower(0.0);
-                    robot.leftLiftWheel3.setPower(0.0);
-                    robot.rightLiftWheel1.setPower(0.0);
-                    robot.rightLiftWheel2.setPower(0.0);
-                    robot.rightLiftWheel3.setPower(0.0);
 
                 }
 
@@ -346,21 +303,13 @@ public class AutoRianPlanARed extends OpMode {
     }
 
     public void moveAtSpeed (double speed) {
-
-        robot.motorLeftBackWheel.setPower(speed);
-        robot.motorLeftFrontWheel.setPower(speed);
-        robot.motorRightBackWheel.setPower(speed);
-        robot.motorRightFrontWheel.setPower(speed);
-
+        robot.motorLeftWheel.setPower(speed);
+        robot.motorRightWheel.setPower(speed);
     }
 
     public void turnAtSpeed (double speed) {
-
-        robot.motorLeftBackWheel.setPower(speed);
-        robot.motorLeftFrontWheel.setPower(speed);
-        robot.motorRightBackWheel.setPower(-speed);
-        robot.motorRightFrontWheel.setPower(-speed);
-
+        robot.motorLeftWheel.setPower(speed);
+        robot.motorRightWheel.setPower(-speed);
     }
 
     String format(OpenGLMatrix transformationMatrix) {

@@ -65,7 +65,6 @@ class JewelKicker {
      */
 
     private ColorSensor jewelSensor;
-    private DistanceSensor jewelSensorDistance;
     private Servo jewelArm;
     private Servo jewelHitter;
 
@@ -81,12 +80,10 @@ class JewelKicker {
     private long jewelWaitTime = 1000;
 
     JewelKicker (ColorSensor c,
-                 DistanceSensor d,
                  Servo arm,
                  Servo h,
                  Telemetry t) {
         jewelSensor = c;
-        jewelSensorDistance = d;
         jewelArm = arm;
         jewelHitter = h;
         telemetry = t;
@@ -128,7 +125,6 @@ class JewelKicker {
                         state = 1;
                     }
                 }
-                telemetry.addData("Distance (cm)", String.format(Locale.US, "%.02f", jewelSensorDistance.getDistance(DistanceUnit.CM)));
                 telemetry.addData("Red  ", jewelSensor.red());
                 telemetry.addData("Green", jewelSensor.green());
                 telemetry.addData("Blue ", jewelSensor.blue());
