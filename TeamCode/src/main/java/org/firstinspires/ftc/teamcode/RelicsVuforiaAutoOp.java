@@ -84,7 +84,7 @@ import java.util.List;
  * is explained below.
  */
 
-@Autonomous(name="Relics: VEX", group ="Vuforia Auto Mode")
+@Autonomous(name="VuMark: auto", group ="Utilities")
 public class RelicsVuforiaAutoOp extends OpMode {
 
     public static final String TAG = "Vuforia Sample";

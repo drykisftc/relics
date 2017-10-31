@@ -73,8 +73,8 @@ class JewelKicker {
     double jewelArmRestPosition = 0.8;
     double jewelArmActionPosition = 0.15;
     private double jewelHitterRestPosition =0.5;
-    private double jewelHitterBluePosition = 1.0;
-    private double jewelHitterRedPosition = 0.0;
+    double jewelHitterBluePosition = 1.0;
+    double jewelHitterRedPosition = 0.0;
     private Telemetry telemetry;
 
     private long jewelWaitTime = 1000;
@@ -117,9 +117,9 @@ class JewelKicker {
                         state = 1;
                     } else if (jewelSensor.red() > jewelSensor.blue() && jewelSensor.red() > jewelSensor.green()) {
                         if(teamColor == "red") {
-                            jewelHitter.setPosition(jewelHitterBluePosition);
-                        } else {
                             jewelHitter.setPosition(jewelHitterRedPosition);
+                        } else {
+                            jewelHitter.setPosition(jewelHitterBluePosition);
                         }
                         timeStamp = System.currentTimeMillis();
                         state = 1;

@@ -32,11 +32,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.Range;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 /**
  * This file provides basic Telop driving for a Pushbot robot.
@@ -53,12 +55,14 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="TeleOp: A Pro Relic", group="Run")
-@Disabled
-public class RelicTeleOp extends OpMode{
+@TeleOp(name="TeleOp: A Pro Nathen", group="TeleOp")
+public class TeleOpNathen extends OpMode{
 
     /* Declare OpMode members. */
-    protected HardwareRelic robot = new HardwareRelic();
+    protected HardwareNathen robot = null;
+
+    //public float jewelArmPosition = robot.jewelArm.getPosition();
+    //public float jewelHitterPosition = robot.jewelHitter.getPosition();
 
     double [] wheelPowerLUT = {0.0f, 0.05f, 0.15f, 0.18f, 0.20f,
             0.22f, 0.24f, 0.26f, 0.28f, 0.30f, 0.32f, 0.34f, 0.36f,
@@ -67,30 +71,28 @@ public class RelicTeleOp extends OpMode{
             1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f,
             1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f};
 
+    double leftHandPosition = 0.0;
+    double rightHandPosition = 0.0;
+
     /*
      * Code to run ONCE when the driver hits INIT
      */
     @Override
     public void init() {
 
+        robot = new HardwareNathen();
+
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
 
-        // wheels
-        robot.motorLeftBackWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorRightBackWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorLeftBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorRightBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorLeftBackWheel.setPower(0.0);
-        robot.motorRightBackWheel.setPower(0.0);
-
-
+        robot.start();
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("TeleOp", "Hello Vortex");    //
         updateTelemetry(telemetry);
+
     }
 
     /*
@@ -102,30 +104,16 @@ public class RelicTeleOp extends OpMode{
 
     }
 
-
     /*
      * Code to run ONCE when the driver hits PLAY
      */
     @Override
     public void start() {
 
-        // wheels
-        robot.motorLeftBackWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorRightBackWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorLeftBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorRightBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorLeftBackWheel.setPower(0.0);
-        robot.motorRightBackWheel.setPower(0.0);
+        robot.jewelSensor.enableLed(false);
 
-        robot.motorLeftFrontWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorRightFrontWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        robot.motorLeftFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorRightFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.motorLeftFrontWheel.setPower(0.0);
-        robot.motorRightFrontWheel.setPower(0.0);
-
-
-
+        leftHandPosition = robot.leftHandOpenPosition;
+        rightHandPosition = robot.rightHandOpenPosition;
         telemetry.update();
     }
 
@@ -136,46 +124,81 @@ public class RelicTeleOp extends OpMode{
     public void loop() {
 
         joystickWheelControl();
+        glyphHandControl();
+        glyphLiftControl();
+        //readJewelSensor();
         telemetry.update();
     }
 
     public void joystickWheelControl() {
 
         // Mecanum wheel driving system (note: The joystick goes negative when pushed forwards, so negate it)
+        float throttle = -gamepad1.right_stick_y;
         float direction = gamepad1.right_stick_x;
-        float parallel = -gamepad1.left_stick_x;
-        float diagonal = gamepad1.left_stick_y;
-        float right = -direction;
-        float left = direction;
-        float diagonal1 = parallel + diagonal;
-        float diagonal2 = -parallel + diagonal;
+        float right = throttle - direction;
+        float left = throttle + direction;
 
-        if (Math.abs(parallel) > 0.05 || Math.abs(diagonal) > 0.05) {
+        // clip the right/left values so that the values never exceed +/- 1
+        right = Range.clip(right, -1, 1);
+        left = Range.clip(left, -1, 1);
+        robot.motorLeftWheel.setPower(left);
+        robot.motorRightWheel.setPower(right);
 
-            //parallel and diagonal movement
-            diagonal1 = Range.clip(diagonal1, -1, 1);
-            diagonal2 = Range.clip(diagonal2, -1, 1);
-            robot.motorLeftBackWheel.setPower(diagonal2);
-            robot.motorLeftFrontWheel.setPower(diagonal1);
-            robot.motorRightBackWheel.setPower(diagonal1);
-            robot.motorRightFrontWheel.setPower(diagonal2);
-
-        } else {
-
-            // clip the right/left values so that the values never exceed +/- 1
-            right = Range.clip(right, -1, 1);
-            left = Range.clip(left, -1, 1);
-            robot.motorLeftBackWheel.setPower(-left);
-            robot.motorLeftFrontWheel.setPower(-left);
-            robot.motorRightBackWheel.setPower(-right);
-            robot.motorRightFrontWheel.setPower(-right);
-
-        }
 
         // Send telemetry message to signify robot running;
         telemetry.addData("left",  "%.2f", left);
         telemetry.addData("right", "%.2f", right);
     }
+
+    public void glyphHandControl() {
+
+        float triggerPos = gamepad1.right_trigger/1.5f;
+        if ( triggerPos > 0.05) {
+            robot.leftHand.setPosition(1 - triggerPos);
+            robot.rightHand.setPosition(triggerPos);
+        } else {
+
+            if (gamepad1.left_bumper) {
+                leftHandPosition = robot.leftHandOpenPosition;
+                rightHandPosition = robot.rightHandOpenPosition;
+            }
+
+            if (gamepad1.right_bumper) {
+                leftHandPosition = robot.leftHandClosePosition;
+                rightHandPosition = robot.rightHandClosePosition;
+            }
+            robot.leftHand.setPosition(leftHandPosition);
+            robot.rightHand.setPosition(rightHandPosition);
+        }
+    }
+
+    public void glyphLiftControl () {
+        if ( gamepad1.dpad_up) {
+            robot.liftMotorPosition = robot.liftMotor.getCurrentPosition();
+            if (robot.liftMotorPosition < robot.liftHeightLimit) {
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.liftMotor.setPower(robot.liftMotorHolderPower);
+            } else {
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.liftMotor.setPower(0.0);
+            }
+        } else if ( gamepad1.dpad_down) {
+            robot.liftMotorPosition = robot.liftMotor.getCurrentPosition();
+            if (robot.liftMotorPosition > -robot.liftHeightLimit) {
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.liftMotor.setPower(-robot.liftMotorHolderPower);
+            } else {
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.liftMotor.setPower(0.0);
+            }
+        } else {
+            // hold position
+            VortexUtils.moveMotorByEncoder(robot.liftMotor, robot.liftMotorPosition, robot.liftMotorHolderPower);
+        }
+        telemetry.addData("right arm pos ", "%6d", robot.liftMotorPosition);
+    }
+
+
 
     /*
      * Code to run ONCE after the driver hits STOP

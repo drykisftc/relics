@@ -55,7 +55,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
 @Autonomous(name = "Nathen_PlanA_Red", group = "Nathen")
-public class AutoNathanPlanARed extends OpMode {
+public class AutoNathanPlanARed extends AutoRelic {
 
     /**
      * Note that the REV Robotics Color-Distance incorporates two sensors into one device.
@@ -75,50 +75,11 @@ public class AutoNathanPlanARed extends OpMode {
      *
      */
 
-    VuforiaLocalizer vuforia;
-
-    protected int cameraMonitorViewId;
-    protected VuforiaLocalizer.Parameters parameters;
-    protected VuforiaTrackables relicTrackables;
-    protected VuforiaTrackable relicTemplate;
-    protected RelicRecoveryVuMark vuMark;
-    protected String vumarkImage = "unknown";
-
-    protected ColorSensor jewelSensor = null;
-    protected DistanceSensor jewelSensorDistance= null;
-    protected BNO055IMU imuSensor = null;
-
     protected HardwareNathen robot= null;
-
-    protected Servo jewelArm= null;
-    protected Servo jewelHitter= null;
-
-    protected float axleDiagonalDistance;
-
-    protected int state;
-    protected long timeStamp;
-    protected float wheelDistanceAverageStamp;
-    protected float wheelDistanceAverage;
-    protected int columnDistance;
-    protected int leftBackStamp;
-    protected int rightBackStamp;
-
-    protected float fGlyphTurnAngle = 90;
-    protected int cryptoBoxStopDistance = 20;
-    protected double vuforiaDetectingSpeed = 0.2;
-    protected double adjustingSpeed;
-    protected int rightColumnDistance = 2600;
-    protected int centerColumnDistance = 3350;
-    protected int leftColumnDistance = 3950;
-    protected int cryptoBoxDistance = 500;
-    protected float axleDistance = 18.1f;
-
-    protected JewelKicker jewelKicker= null;
-
-    protected Navigation navigation =null;
 
     @Override
     public void init() {
+        teamColor = "red";
         robot = new HardwareNathen();
         robot.init(hardwareMap);
         robot.start();
@@ -127,22 +88,13 @@ public class AutoNathanPlanARed extends OpMode {
         jewelHitter = robot.jewelHitter;
 
         jewelSensor = robot.jewelSensor;
-        jewelSensorDistance = robot.jewelSensorDistance;
         jewelKicker = new JewelKicker(jewelSensor,jewelArm,jewelHitter,telemetry);
         jewelKicker.init();
 
-        cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
-
-        parameters.vuforiaLicenseKey = "AVw9AA7/////AAAAGR2dOk5hfEdLl+V9Doao7C5Xp0Wvb2cien7ybTAhAyUTB2iZRO/CMyxlXakNnP3+HqLEMe7nzV+fllHLVQLuSwWmLdDErkjexTZKcgCGQUIZ+Ts6O2m7l+zwVVBH5V5Ah5SJP3jd/P6lvuKJY+DUY0pThAitsP59uD6wkcukMQQXNN+xBPzEBEx/0kt7hS5GJ+qCYDLD1qgCO5KrDuWzYtWjZi3LaGHsO9msvrGiCXYaP9PDRX9ZoWB1tJiHky5HyG/p+ndycmiK6sY9lRymaaJ5fX556ZUKtQX2dOAF7tHgVqsPOhqCV3E3qN6kXnwEqy9KgZ1QQjKJnCR5eLRXmSOqAbKi8ArzrRc3737EpSzK";
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
-        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
-
-        relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
-        relicTemplate = relicTrackables.get(0);
-        relicTemplate.setName("relicVuMarkTemplate");
-
         navigation = new Navigation(telemetry);
+
+        vuforia = new HardwareVuforia(VuforiaLocalizer.CameraDirection.FRONT);
+        vuforia.init(hardwareMap);
 
         DcMotor [] leftMotors = new DcMotor[1];
         leftMotors[0] = robot.motorLeftWheel;
@@ -151,6 +103,8 @@ public class AutoNathanPlanARed extends OpMode {
 
         jewelKicker.jewelArmActionPosition= 0.0;
         jewelKicker.jewelArmRestPosition= 1.0;
+        jewelKicker.jewelHitterBluePosition = 1.0;
+        jewelKicker.jewelHitterRedPosition = 0.0;
 
         telemetry.addData("jewelArm", jewelArm.getPosition());
         telemetry.addData("jewelHitter", jewelHitter.getPosition());
@@ -163,9 +117,12 @@ public class AutoNathanPlanARed extends OpMode {
         robot.start();
         state = 0;
         timeStamp = System.currentTimeMillis();
-        vumarkImage = "Unknown";
+        vuforia.vumarkImage = "Unknown";
         jewelKicker.start();
-        relicTrackables.activate();
+
+        // hold the glyph
+        robot.leftHand.setPosition(robot.leftHandClosePosition);
+        robot.rightHand.setPosition(robot.rightHandClosePosition);
     }
 
     @Override
@@ -176,45 +133,28 @@ public class AutoNathanPlanARed extends OpMode {
                 // jewel handling
                 state = jewelKicker.loop(0, 1, "red");
 
-                vuMark = RelicRecoveryVuMark.from(relicTemplate);
-
-                if (vuMark == RelicRecoveryVuMark.LEFT) {
-                    vumarkImage = "left";
-                } else if (vuMark == RelicRecoveryVuMark.RIGHT) {
-                    vumarkImage = "right";
-                } else if (vuMark == RelicRecoveryVuMark.CENTER) {
-                    vumarkImage = "center";
-                }
+                vuforia.identifyGlyphCrypto();
 
                 break;
             case 1:
 
                 //read vumark
-                vuMark = RelicRecoveryVuMark.from(relicTemplate);
-
-                if (vuMark == RelicRecoveryVuMark.LEFT) {
-                    vumarkImage = "left";
-                } else if (vuMark == RelicRecoveryVuMark.RIGHT) {
-                    vumarkImage = "right";
-                } else if (vuMark == RelicRecoveryVuMark.CENTER) {
-                    vumarkImage = "center";
-                }
-                OpenGLMatrix pose = ((VuforiaTrackableDefaultListener)relicTemplate.getListener()).getPose();
-                telemetry.addData("Pose", format(pose));
-
-                //move forward with encoder
-                wheelDistanceAverage = (robot.motorLeftWheel.getCurrentPosition() +
-                                            robot.motorRightWheel.getCurrentPosition())/2;
-
-                if (vumarkImage == "left") {
+                vuforia.identifyGlyphCrypto();
+                if (vuforia.vumarkImage == "left") {
                     columnDistance = leftColumnDistance;
-                } else if (vumarkImage == "center") {
+                } else if (vuforia.vumarkImage == "center") {
                     columnDistance = centerColumnDistance;
-                } else if (vumarkImage == "right") {
+                } else if (vuforia.vumarkImage == "right") {
                     columnDistance = rightColumnDistance;
                 } else {
                     columnDistance = rightColumnDistance;
                 }
+
+                OpenGLMatrix pose = vuforia.getGlyphCryptoPosition();
+                telemetry.addData("Pose", format(pose));
+                //move forward with encoder
+                wheelDistanceAverage = (robot.motorLeftWheel.getCurrentPosition() +
+                                            robot.motorRightWheel.getCurrentPosition())/2;
 
                 if (wheelDistanceAverage < columnDistance) {
 
@@ -295,7 +235,7 @@ public class AutoNathanPlanARed extends OpMode {
         }
 
         telemetry.addData("state", state);
-        telemetry.addData("vumark", vumarkImage);
+        telemetry.addData("vumark", vuforia.vumarkImage);
         telemetry.update();
     }
 

@@ -54,7 +54,7 @@ import java.util.Locale;
  *
  * @see <a href="http://www.adafruit.com/products/2472">Adafruit IMU</a>
  */
-@Autonomous(name = "Sensor: BNO055 IMU", group = "Rian")
+@Autonomous(name = "Sensor: BNO055 IMU", group = "Utilities")
 public class TeleSensorBNO055IMU extends LinearOpMode
     {
     //----------------------------------------------------------------------------------------------

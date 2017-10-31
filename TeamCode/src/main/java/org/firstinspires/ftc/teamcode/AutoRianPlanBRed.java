@@ -60,7 +60,7 @@ public class AutoRianPlanBRed extends AutoRianPlanARed {
         switch (state) {
             case 0:
                 // jewel handling
-                state = jewelKicker.loop(0, 1, "red");
+                state = jewelKicker.loop(0, 1, teamColor);
             case 1:
                  // detect crypto
 

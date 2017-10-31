@@ -61,6 +61,11 @@ public class HardwareNathen extends HardwareBase
     int liftMotorPosition = 0;
     double liftMotorHolderPower = 0.3;
 
+    double leftHandOpenPosition = 1.0;
+    double leftHandClosePosition = 0.4;
+    double rightHandOpenPosition = 0.0;
+    double rightHandClosePosition = 0.6;
+
     /* Constructor */
     public HardwareNathen(){
 
@@ -113,14 +118,11 @@ public class HardwareNathen extends HardwareBase
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftMotor.setPower(0.0);
 
-        leftHand.setPosition(0.0);
-        rightHand.setPosition(1.0);
-
         // init positions
         jewelArm.setPosition(0.8);
         jewelHitter.setPosition(0.5);
-        leftHand.setPosition(1.0);
-        rightHand.setPosition(0.0);
+        leftHand.setPosition(leftHandOpenPosition);
+        rightHand.setPosition(rightHandOpenPosition);
     }
 
     @Override

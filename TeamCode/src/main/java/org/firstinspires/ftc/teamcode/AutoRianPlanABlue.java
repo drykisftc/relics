@@ -51,6 +51,7 @@ public class AutoRianPlanABlue extends AutoRianPlanARed {
 
     @Override
     public void start() {
+        teamColor = "blue";
         super.start();
         fGlyphTurnAngle = 90f;
     }
@@ -60,7 +61,7 @@ public class AutoRianPlanABlue extends AutoRianPlanARed {
         switch (state) {
             case 0:
                 // jewel handling
-                state = jewelKicker.loop(0, 1, "blue");
+                state = jewelKicker.loop(0, 1, teamColor);
             case 1:
                  // detect crypto
 

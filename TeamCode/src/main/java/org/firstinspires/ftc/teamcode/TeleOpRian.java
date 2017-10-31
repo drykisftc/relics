@@ -52,8 +52,8 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="TeleOp: A Pro Rian", group="Run")
-public class RianTeleOp extends OpMode{
+@TeleOp(name="TeleOp: A Pro Rian", group="TeleOp")
+public class TeleOpRian extends OpMode{
 
     /* Declare OpMode members. */
     protected HardwareRian robot = new HardwareRian();
