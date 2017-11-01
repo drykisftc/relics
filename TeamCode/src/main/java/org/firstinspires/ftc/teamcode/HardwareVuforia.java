@@ -71,13 +71,12 @@ public class HardwareVuforia extends HardwareBase
         relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
         relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate");
-        relicTrackables.activate();
 
     }
 
     @Override
     public void start() {
-
+        relicTrackables.activate();
     }
 
     @Override

@@ -76,10 +76,28 @@ public class AutoNathanPlanARed extends AutoRelic {
      */
 
     protected HardwareNathen robot= null;
+    DcMotor [] leftMotors;
+    DcMotor [] rightMotors;
+
+    public AutoNathanPlanARed () {
+        // team specific
+        teamColor = "red";
+        fGlyphTurnAngle = -90;
+    }
 
     @Override
     public void init() {
-        teamColor = "red";
+
+//        cryptoBoxStopDistance = 20;
+//        vuforiaDetectingSpeed = 0.2;
+//        rightColumnDistance = 2600;
+//        centerColumnDistance = 3350;
+//        leftColumnDistance = 3950;
+//        cryptoBoxDistance = 500;
+//        backupDistance = -100;
+//        axleDistance = 18.1f;
+
+        //
         robot = new HardwareNathen();
         robot.init(hardwareMap);
         robot.start();
@@ -96,25 +114,37 @@ public class AutoNathanPlanARed extends AutoRelic {
         vuforia = new HardwareVuforia(VuforiaLocalizer.CameraDirection.FRONT);
         vuforia.init(hardwareMap);
 
-        DcMotor [] leftMotors = new DcMotor[1];
+        leftMotors = new DcMotor[1];
         leftMotors[0] = robot.motorLeftWheel;
-        DcMotor [] rightMotors = new DcMotor[1];
+        rightMotors = new DcMotor[1];
         rightMotors[0] = robot.motorRightWheel;
 
         jewelKicker.jewelArmActionPosition= 0.0;
         jewelKicker.jewelArmRestPosition= 1.0;
-        jewelKicker.jewelHitterBluePosition = 1.0;
-        jewelKicker.jewelHitterRedPosition = 0.0;
+        jewelKicker.jewelHitterBluePosition = 0.0;
+        jewelKicker.jewelHitterRedPosition = 1.0;
 
         telemetry.addData("jewelArm", jewelArm.getPosition());
         telemetry.addData("jewelHitter", jewelHitter.getPosition());
         telemetry.update();
     }
 
+    @Override
+    public void init_loop () {
+         if (robot.gyro.isCalibrating())  {
+            telemetry.addData(">", "Gyro is calibrating.  DO NOT start!!!!");
+            telemetry.addData(">", "Wait! Wait! Wait! ");
+        }
+        else {
+            telemetry.addData(">", "Press Start.");
+        }
+
+    }
 
     @Override
     public void start() {
         robot.start();
+        vuforia.start();
         state = 0;
         timeStamp = System.currentTimeMillis();
         vuforia.vumarkImage = "Unknown";
@@ -132,7 +162,6 @@ public class AutoNathanPlanARed extends AutoRelic {
 
                 // jewel handling
                 state = jewelKicker.loop(0, 1, "red");
-
                 vuforia.identifyGlyphCrypto();
 
                 break;
@@ -165,73 +194,78 @@ public class AutoNathanPlanARed extends AutoRelic {
                     moveAtSpeed(0.0);
                     leftBackStamp = robot.motorLeftWheel.getCurrentPosition();
                     rightBackStamp = robot.motorRightWheel.getCurrentPosition();
-
+                    vuforia.relicTrackables.deactivate();
+                    navigation.resetTurn(leftMotors, rightMotors);
                     state = 4;
-
                 }
 
                 break;
             case 4:
-                /*// get heading
-                Orientation angles = imuSensor.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                robot.navigation.heading = angles.firstAngle;
-                //gravity  = robot.imu.getGravity();
-
-                // turn right 90 degree
-                float turnPower = robot.navigation.getMaintainHeadingPower(fGlyphTurnAngle);
-                if (Math.abs(turnPower) < 0.01) {
-                    state = 5;
+                // turn
+                if (0 == navigation.turnByEncoderOpenLoop(0.3,fGlyphTurnAngle,
+                        robot.axleDistance, leftMotors, rightMotors)) {
+                    state = 6;
+                    wheelDistanceAverageStamp = (robot.motorLeftWheel.getCurrentPosition() +
+                            robot.motorRightWheel.getCurrentPosition())/2;
+                    navigation.resetTurn(leftMotors, rightMotors);
                 }
-
-                robot.motorLeftFrontWheel.setPower(turnPower);
-                robot.motorLeftWheel.setPower(turnPower);
-                robot.motorRightFrontWheel.setPower(-turnPower);
-                robot.motorRightWheel.setPower(-turnPower);*/
-
-                //navigation.
 
                 break;
             case 5:
+                // turn
+                if (0 == navigation.turnByGyroCloseLoop(0.0,robot.getGyroHeading(),
+                        fGlyphTurnAngle, leftMotors, rightMotors)) {
+                    state = 6;
+                    wheelDistanceAverageStamp = (robot.motorLeftWheel.getCurrentPosition() +
+                            robot.motorRightWheel.getCurrentPosition())/2;
+                }
+
+                break;
+            case 6:
                 // move straight
 
                 wheelDistanceAverage = (robot.motorLeftWheel.getCurrentPosition() +
                         robot.motorRightWheel.getCurrentPosition())/2;
 
                 if (wheelDistanceAverage - wheelDistanceAverageStamp < cryptoBoxDistance) {
-
-                    moveAtSpeed(0.5);
+                    moveAtSpeed(0.25);
 
                 } else {
-
                     moveAtSpeed(0.0);
                     timeStamp = System.currentTimeMillis();
-                    state = 6;
-
-                }
-
-                break;
-            case 6:
-                // release the glyph
-
-                time = System.currentTimeMillis();
-
-                if (time - timeStamp < 2000) {
-
-
-
-                } else {
-
-
+                    state = 7;
                 }
 
                 break;
             case 7:
+                // release the glyph
 
-                robot.stop();
+                time = System.currentTimeMillis();
+                if (time - timeStamp < 2000) {
+                    robot.leftHand.setPosition(robot.leftHandOpenPosition);
+                    robot.rightHand.setPosition(robot.rightHandOpenPosition);
+                } else {
+                    state = 8;
+                    wheelDistanceAverage = (robot.motorLeftWheel.getCurrentPosition() +
+                            robot.motorRightWheel.getCurrentPosition())/2;
+                    moveAtSpeed(-0.2);
+                    timeStamp = System.currentTimeMillis();
+                }
 
-                // stop
+                break;
+            case 8:
+                // backup
+                wheelDistanceAverage = (robot.motorLeftWheel.getCurrentPosition() +
+                        robot.motorRightWheel.getCurrentPosition())/2;
+
+                if (wheelDistanceAverage - wheelDistanceAverageStamp < backupDistance) {
+                    moveAtSpeed(0.0);
+                    state = 9;
+                }
+
                 break;
             default:
+                robot.stop();
         }
 
         telemetry.addData("state", state);

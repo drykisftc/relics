@@ -90,7 +90,8 @@ public class AutoRelic extends OpMode {
     protected int centerColumnDistance = 3350;
     protected int leftColumnDistance = 3950;
     protected int cryptoBoxDistance = 500;
-    protected float axleDistance = 18.1f;
+    protected int backupDistance = -100;
+
 
     protected JewelKicker jewelKicker= null;
 

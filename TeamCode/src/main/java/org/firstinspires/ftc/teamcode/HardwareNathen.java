@@ -66,6 +66,8 @@ public class HardwareNathen extends HardwareBase
     double rightHandOpenPosition = 0.0;
     double rightHandClosePosition = 0.6;
 
+    protected float axleDistance = 800f;
+
     /* Constructor */
     public HardwareNathen(){
 
@@ -123,6 +125,7 @@ public class HardwareNathen extends HardwareBase
         jewelHitter.setPosition(0.5);
         leftHand.setPosition(leftHandOpenPosition);
         rightHand.setPosition(rightHandOpenPosition);
+        jewelSensor.enableLed(true);
     }
 
     @Override
@@ -135,5 +138,9 @@ public class HardwareNathen extends HardwareBase
         motorRightWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+    }
+
+    public float getGyroHeading () {
+        return -gyro.getHeading();
     }
 }

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -32,7 +33,8 @@ public class Navigation {
     int rightWheelLandMark= 0;
     float currentTurnAngle =0.0f;
     int convergeCount = 0;
-    float angleErrorTolerance = 0.5f;
+    float angleErrorTolerance = 1.1f;
+    int convergeCountThreshold = 5;
 
     Telemetry telemetry = null;
 
@@ -43,21 +45,21 @@ public class Navigation {
         pidControlDistance.setKp(0.001f);
         pidControlDistance.setKi(0.001f);
         pidControlDistance.setKd(0.001f);
-        pidControlDistance.setMaxIntegralError(2.0f/pidControlDistance.fKp);
+        pidControlDistance.setMaxIntegralError(2.0f/pidControlDistance.fKi);
 
         // speed control
         pidControlSpeed = new PIDControl();
         pidControlSpeed.setKp(0.001f);
         pidControlSpeed.setKi(0.001f);
         pidControlSpeed.setKd(0.001f);
-        pidControlSpeed.setMaxIntegralError(2.0f/pidControlSpeed.fKp);
+        pidControlSpeed.setMaxIntegralError(2.0f/pidControlSpeed.fKi);
 
         //heading control
         pidControlHeading = new PIDControl();
-        pidControlHeading.setKp(0.05f);
-        pidControlHeading.setKi(0.001f);
-        pidControlHeading.setKd(0.001f);
-        pidControlHeading.setMaxIntegralError(2.0f/pidControlHeading.fKp);
+        pidControlHeading.setKp(0.001f);
+        pidControlHeading.setKi(0.005f);
+        pidControlHeading.setKd(0.0001f);
+        pidControlHeading.setMaxIntegralError(0.4f/pidControlHeading.fKi);
 
         // update time stamp
         lastDistanceTimestamp= System.currentTimeMillis();
@@ -152,7 +154,7 @@ public class Navigation {
                         leftDone = true;
                     } else {
                         for ( int i =0; i < leftMs.length; i++ ) {
-                            leftMs[i].setPower(-power);
+                            leftMs[i].setPower(power);
                         }
                     }
                 } else {
@@ -163,7 +165,7 @@ public class Navigation {
                         leftDone = true;
                     } else {
                         for ( int i =0; i < leftMs.length; i++ ) {
-                            leftMs[i].setPower(power);
+                            leftMs[i].setPower(-power);
                         }
                     }
                 }
@@ -227,7 +229,7 @@ public class Navigation {
                 break;
             case 1:
 
-                float errorAngle = (targetAngle-currentTurnAngle)%360;
+                float errorAngle = (float)getAngleError(targetAngle,currentTurnAngle);
 
                 if (Math.abs(errorAngle) < angleErrorTolerance) {
                     convergeCount ++;
@@ -235,7 +237,7 @@ public class Navigation {
                     convergeCount = 0;
                 }
 
-                if (convergeCount > 3) {
+                if (convergeCount > convergeCountThreshold) {
                     turnState = 1;
                 }
 
@@ -245,10 +247,10 @@ public class Navigation {
                         currentT-lastHeadingTimestamp);
                 lastHeadingTimestamp = currentT;
                 for ( int i =0; i < leftMs.length; i++ ) {
-                   leftMs[i].setPower(power+powerDiff);
+                   leftMs[i].setPower(power-powerDiff);
                 }
                 for ( int i =0; i < rightMs.length; i++ ) {
-                   rightMs[i].setPower(power-powerDiff);
+                   rightMs[i].setPower(power+powerDiff);
                 }
                 break;
             default:
@@ -258,11 +260,11 @@ public class Navigation {
     }
 
     public int turnByGyroCloseLoop (double power, float currentAngle,
-                                    float targetAngle, float axleLength,
+                                    float targetAngle,
                                     DcMotor [] leftMs, DcMotor [] rightMs) {
         switch (turnState) {
             case 0:
-                float errorAngle = (targetAngle-currentAngle)%360;
+                float errorAngle = (float)getAngleError(targetAngle,currentAngle);
 
                 if (Math.abs(errorAngle) < angleErrorTolerance) {
                     convergeCount ++;
@@ -270,25 +272,31 @@ public class Navigation {
                     convergeCount = 0;
                 }
 
-                if (convergeCount > 3) {
+                if (convergeCount > convergeCountThreshold) {
                     turnState = 1;
                 }
 
                 // adjust power
                 long currentT = System.currentTimeMillis();
                 float powerDiff = pidControlHeading.update(errorAngle,
-                        currentT-lastHeadingTimestamp);
+                        (currentT-lastHeadingTimestamp)/1000.0f); // use seconds
                 lastHeadingTimestamp = currentT;
                 for ( int i =0; i < leftMs.length; i++ ) {
-                    leftMs[i].setPower(power+powerDiff);
+                    leftMs[i].setPower(Range.clip(power-powerDiff,-1.0,1.0));
                 }
                 for ( int i =0; i < rightMs.length; i++ ) {
-                    rightMs[i].setPower(power-powerDiff);
+                    rightMs[i].setPower(Range.clip(power+powerDiff,-1.0,1.0));
                 }
+                telemetry.addData("error:" , errorAngle);
+                telemetry.addData("delta power", powerDiff);
                 break;
             default:
                 return 0;
         }
+        telemetry.addData("turnState:", turnState);
+        telemetry.addData("Target   :", targetAngle);
+        telemetry.addData("Heading  :", currentAngle);
+
         return 1;
     }
 
@@ -302,5 +310,26 @@ public class Navigation {
     float getTurnDistanceRightWheel (float angle, float axleDistance){
         return (float)(axleDistance * angle * 3.14) / 360;
     }
+
+    double normalizeHeading (double value) {
+        // set it to [-360, 360]
+        double v = value/360.0;
+        double v2 = (v-(int)v) * 360.0;
+
+        // set it in [0,360]
+        while (v2 < 0)  v2 += 360;
+        return v2;
+    }
+
+    // calculate error in -179 to +180 range  (
+    double getAngleError(double targetAngle, double currentAngle) {
+
+        double robotError;
+        robotError = targetAngle - currentAngle;
+        while (robotError > 180)  robotError -= 360;
+        while (robotError <= -180) robotError += 360;
+        return robotError;
+    }
+
 
 }

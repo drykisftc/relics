@@ -119,6 +119,7 @@ public class AutoRianPlanARed extends AutoRelic {
     @Override
     public void start() {
         robot.start();
+        vuforia.start();
         state = 0;
         timeStamp = System.currentTimeMillis();
         vuforia.vumarkImage = "Unknown";
