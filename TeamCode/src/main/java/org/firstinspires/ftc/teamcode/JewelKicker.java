@@ -108,16 +108,20 @@ class JewelKicker {
                 if(System.currentTimeMillis() - timeStamp > jewelWaitTime) {
                     if (jewelSensor.blue() > jewelSensor.red() && jewelSensor.blue() > jewelSensor.green()) {
                         if(teamColor == "blue") {
-                            jewelHitter.setPosition(jewelHitterBluePosition);
-                        } else {
+                            telemetry.addData("kick ", "blue");
                             jewelHitter.setPosition(jewelHitterRedPosition);
+                        } else {
+                            telemetry.addData("kick ", "red");
+                            jewelHitter.setPosition(jewelHitterBluePosition);
                         }
                         timeStamp = System.currentTimeMillis();
                         state = 1;
                     } else if (jewelSensor.red() > jewelSensor.blue() && jewelSensor.red() > jewelSensor.green()) {
                         if(teamColor == "red") {
+                            telemetry.addData("kick ", "red");
                             jewelHitter.setPosition(jewelHitterRedPosition);
                         } else {
+                            telemetry.addData("kick ", "blue");
                             jewelHitter.setPosition(jewelHitterBluePosition);
                         }
                         timeStamp = System.currentTimeMillis();

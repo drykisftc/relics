@@ -82,15 +82,22 @@ public class AutoRelic extends OpMode {
     protected int leftBackStamp;
     protected int rightBackStamp;
 
-    protected float fGlyphTurnAngle = 90;
+    protected float fGlyphTurnAngle = -90; // positive turns left, negative turns right
+    protected float fGlyphTurnAngle2 = 0;
+    protected double glyTurnPower = -0.5;
+
+    protected double glyphMovePower = 0.5;
+    protected double sideMovePower = 0.2;
+    protected double vuforiaDetectingPower = 0.2;
+    protected double backupPower = -0.1;
+
     protected int cryptoBoxStopDistance = 20;
-    protected double vuforiaDetectingSpeed = 0.2;
-    protected double adjustingSpeed;
     protected int rightColumnDistance = 2600;
     protected int centerColumnDistance = 3350;
     protected int leftColumnDistance = 3950;
     protected int cryptoBoxDistance = 500;
     protected int backupDistance = -100;
+    protected int offBalanceStoneDistance = 2600;
 
 
     protected JewelKicker jewelKicker= null;
@@ -105,12 +112,31 @@ public class AutoRelic extends OpMode {
     protected Servo jewelArm= null;
     protected Servo jewelHitter= null;
 
+    DcMotor [] leftMotors;
+    DcMotor [] rightMotors;
+
     @Override
     public void init () {}
     @Override
     public void start () {}
     @Override
     public void loop () {}
+
+    public void computeGlyphColumnDistance() {
+        vuforia.identifyGlyphCrypto();
+        if (vuforia.vumarkImage == "left") {
+            columnDistance = leftColumnDistance;
+        } else if (vuforia.vumarkImage == "center") {
+            columnDistance = centerColumnDistance;
+        } else if (vuforia.vumarkImage == "right") {
+            columnDistance = rightColumnDistance;
+        } else {
+            columnDistance = rightColumnDistance;
+        }
+
+        OpenGLMatrix pose = vuforia.getGlyphCryptoPosition();
+        telemetry.addData("Pose", format(pose));
+    }
 
     String format(OpenGLMatrix transformationMatrix) {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";

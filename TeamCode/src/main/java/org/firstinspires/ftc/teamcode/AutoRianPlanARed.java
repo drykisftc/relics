@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -48,23 +49,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 public class AutoRianPlanARed extends AutoRelic {
 
-    /**
-     * Note that the REV Robotics Color-Distance incorporates two sensors into one device.
-     * It has a light/distance (range) sensor.  It also has an RGB color sensor.
-     * The light/distance sensor saturates at around 2" (5cm).  This means that targets that are 2"
-     * or closer will display the same value for distance/light detected.
-     *
-     * Although you configure a single REV Robotics Color-Distance sensor in your configuration file,
-     * you can treat the sensor as two separate sensors that share the same name in your op mode.
-     *
-     * In this example, we represent the detected color by a hue, saturation, and value color
-     * model (see https://en.wikipedia.org/wiki/HSL_and_HSV).  We change the background
-     * color of the screen to match the detected color.
-     *
-     * In this example, we  also use the distance sensor to display the distance
-     * to the target object.  Note that the distance sensor saturates at around 2" (5 cm).
-     *
-     */
 
     protected BNO055IMU imuSensor = null;
 
@@ -74,6 +58,15 @@ public class AutoRianPlanARed extends AutoRelic {
     protected int leftFrontStamp;
     protected int rightBackStamp;
     protected int rightFrontStamp;
+
+    public AutoRianPlanARed () {
+        leftMotors = new DcMotor[2];
+        leftMotors[0] = robot.motorLeftFrontWheel;
+        leftMotors[0] = robot.motorLeftBackWheel;
+        rightMotors = new DcMotor[2];
+        rightMotors[0] = robot.motorRightFrontWheel;
+        rightMotors[0] = robot.motorRightBackWheel;
+    }
 
     @Override
     public void init() {
@@ -126,37 +119,20 @@ public class AutoRianPlanARed extends AutoRelic {
             case 1:
 
                 //read vumark
-                vuforia.identifyGlyphCrypto();
-                if (vuforia.vumarkImage == "left") {
-                    columnDistance = leftColumnDistance;
-                } else if (vuforia.vumarkImage == "center") {
-                    columnDistance = centerColumnDistance;
-                } else if (vuforia.vumarkImage == "right") {
-                    columnDistance = rightColumnDistance;
-                } else {
-                    columnDistance = rightColumnDistance;
-                }
-
-                OpenGLMatrix pose = vuforia.getGlyphCryptoPosition();
-                telemetry.addData("Pose", format(pose));
+                computeGlyphColumnDistance();
 
                 //move forward with encoder
-                wheelDistanceAverage = (robot.motorLeftBackWheel.getCurrentPosition() +
-                                            robot.motorLeftFrontWheel.getCurrentPosition() +
-                                            robot.motorRightBackWheel.getCurrentPosition() +
-                                            robot.motorRightFrontWheel.getCurrentPosition())/4;
+                wheelDistanceAverage = getWheelOdometer();
 
                 if (wheelDistanceAverage < columnDistance) {
 
-                    moveAtSpeed(vuforiaDetectingSpeed);
+                    moveAtPower(vuforiaDetectingPower);
 
                 } else {
-
-                    moveAtSpeed(0.0);
-                    leftBackStamp = robot.motorLeftBackWheel.getCurrentPosition();
-                    leftFrontStamp = robot.motorLeftFrontWheel.getCurrentPosition();
-                    rightBackStamp = robot.motorRightBackWheel.getCurrentPosition();
-                    rightFrontStamp = robot.motorRightFrontWheel.getCurrentPosition();
+                    vuforia.relicTrackables.deactivate();
+                    moveAtPower(0.0);
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
                     state = 2;
 
                 }
@@ -164,49 +140,53 @@ public class AutoRianPlanARed extends AutoRelic {
                 //move forward
                 /*if (!(robot.jewelSensorDistance.getDistance(DistanceUnit.CM) < cryptoBoxStopDistance)) {
 
-                    moveAtSpeed(vuforiaDetectingSpeed);
+                    moveAtPower(vuforiaDetectingPower);
 
                 } else {
 
-                    moveAtSpeed(0);
+                    moveAtPower(0);
                     state = 2;
                 }*/
 
                 break;
             case 2:
+//                if (fGlyphTurnAngle == 0.0f || 0 == navigation.turnByEncoderOpenLoop(glyTurnPower,fGlyphTurnAngle,
+//                        robot.axleDistance, leftMotors, rightMotors)) {
+//                    turnAtPower(0.0);
+//                    wheelDistanceLandMark = getWheelOdometer();
+//                    telemetry.addData("left", robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp + robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp);
+//                    telemetry.addData("left", robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp);
+//                    getWheelLandmarks();
+//                    navigation.resetTurn(leftMotors, rightMotors);
+//                    state = 3;
+//                }
 
                 if ((robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp + robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp > 3575) && (robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp < -3575)) {
 
-                    turnAtSpeed(0.0);
-                    wheelDistanceLandMark = (robot.motorLeftBackWheel.getCurrentPosition() +
-                            robot.motorLeftFrontWheel.getCurrentPosition() +
-                            robot.motorRightBackWheel.getCurrentPosition() +
-                            robot.motorRightFrontWheel.getCurrentPosition())/4;
+                    turnAtPower(0.0);
+                    wheelDistanceLandMark = getWheelOdometer();
                     telemetry.addData("left", robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp + robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp);
                     telemetry.addData("left", robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp);
                     state = 3;
 
                 } else {
 
-                    turnAtSpeed(0.5);
+                    turnAtPower(glyTurnPower);
                 }
 
                 break;
             case 3:
                 // move straight
 
-                wheelDistanceAverage = (robot.motorLeftBackWheel.getCurrentPosition() +
-                        robot.motorLeftFrontWheel.getCurrentPosition() +
-                        robot.motorRightBackWheel.getCurrentPosition() +
-                        robot.motorRightFrontWheel.getCurrentPosition())/4;
+                wheelDistanceAverage = getWheelOdometer();
 
                 if (wheelDistanceAverage - wheelDistanceLandMark < cryptoBoxDistance) {
 
-                    moveAtSpeed(0.5);
+                    moveAtPower(0.5);
 
                 } else {
 
-                    moveAtSpeed(0.0);
+                    moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
                     state = 4;
 
@@ -219,14 +199,7 @@ public class AutoRianPlanARed extends AutoRelic {
                 time = System.currentTimeMillis();
 
                 if (time - timeStamp < 1000) {
-
-                    robot.leftLiftWheel1.setPower(1.0);
-                    robot.leftLiftWheel2.setPower(1.0);
-                    robot.leftLiftWheel3.setPower(1.0);
-                    robot.rightLiftWheel1.setPower(-1.0);
-                    robot.rightLiftWheel2.setPower(-1.0);
-                    robot.rightLiftWheel3.setPower(-1.0);
-
+                    releaseGlyph();
                 } else {
 
                     timeStamp = System.currentTimeMillis();
@@ -240,28 +213,17 @@ public class AutoRianPlanARed extends AutoRelic {
                 time = System.currentTimeMillis();
 
                 if (time - timeStamp < 1000) {
-
-                    moveAtSpeed(-0.1);
-
+                    moveAtPower(backupPower);
                 } else {
-
-                    moveAtSpeed(0.0);
-                    robot.leftLiftWheel1.setPower(0.0);
-                    robot.leftLiftWheel2.setPower(0.0);
-                    robot.leftLiftWheel3.setPower(0.0);
-                    robot.rightLiftWheel1.setPower(0.0);
-                    robot.rightLiftWheel2.setPower(0.0);
-                    robot.rightLiftWheel3.setPower(0.0);
+                    moveAtPower(0.0);
                     state = 6;
-
                 }
 
                 break;
             case 6:
 
-                robot.stop();
-
                 // stop
+                robot.stop();
                 break;
             default:
         }
@@ -277,22 +239,78 @@ public class AutoRianPlanARed extends AutoRelic {
         return (float)(axleDistance * angle * 3.14) / 360;
     }
 
-    public void moveAtSpeed (double speed) {
+    public void moveAtPower(double p) {
 
-        robot.motorLeftBackWheel.setPower(speed);
-        robot.motorLeftFrontWheel.setPower(speed);
-        robot.motorRightBackWheel.setPower(speed);
-        robot.motorRightFrontWheel.setPower(speed);
-
+        robot.motorLeftBackWheel.setPower(p);
+        robot.motorLeftFrontWheel.setPower(p);
+        robot.motorRightBackWheel.setPower(p);
+        robot.motorRightFrontWheel.setPower(p);
     }
 
-    public void turnAtSpeed (double speed) {
+    public void sideMoveAtPower(double p) {
+        robot.motorLeftFrontWheel.setPower(-p);
+        robot.motorRightBackWheel.setPower(-p);
+        robot.motorRightFrontWheel.setPower(p);
+        robot.motorLeftBackWheel.setPower(p);
+    }
 
-        robot.motorLeftBackWheel.setPower(speed);
-        robot.motorLeftFrontWheel.setPower(speed);
-        robot.motorRightBackWheel.setPower(-speed);
-        robot.motorRightFrontWheel.setPower(-speed);
+    // positive power moves left
+    public int sideMoveByDistance (double power, int d) {
+        int distance = Math.abs(d);
+        if (power == 0) {
+            return 0; // zero power do nothing
+        } else if (power < 0){
+            distance = -distance;
+        }
 
+        if (robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp > -distance
+                && robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp < distance) {
+            sideMoveAtPower(sideMovePower);
+        } else {
+            sideMoveAtPower(0.0);
+            return 0;
+        }
+        return 1;
+    }
+
+    // positive power to turn left
+    public void turnAtPower(double p) {
+        robot.motorLeftBackWheel.setPower(-p);
+        robot.motorLeftFrontWheel.setPower(-p);
+        robot.motorRightBackWheel.setPower(p);
+        robot.motorRightFrontWheel.setPower(p);
+    }
+
+    public int getWheelOdometer() {
+        return (robot.motorLeftBackWheel.getCurrentPosition() +
+                robot.motorLeftFrontWheel.getCurrentPosition() +
+                robot.motorRightBackWheel.getCurrentPosition() +
+                robot.motorRightFrontWheel.getCurrentPosition())/4;
+    }
+
+    public void getWheelLandmarks () {
+        leftBackStamp = robot.motorLeftBackWheel.getCurrentPosition();
+        leftFrontStamp = robot.motorLeftFrontWheel.getCurrentPosition();
+        rightBackStamp = robot.motorRightBackWheel.getCurrentPosition();
+        rightFrontStamp = robot.motorRightFrontWheel.getCurrentPosition();
+    }
+
+    public void releaseGlyph () {
+        robot.leftLiftWheel1.setPower(1.0);
+        robot.leftLiftWheel2.setPower(1.0);
+        robot.leftLiftWheel3.setPower(1.0);
+        robot.rightLiftWheel1.setPower(-1.0);
+        robot.rightLiftWheel2.setPower(-1.0);
+        robot.rightLiftWheel3.setPower(-1.0);
+    }
+
+    public void stopGlyphWheels(){
+        robot.leftLiftWheel1.setPower(0.0);
+        robot.leftLiftWheel2.setPower(0.0);
+        robot.leftLiftWheel3.setPower(0.0);
+        robot.rightLiftWheel1.setPower(0.0);
+        robot.rightLiftWheel2.setPower(0.0);
+        robot.rightLiftWheel3.setPower(0.0);
     }
 
     String format(OpenGLMatrix transformationMatrix) {

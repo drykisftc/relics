@@ -47,57 +47,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  */
 @Autonomous(name = "RianPlanB_Blue", group = "Rian")
 
-public class AutoRianPlanBBlue extends AutoRianPlanARed {
+public class AutoRianPlanBBlue extends AutoRianPlanBRed {
 
-    @Override
-    public void start() {
+    public AutoRianPlanBBlue () {
         teamColor = "blue";
-        super.start();
-        fGlyphTurnAngle = 0.0f;
+        fGlyphTurnAngle = 180;
+        sideMovePower = -0.2; // move right
+        leftColumnDistance = 2600;
+        centerColumnDistance = 3350;
+        rightColumnDistance = 3950;
     }
 
-    @Override
-    public void loop() {
-        switch (state) {
-            case 0:
-                // jewel handling
-                state = jewelKicker.loop(0, 1, teamColor);
-            case 1:
-                 // detect crypto
-
-                break;
-            case 2:
-                // move forward, stop at the correct glyph row (left, center, right)
-                break;
-
-            case 3:
-                // get heading
-                Orientation angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                navigation.heading = angles.firstAngle;
-                //gravity  = robot.imu.getGravity();
-
-                // turn 0
-                float turnPower = navigation.getMaintainHeadingPower(fGlyphTurnAngle);
-                if (Math.abs(turnPower) < 0.01) {
-                    state = 4;
-                }
-
-                break;
-            case 4:
-                // move left
-                break;
-            case 5:
-                // move straight
-                break;
-            case 6:
-                // release the glyph
-                break;
-            case 7:
-                // stop
-                break;
-            default:
-        }
-
-        telemetry.update();
-    }
 }

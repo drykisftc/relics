@@ -31,13 +31,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.internal.system.SystemProperties;
-
 /*
  * This is an example LinearOpMode that shows how to use
  * the REV Robotics Color-Distance Sensor.
@@ -51,16 +44,12 @@ import org.firstinspires.ftc.robotcore.internal.system.SystemProperties;
 
 public class AutoRianPlanBRed extends AutoRianPlanARed {
 
-    @Override
-    public void start() {
-        super.start();
+    public AutoRianPlanBRed () {
         teamColor = "red";
-        fGlyphTurnAngle = 180.0f;
-
+        fGlyphTurnAngle = 0.0f;
         leftColumnDistance = 3800;
         centerColumnDistance = 2350;
         rightColumnDistance = 900;
-
     }
 
     @Override
@@ -76,95 +65,54 @@ public class AutoRianPlanBRed extends AutoRianPlanARed {
             case 1:
 
                 //read vumark
-                vuforia.identifyGlyphCrypto();
-                if (vuforia.vumarkImage == "left") {
-                    columnDistance = leftColumnDistance;
-                } else if (vuforia.vumarkImage == "center") {
-                    columnDistance = centerColumnDistance;
-                } else if (vuforia.vumarkImage == "right") {
-                    columnDistance = rightColumnDistance;
-                } else {
-                    columnDistance = rightColumnDistance;
-                }
-
-                OpenGLMatrix pose = vuforia.getGlyphCryptoPosition();
-                telemetry.addData("Pose", format(pose));
+                computeGlyphColumnDistance();
 
                 //move forward with encoder
-                wheelDistanceAverage = (robot.motorLeftBackWheel.getCurrentPosition() +
-                        robot.motorLeftFrontWheel.getCurrentPosition() +
-                        robot.motorRightBackWheel.getCurrentPosition() +
-                        robot.motorRightFrontWheel.getCurrentPosition())/4;
+                wheelDistanceAverage = getWheelOdometer();
 
-                if (wheelDistanceAverage < 2600) {
+                if (wheelDistanceAverage < offBalanceStoneDistance) {
 
-                    moveAtSpeed(vuforiaDetectingSpeed);
+                    moveAtPower(vuforiaDetectingPower);
 
                 } else {
 
-                    moveAtSpeed(0.0);
-                    leftBackStamp = robot.motorLeftBackWheel.getCurrentPosition();
-                    leftFrontStamp = robot.motorLeftFrontWheel.getCurrentPosition();
-                    rightBackStamp = robot.motorRightBackWheel.getCurrentPosition();
-                    rightFrontStamp = robot.motorRightFrontWheel.getCurrentPosition();
+                    moveAtPower(0.0);
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
                     state = 2;
-
                 }
 
                 break;
-            case 2:
-                // move left
-                if (robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp > -columnDistance && robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp < columnDistance) {
-
-                    robot.motorLeftFrontWheel.setPower(-0.2);
-                    robot.motorRightBackWheel.setPower(-0.2);
-                    robot.motorRightFrontWheel.setPower(0.2);
-                    robot.motorLeftBackWheel.setPower(0.2);
-
-                } else {
-
-                    wheelDistanceLandMark = (robot.motorLeftBackWheel.getCurrentPosition() +
-                                                 robot.motorLeftFrontWheel.getCurrentPosition() +
-                                                 robot.motorRightBackWheel.getCurrentPosition() +
-                                                 robot.motorRightFrontWheel.getCurrentPosition())/4;
+            case 2: // turn if necessary
+                if (fGlyphTurnAngle == 0.0f || 0 == navigation.turnByEncoderOpenLoop(glyTurnPower,fGlyphTurnAngle,
+                            robot.axleDistance, leftMotors, rightMotors)) {
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
                     state = 3;
-
                 }
+                break;
+            case 3:
+                // move left
+                if ( 0 == sideMoveByDistance(sideMovePower, columnDistance) ){
+                    wheelDistanceLandMark = getWheelOdometer();
+                    state = 4;
+                }
+//                if (robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp > -columnDistance && robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp < columnDistance) {
+//                    sideMoveAtPower(sideMovePower);
+//                } else {
+//                    wheelDistanceLandMark = getWheelOdometer();
+//                    state = 4;
+//                }
 
                 break;
 
-            case 3:
+            case 4:
 
-                wheelDistanceAverage = (robot.motorLeftBackWheel.getCurrentPosition() +
-                                        robot.motorLeftFrontWheel.getCurrentPosition() +
-                                        robot.motorRightBackWheel.getCurrentPosition() +
-                                        robot.motorRightFrontWheel.getCurrentPosition())/4;
+                wheelDistanceAverage = getWheelOdometer();
 
                 if (wheelDistanceAverage - wheelDistanceLandMark < cryptoBoxDistance) {
 
-                    moveAtSpeed(0.2);
-
-                } else {
-
-                    timeStamp = System.currentTimeMillis();
-                    state = 4;
-
-                }
-
-                break;
-            case 4:
-                // release the glyph
-
-                time = System.currentTimeMillis();
-
-                if (time - timeStamp < 1000) {
-
-                    robot.leftLiftWheel1.setPower(1.0);
-                    robot.leftLiftWheel2.setPower(1.0);
-                    robot.leftLiftWheel3.setPower(1.0);
-                    robot.rightLiftWheel1.setPower(-1.0);
-                    robot.rightLiftWheel2.setPower(-1.0);
-                    robot.rightLiftWheel3.setPower(-1.0);
+                    moveAtPower(sideMovePower);
 
                 } else {
 
@@ -175,25 +123,38 @@ public class AutoRianPlanBRed extends AutoRianPlanARed {
 
                 break;
             case 5:
-                //back up
+                // release the glyph
                 time = System.currentTimeMillis();
 
                 if (time - timeStamp < 1000) {
-
-                    moveAtSpeed(-0.1);
-
+                    releaseGlyph();
                 } else {
 
-                    moveAtSpeed(0.0);
+                    timeStamp = System.currentTimeMillis();
                     state = 6;
 
                 }
 
                 break;
             case 6:
+                //back up
+                time = System.currentTimeMillis();
+
+                if (time - timeStamp < 1000) {
+
+                    moveAtPower(backupPower);
+
+                } else {
+
+                    moveAtPower(0.0);
+                    state = 7;
+
+                }
+
+                break;
+            case 7:
                 // stop
                 robot.stop();
-
                 break;
             default:
         }

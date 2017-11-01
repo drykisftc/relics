@@ -49,55 +49,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 public class AutoRianPlanABlue extends AutoRianPlanARed {
 
-    @Override
-    public void start() {
+    public AutoRianPlanABlue () {
         teamColor = "blue";
-        super.start();
-        fGlyphTurnAngle = 90f;
+        vuforiaDetectingPower = -0.2;
+        sideMovePower = -0.2; // move right
     }
 
-    @Override
-    public void loop() {
-        switch (state) {
-            case 0:
-                // jewel handling
-                state = jewelKicker.loop(0, 1, teamColor);
-            case 1:
-                 // detect crypto
-
-                break;
-            case 2:
-                // move forward, stop at the correct glyph row (left, center, right)
-                break;
-
-            case 3:
-                // get heading
-                Orientation angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                navigation.heading = angles.firstAngle;
-                //gravity  = robot.imu.getGravity();
-
-                // turn 90
-                float turnPower = navigation.getMaintainHeadingPower(fGlyphTurnAngle);
-                if (Math.abs(turnPower) < 0.01) {
-                    state = 4;
-                }
-
-                break;
-            case 4:
-                // move right
-                break;
-            case 5:
-                // move straight
-                break;
-            case 6:
-                // release the glyph
-                break;
-            case 7:
-                // stop
-                break;
-            default:
-        }
-
-        telemetry.update();
-    }
 }

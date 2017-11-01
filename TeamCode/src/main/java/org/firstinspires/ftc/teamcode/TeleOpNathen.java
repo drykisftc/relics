@@ -126,7 +126,7 @@ public class TeleOpNathen extends OpMode{
         joystickWheelControl();
         glyphHandControl();
         glyphLiftControl();
-        //readJewelSensor();
+        //jewelHandControl();
         telemetry.update();
     }
 
@@ -169,6 +169,17 @@ public class TeleOpNathen extends OpMode{
             }
             robot.leftHand.setPosition(leftHandPosition);
             robot.rightHand.setPosition(rightHandPosition);
+        }
+    }
+
+    public void jewelHandControl () {
+        if(gamepad1.a) {
+            robot.jewelHitter.setPosition(0.0);
+        } else if (gamepad1.b) {
+            robot.jewelHitter.setPosition(1.0);
+        }
+        else {
+            robot.jewelHitter.setPosition(0.5);
         }
     }
 

@@ -19,27 +19,10 @@ import java.io.File;
 import java.util.Locale;
 
 /**
- * This is NOT an OpMode
- * This class can be used to define all the specific hardware for a single robot.
- * In this case that robot is a Pushbot, using Matrix Hardware.
- * See PushbotTeleopTank_Iterative for a usage examples.
- *
- * This is coded as an Extension of HardwarePushbot to illustrate that the only additional
- * action REQUIRED for a MATRIX controller is enabling the Servos.
- *
- * This hardware class assumes the following device names have been configured on the robot:
- * Note:  All names are lower case and some have single spaces between words.
- *
- * Matrix Controller has been assigned the name:  "matrix controller"
- *
- * Motor channel:  Left  drive motor:        "left motor"
- * Motor channel:  Right drive motor:        "right motor"
- * Motor channel:  Manipulator drive motor:  "arm motor"
- * Servo channel:  Servo to open left claw:  "left claw"
- * Servo channel:  Servo to open right claw: "right claw"
- *
- * In addition, the Matrix Controller has been assigned the name:  "matrix controller"
+ 24 inches have 1939 encoder counts that is 80.79encoder counts per inch
+ Nathan has wheel base of 14.4 inches.
  */
+
 public class HardwareRian extends HardwareBase
 {
     // DC Motors
@@ -70,6 +53,8 @@ public class HardwareRian extends HardwareBase
     // Orientation sensor
     BNO055IMU imu = null;
     Orientation angles = null;
+
+    protected float axleDistance = 1163.376f;
 
     /* Constructor */
     public HardwareRian(){

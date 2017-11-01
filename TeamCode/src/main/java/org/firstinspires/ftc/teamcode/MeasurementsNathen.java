@@ -87,10 +87,14 @@ public class MeasurementsNathen extends OpMode{
      */
     @Override
     public void init_loop() {
-
-
+        if (robot.gyro.isCalibrating())  {
+            telemetry.addData(">", "Gyro is calibrating.  DO NOT start!!!!");
+            telemetry.addData(">", "Wait! Wait! Wait! ");
+        }
+        else {
+            telemetry.addData(">", "Press Start.");
+        }
     }
-
 
     /*
      * Code to run ONCE when the driver hits PLAY

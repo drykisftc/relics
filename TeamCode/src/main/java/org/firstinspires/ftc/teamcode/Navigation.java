@@ -129,9 +129,10 @@ public class Navigation {
         turnState =0;
     }
 
-    public int turnByEncoderOpenLoop (double power, float angle,
+    public int turnByEncoderOpenLoop (double p, float angle,
                                       float axleLength,
                                       DcMotor [] leftMs, DcMotor[] rightMs) {
+        double power = Math.abs(p);
         switch (turnState) {
             case 0:
                 // compute encoder distance

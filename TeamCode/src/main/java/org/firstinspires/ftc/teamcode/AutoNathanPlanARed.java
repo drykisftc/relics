@@ -49,27 +49,8 @@ import java.util.Random;
 @Autonomous(name = "Nathen_PlanA_Red", group = "Nathen")
 public class AutoNathanPlanARed extends AutoRelic {
 
-    /**
-     * Note that the REV Robotics Color-Distance incorporates two sensors into one device.
-     * It has a light/distance (range) sensor.  It also has an RGB color sensor.
-     * The light/distance sensor saturates at around 2" (5cm).  This means that targets that are 2"
-     * or closer will display the same value for distance/light detected.
-     *
-     * Although you configure a single REV Robotics Color-Distance sensor in your configuration file,
-     * you can treat the sensor as two separate sensors that share the same name in your op mode.
-     *
-     * In this example, we represent the detected color by a hue, saturation, and value color
-     * model (see https://en.wikipedia.org/wiki/HSL_and_HSV).  We change the background
-     * color of the screen to match the detected color.
-     *
-     * In this example, we  also use the distance sensor to display the distance
-     * to the target object.  Note that the distance sensor saturates at around 2" (5 cm).
-     *
-     */
-
     protected HardwareNathen robot= null;
-    DcMotor [] leftMotors;
-    DcMotor [] rightMotors;
+
     Random rand = new Random(System.currentTimeMillis());
     int glyphLiftPosition = 0;
     double jewelArmPos = 0;
@@ -79,16 +60,18 @@ public class AutoNathanPlanARed extends AutoRelic {
         teamColor = "red";
         fGlyphTurnAngle = -90;
         cryptoBoxDistance = 800;
-        glyphLiftPosition= 1000;
+        glyphLiftPosition= 1500;
 
         //        cryptoBoxStopDistance = 20;
-        //        vuforiaDetectingSpeed = 0.2;
-        rightColumnDistance = 2400;
-        centerColumnDistance = 3150;
-        leftColumnDistance = 3750;
+        //        vuforiaDetectingPower = 0.2;
+        rightColumnDistance = 2170;
+        centerColumnDistance = 2920;
+        leftColumnDistance = 3670;
         //        cryptoBoxDistance = 500;
         //        backupDistance = -100;
         //        axleDistance = 18.1f;
+
+        glyTurnPower = 0.25;
     }
 
     @Override
@@ -119,7 +102,11 @@ public class AutoNathanPlanARed extends AutoRelic {
         jewelKicker.jewelArmActionPosition= 0.0;
         jewelKicker.jewelArmRestPosition= 1.0;
 
-        jewelKicker.jewelHitterRestPosition = 0.45;
+        jewelKicker.jewelHitterRestPosition = 0.5;
+        jewelKicker.jewelHitterRedPosition = 0.0;
+        jewelKicker.jewelHitterBluePosition = 1.0;
+
+
         jewelArmPos = jewelKicker.jewelArmActionPosition;
 
         telemetry.addData("jewelArm", jewelArm.getPosition());
@@ -129,14 +116,13 @@ public class AutoNathanPlanARed extends AutoRelic {
 
     @Override
     public void init_loop () {
-         if (robot.gyro.isCalibrating())  {
-            telemetry.addData(">", "Gyro is calibrating.  DO NOT start!!!!");
-            telemetry.addData(">", "Wait! Wait! Wait! ");
-        }
-        else {
-            telemetry.addData(">", "Press Start.");
-        }
-
+//        if (robot.gyro.isCalibrating())  {
+//            telemetry.addData(">", "Gyro is calibrating.  DO NOT start!!!!");
+//            telemetry.addData(">", "Wait! Wait! Wait! ");
+//        }
+//        else {
+//            telemetry.addData(">", "Press Start.");
+//        }
     }
 
     @Override
@@ -161,7 +147,7 @@ public class AutoNathanPlanARed extends AutoRelic {
 
                 // jewel handling
                 state = jewelKicker.loop(0, 1, teamColor);
-                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.08*rand.nextDouble()-0.04;
+                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.1*rand.nextDouble()-0.05;
                 vuforia.identifyGlyphCrypto();
                 wheelDistanceLandMark = (robot.motorLeftWheel.getCurrentPosition() +
                         robot.motorRightWheel.getCurrentPosition())/2;
@@ -172,32 +158,18 @@ public class AutoNathanPlanARed extends AutoRelic {
                 VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, robot.liftMotorHolderPower);
 
                 //read vumark
-                vuforia.identifyGlyphCrypto();
-                if (vuforia.vumarkImage == "left") {
-                    columnDistance = leftColumnDistance;
-                } else if (vuforia.vumarkImage == "center") {
-                    columnDistance = centerColumnDistance;
-                } else if (vuforia.vumarkImage == "right") {
-                    columnDistance = rightColumnDistance;
-                } else {
-                    columnDistance = rightColumnDistance;
-                }
+                computeGlyphColumnDistance();
 
-                OpenGLMatrix pose = vuforia.getGlyphCryptoPosition();
-                telemetry.addData("Pose", format(pose));
                 //move forward with encoder
                 wheelDistanceAverage = (robot.motorLeftWheel.getCurrentPosition() +
                                             robot.motorRightWheel.getCurrentPosition())/2;
 
                 if (wheelDistanceAverage < columnDistance) {
 
-                    moveAtSpeed(vuforiaDetectingSpeed);
+                    moveAtSpeed(vuforiaDetectingPower);
 
                 } else {
-
                     moveAtSpeed(0.0);
-                    leftBackStamp = robot.motorLeftWheel.getCurrentPosition();
-                    rightBackStamp = robot.motorRightWheel.getCurrentPosition();
                     vuforia.relicTrackables.deactivate();
                     navigation.resetTurn(leftMotors, rightMotors);
                     wheelDistanceLandMark = (robot.motorLeftWheel.getCurrentPosition() +
@@ -208,7 +180,7 @@ public class AutoNathanPlanARed extends AutoRelic {
                 break;
             case 4:
                 // turn
-                if (0 == navigation.turnByEncoderOpenLoop(0.3,fGlyphTurnAngle,
+                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,fGlyphTurnAngle,
                         robot.axleDistance, leftMotors, rightMotors)) {
                     state = 6;
                     wheelDistanceLandMark = (robot.motorLeftWheel.getCurrentPosition() +
@@ -217,16 +189,15 @@ public class AutoNathanPlanARed extends AutoRelic {
                 }
 
                 break;
-            case 5:
-                // turn
-                if (0 == navigation.turnByGyroCloseLoop(0.0,robot.getGyroHeading(),
-                        fGlyphTurnAngle, leftMotors, rightMotors)) {
-                    state = 6;
-                    wheelDistanceLandMark = (robot.motorLeftWheel.getCurrentPosition() +
-                            robot.motorRightWheel.getCurrentPosition())/2;
-                }
-
-                break;
+//            case 5:
+//                // turn
+//                if (0 == navigation.turnByGyroCloseLoop(0.0,robot.getGyroHeading(),
+//                        fGlyphTurnAngle, leftMotors, rightMotors)) {
+//                    state = 6;
+//                    wheelDistanceLandMark = (robot.motorLeftWheel.getCurrentPosition() +
+//                            robot.motorRightWheel.getCurrentPosition())/2;
+//                }
+//                break;
             case 6:
                 // move straight
                 wheelDistanceAverage = (robot.motorLeftWheel.getCurrentPosition() +
