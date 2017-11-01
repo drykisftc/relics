@@ -78,7 +78,7 @@ class JewelKicker {
     double jewelHitterRedPosition = 0.0;
     private Telemetry telemetry;
 
-    private long jewelWaitTime = 1000;
+    long jewelWaitTime = 2000;
 
     JewelKicker (ColorSensor c,
                  Servo arm,
@@ -105,9 +105,7 @@ class JewelKicker {
         switch (state) {
             case 0:
                 jewelArm.setPosition(jewelArmActionPosition);
-                if(jewelHitter.getPosition() > 0.40
-                        && jewelHitter.getPosition() < 0.60
-                        && System.currentTimeMillis() - timeStamp > jewelWaitTime) {
+                if(System.currentTimeMillis() - timeStamp > jewelWaitTime) {
                     if (jewelSensor.blue() > jewelSensor.red() && jewelSensor.blue() > jewelSensor.green()) {
                         if(teamColor == "blue") {
                             jewelHitter.setPosition(jewelHitterBluePosition);

@@ -123,7 +123,7 @@ public class AutoRianPlanBRed extends AutoRianPlanARed {
 
                 } else {
 
-                    wheelDistanceAverageStamp = (robot.motorLeftBackWheel.getCurrentPosition() +
+                    wheelDistanceLandMark = (robot.motorLeftBackWheel.getCurrentPosition() +
                                                  robot.motorLeftFrontWheel.getCurrentPosition() +
                                                  robot.motorRightBackWheel.getCurrentPosition() +
                                                  robot.motorRightFrontWheel.getCurrentPosition())/4;
@@ -140,7 +140,7 @@ public class AutoRianPlanBRed extends AutoRianPlanARed {
                                         robot.motorRightBackWheel.getCurrentPosition() +
                                         robot.motorRightFrontWheel.getCurrentPosition())/4;
 
-                if (wheelDistanceAverage - wheelDistanceAverageStamp < cryptoBoxDistance) {
+                if (wheelDistanceAverage - wheelDistanceLandMark < cryptoBoxDistance) {
 
                     moveAtSpeed(0.2);
 
