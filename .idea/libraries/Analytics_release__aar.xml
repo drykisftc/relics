@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Analytics-release:@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.android/build-cache/519f33a9a4815fadad6eb64ec56ef0316a4babdc/output/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.android/build-cache/519f33a9a4815fadad6eb64ec56ef0316a4babdc/output/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
