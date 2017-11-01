@@ -105,6 +105,7 @@ class JewelKicker {
         switch (state) {
             case 0:
                 jewelArm.setPosition(jewelArmActionPosition);
+                jewelHitter.setPosition(jewelHitterRestPosition);
                 if(System.currentTimeMillis() - timeStamp > jewelWaitTime) {
                     if (jewelSensor.blue() > jewelSensor.red() && jewelSensor.blue() > jewelSensor.green()) {
                         if(teamColor == "blue") {

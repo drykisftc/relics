@@ -54,6 +54,7 @@ public class AutoNathanPlanARed extends AutoRelic {
     Random rand = new Random(System.currentTimeMillis());
     int glyphLiftPosition = 0;
     double jewelArmPos = 0;
+    double jewelHitterPos = 0;
 
     public AutoNathanPlanARed () {
         // team specific
@@ -64,9 +65,9 @@ public class AutoNathanPlanARed extends AutoRelic {
 
         //        cryptoBoxStopDistance = 20;
         //        vuforiaDetectingPower = 0.2;
-        rightColumnDistance = 2170;
-        centerColumnDistance = 2920;
-        leftColumnDistance = 3670;
+        rightColumnDistance = 2130;
+        centerColumnDistance = 2280;
+        leftColumnDistance = 3630;
         //        cryptoBoxDistance = 500;
         //        backupDistance = -100;
         //        axleDistance = 18.1f;
@@ -108,6 +109,7 @@ public class AutoNathanPlanARed extends AutoRelic {
 
 
         jewelArmPos = jewelKicker.jewelArmActionPosition;
+        jewelHitterPos = jewelKicker.jewelHitterRestPosition;
 
         telemetry.addData("jewelArm", jewelArm.getPosition());
         telemetry.addData("jewelHitter", jewelHitter.getPosition());
@@ -147,7 +149,11 @@ public class AutoNathanPlanARed extends AutoRelic {
 
                 // jewel handling
                 state = jewelKicker.loop(0, 1, teamColor);
-                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.1*rand.nextDouble()-0.05;
+
+                // gitter arm to avoid jewel holes
+                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.15*rand.nextDouble()-0.075;
+                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.1*rand.nextDouble()-0.05;
+
                 vuforia.identifyGlyphCrypto();
                 wheelDistanceLandMark = (robot.motorLeftWheel.getCurrentPosition() +
                         robot.motorRightWheel.getCurrentPosition())/2;
