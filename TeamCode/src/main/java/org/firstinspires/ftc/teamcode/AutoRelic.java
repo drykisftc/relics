@@ -76,7 +76,7 @@ public class AutoRelic extends OpMode {
 
     protected int state;
     protected long timeStamp;
-    protected float wheelDistanceAverageStamp;
+    protected float wheelDistanceLandMark;
     protected float wheelDistanceAverage;
     protected int columnDistance;
     protected int leftBackStamp;

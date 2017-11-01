@@ -55,7 +55,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  */
 
 @TeleOp(name="TeleOp: Rian Measurement", group="Utilities")
-public class RianMeasurements extends OpMode{
+public class MeasurementsRian extends OpMode{
 
     /* Declare OpMode members. */
     protected HardwareRian robot = new HardwareRian();

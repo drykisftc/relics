@@ -29,21 +29,13 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.Servo;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+
+import java.util.Random;
 
 /*
  * This is an example LinearOpMode that shows how to use
@@ -78,11 +70,15 @@ public class AutoNathanPlanARed extends AutoRelic {
     protected HardwareNathen robot= null;
     DcMotor [] leftMotors;
     DcMotor [] rightMotors;
+    Random rand = new Random(System.currentTimeMillis());
+    int glyphLiftPosition = 0;
 
     public AutoNathanPlanARed () {
         // team specific
         teamColor = "red";
         fGlyphTurnAngle = -90;
+        cryptoBoxDistance = 800;
+        glyphLiftPosition= 1000;
     }
 
     @Override
@@ -121,6 +117,8 @@ public class AutoNathanPlanARed extends AutoRelic {
 
         jewelKicker.jewelArmActionPosition= 0.0;
         jewelKicker.jewelArmRestPosition= 1.0;
+
+        jewelKicker.jewelHitterRestPosition = 0.55;
         jewelKicker.jewelHitterBluePosition = 0.0;
         jewelKicker.jewelHitterRedPosition = 1.0;
 
@@ -162,10 +160,15 @@ public class AutoNathanPlanARed extends AutoRelic {
 
                 // jewel handling
                 state = jewelKicker.loop(0, 1, "red");
+                jewelKicker.jewelArmActionPosition +=  0.04*rand.nextDouble()-0.02;
                 vuforia.identifyGlyphCrypto();
+                wheelDistanceLandMark = (robot.motorLeftWheel.getCurrentPosition() +
+                        robot.motorRightWheel.getCurrentPosition())/2;
 
                 break;
             case 1:
+
+                VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, robot.liftMotorHolderPower);
 
                 //read vumark
                 vuforia.identifyGlyphCrypto();
@@ -196,6 +199,8 @@ public class AutoNathanPlanARed extends AutoRelic {
                     rightBackStamp = robot.motorRightWheel.getCurrentPosition();
                     vuforia.relicTrackables.deactivate();
                     navigation.resetTurn(leftMotors, rightMotors);
+                    wheelDistanceLandMark = (robot.motorLeftWheel.getCurrentPosition() +
+                            robot.motorRightWheel.getCurrentPosition())/2;
                     state = 4;
                 }
 
@@ -205,7 +210,7 @@ public class AutoNathanPlanARed extends AutoRelic {
                 if (0 == navigation.turnByEncoderOpenLoop(0.3,fGlyphTurnAngle,
                         robot.axleDistance, leftMotors, rightMotors)) {
                     state = 6;
-                    wheelDistanceAverageStamp = (robot.motorLeftWheel.getCurrentPosition() +
+                    wheelDistanceLandMark = (robot.motorLeftWheel.getCurrentPosition() +
                             robot.motorRightWheel.getCurrentPosition())/2;
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
@@ -216,18 +221,17 @@ public class AutoNathanPlanARed extends AutoRelic {
                 if (0 == navigation.turnByGyroCloseLoop(0.0,robot.getGyroHeading(),
                         fGlyphTurnAngle, leftMotors, rightMotors)) {
                     state = 6;
-                    wheelDistanceAverageStamp = (robot.motorLeftWheel.getCurrentPosition() +
+                    wheelDistanceLandMark = (robot.motorLeftWheel.getCurrentPosition() +
                             robot.motorRightWheel.getCurrentPosition())/2;
                 }
 
                 break;
             case 6:
                 // move straight
-
                 wheelDistanceAverage = (robot.motorLeftWheel.getCurrentPosition() +
                         robot.motorRightWheel.getCurrentPosition())/2;
 
-                if (wheelDistanceAverage - wheelDistanceAverageStamp < cryptoBoxDistance) {
+                if (wheelDistanceAverage - wheelDistanceLandMark < cryptoBoxDistance) {
                     moveAtSpeed(0.25);
 
                 } else {
@@ -246,7 +250,7 @@ public class AutoNathanPlanARed extends AutoRelic {
                     robot.rightHand.setPosition(robot.rightHandOpenPosition);
                 } else {
                     state = 8;
-                    wheelDistanceAverage = (robot.motorLeftWheel.getCurrentPosition() +
+                    wheelDistanceLandMark = (robot.motorLeftWheel.getCurrentPosition() +
                             robot.motorRightWheel.getCurrentPosition())/2;
                     moveAtSpeed(-0.2);
                     timeStamp = System.currentTimeMillis();
@@ -258,7 +262,7 @@ public class AutoNathanPlanARed extends AutoRelic {
                 wheelDistanceAverage = (robot.motorLeftWheel.getCurrentPosition() +
                         robot.motorRightWheel.getCurrentPosition())/2;
 
-                if (wheelDistanceAverage - wheelDistanceAverageStamp < backupDistance) {
+                if (wheelDistanceAverage - wheelDistanceLandMark < backupDistance) {
                     moveAtSpeed(0.0);
                     state = 9;
                 }

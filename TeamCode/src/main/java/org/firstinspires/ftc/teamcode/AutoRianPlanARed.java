@@ -30,24 +30,10 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 /*
  * This is an example LinearOpMode that shows how to use
@@ -207,7 +193,7 @@ public class AutoRianPlanARed extends AutoRelic {
                 if ((robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp + robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp > 3575) && (robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp < -3575)) {
 
                     turnAtSpeed(0.0);
-                    wheelDistanceAverageStamp = (robot.motorLeftBackWheel.getCurrentPosition() +
+                    wheelDistanceLandMark = (robot.motorLeftBackWheel.getCurrentPosition() +
                             robot.motorLeftFrontWheel.getCurrentPosition() +
                             robot.motorRightBackWheel.getCurrentPosition() +
                             robot.motorRightFrontWheel.getCurrentPosition())/4;
@@ -229,7 +215,7 @@ public class AutoRianPlanARed extends AutoRelic {
                         robot.motorRightBackWheel.getCurrentPosition() +
                         robot.motorRightFrontWheel.getCurrentPosition())/4;
 
-                if (wheelDistanceAverage - wheelDistanceAverageStamp < cryptoBoxDistance) {
+                if (wheelDistanceAverage - wheelDistanceLandMark < cryptoBoxDistance) {
 
                     moveAtSpeed(0.5);
 

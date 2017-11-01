@@ -43,6 +43,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.Locale;
+import java.util.Random;
 
 class JewelKicker {
 
@@ -72,7 +73,7 @@ class JewelKicker {
     private long timeStamp;
     double jewelArmRestPosition = 0.8;
     double jewelArmActionPosition = 0.15;
-    private double jewelHitterRestPosition =0.5;
+    double jewelHitterRestPosition =0.5;
     double jewelHitterBluePosition = 1.0;
     double jewelHitterRedPosition = 0.0;
     private Telemetry telemetry;

@@ -66,7 +66,7 @@ public class HardwareNathen extends HardwareBase
     double rightHandOpenPosition = 0.0;
     double rightHandClosePosition = 0.6;
 
-    protected float axleDistance = 800f;
+    protected float axleDistance = 900f;
 
     /* Constructor */
     public HardwareNathen(){
