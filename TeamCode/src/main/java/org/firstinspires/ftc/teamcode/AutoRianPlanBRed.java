@@ -31,10 +31,12 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.internal.system.SystemProperties;
 
 /*
  * This is an example LinearOpMode that shows how to use
@@ -52,7 +54,13 @@ public class AutoRianPlanBRed extends AutoRianPlanARed {
     @Override
     public void start() {
         super.start();
+        teamColor = "red";
         fGlyphTurnAngle = 180.0f;
+
+        leftColumnDistance = 3800;
+        centerColumnDistance = 2350;
+        rightColumnDistance = 900;
+
     }
 
     @Override
@@ -61,38 +69,131 @@ public class AutoRianPlanBRed extends AutoRianPlanARed {
             case 0:
                 // jewel handling
                 state = jewelKicker.loop(0, 1, teamColor);
+
+                vuforia.identifyGlyphCrypto();
+
+                break;
             case 1:
-                 // detect crypto
+
+                //read vumark
+                vuforia.identifyGlyphCrypto();
+                if (vuforia.vumarkImage == "left") {
+                    columnDistance = leftColumnDistance;
+                } else if (vuforia.vumarkImage == "center") {
+                    columnDistance = centerColumnDistance;
+                } else if (vuforia.vumarkImage == "right") {
+                    columnDistance = rightColumnDistance;
+                } else {
+                    columnDistance = rightColumnDistance;
+                }
+
+                OpenGLMatrix pose = vuforia.getGlyphCryptoPosition();
+                telemetry.addData("Pose", format(pose));
+
+                //move forward with encoder
+                wheelDistanceAverage = (robot.motorLeftBackWheel.getCurrentPosition() +
+                        robot.motorLeftFrontWheel.getCurrentPosition() +
+                        robot.motorRightBackWheel.getCurrentPosition() +
+                        robot.motorRightFrontWheel.getCurrentPosition())/4;
+
+                if (wheelDistanceAverage < 2600) {
+
+                    moveAtSpeed(vuforiaDetectingSpeed);
+
+                } else {
+
+                    moveAtSpeed(0.0);
+                    leftBackStamp = robot.motorLeftBackWheel.getCurrentPosition();
+                    leftFrontStamp = robot.motorLeftFrontWheel.getCurrentPosition();
+                    rightBackStamp = robot.motorRightBackWheel.getCurrentPosition();
+                    rightFrontStamp = robot.motorRightFrontWheel.getCurrentPosition();
+                    state = 2;
+
+                }
 
                 break;
             case 2:
-                // back up, stop at the correct glyph row (left, center, right)
+                // move left
+                if (robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp > -columnDistance && robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp < columnDistance) {
+
+                    robot.motorLeftFrontWheel.setPower(-0.2);
+                    robot.motorRightBackWheel.setPower(-0.2);
+                    robot.motorRightFrontWheel.setPower(0.2);
+                    robot.motorLeftBackWheel.setPower(0.2);
+
+                } else {
+
+                    wheelDistanceAverageStamp = (robot.motorLeftBackWheel.getCurrentPosition() +
+                                                 robot.motorLeftFrontWheel.getCurrentPosition() +
+                                                 robot.motorRightBackWheel.getCurrentPosition() +
+                                                 robot.motorRightFrontWheel.getCurrentPosition())/4;
+                    state = 3;
+
+                }
+
                 break;
 
             case 3:
-                // get heading
-                Orientation angles = robot.imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                navigation.heading = angles.firstAngle;
-                //gravity  = robot.imu.getGravity();
 
-                // turn 180
-                float turnPower = navigation.getMaintainHeadingPower(fGlyphTurnAngle);
-                if (Math.abs(turnPower) < 0.01) {
+                wheelDistanceAverage = (robot.motorLeftBackWheel.getCurrentPosition() +
+                                        robot.motorLeftFrontWheel.getCurrentPosition() +
+                                        robot.motorRightBackWheel.getCurrentPosition() +
+                                        robot.motorRightFrontWheel.getCurrentPosition())/4;
+
+                if (wheelDistanceAverage - wheelDistanceAverageStamp < cryptoBoxDistance) {
+
+                    moveAtSpeed(0.2);
+
+                } else {
+
+                    timeStamp = System.currentTimeMillis();
                     state = 4;
+
                 }
 
                 break;
             case 4:
-                // move right
+                // release the glyph
+
+                time = System.currentTimeMillis();
+
+                if (time - timeStamp < 1000) {
+
+                    robot.leftLiftWheel1.setPower(1.0);
+                    robot.leftLiftWheel2.setPower(1.0);
+                    robot.leftLiftWheel3.setPower(1.0);
+                    robot.rightLiftWheel1.setPower(-1.0);
+                    robot.rightLiftWheel2.setPower(-1.0);
+                    robot.rightLiftWheel3.setPower(-1.0);
+
+                } else {
+
+                    timeStamp = System.currentTimeMillis();
+                    state = 5;
+
+                }
+
                 break;
             case 5:
-                // move straight
+                //back up
+                time = System.currentTimeMillis();
+
+                if (time - timeStamp < 1000) {
+
+                    moveAtSpeed(-0.1);
+
+                } else {
+
+                    moveAtSpeed(0.0);
+                    state = 6;
+
+                }
+
                 break;
             case 6:
-                // release the glyph
-                break;
-            case 7:
                 // stop
+                robot.stop();
+
                 break;
             default:
         }

@@ -157,7 +157,7 @@ public class AutoRianPlanARed extends AutoRelic {
                     leftFrontStamp = robot.motorLeftFrontWheel.getCurrentPosition();
                     rightBackStamp = robot.motorRightBackWheel.getCurrentPosition();
                     rightFrontStamp = robot.motorRightFrontWheel.getCurrentPosition();
-                    state = 4;
+                    state = 2;
 
                 }
 
@@ -173,22 +173,7 @@ public class AutoRianPlanARed extends AutoRelic {
                 }*/
 
                 break;
-            case 4:
-                /*// get heading
-                Orientation angles = imuSensor.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                robot.navigation.heading = angles.firstAngle;
-                //gravity  = robot.imu.getGravity();
-
-                // turn right 90 degree
-                float turnPower = robot.navigation.getMaintainHeadingPower(fGlyphTurnAngle);
-                if (Math.abs(turnPower) < 0.01) {
-                    state = 5;
-                }
-
-                robot.motorLeftFrontWheel.setPower(turnPower);
-                robot.motorLeftBackWheel.setPower(turnPower);
-                robot.motorRightFrontWheel.setPower(-turnPower);
-                robot.motorRightBackWheel.setPower(-turnPower);*/
+            case 2:
 
                 if ((robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp + robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp > 3575) && (robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp < -3575)) {
 
@@ -199,7 +184,7 @@ public class AutoRianPlanARed extends AutoRelic {
                             robot.motorRightFrontWheel.getCurrentPosition())/4;
                     telemetry.addData("left", robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp + robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp);
                     telemetry.addData("left", robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp);
-                    state = 5;
+                    state = 3;
 
                 } else {
 
@@ -207,7 +192,7 @@ public class AutoRianPlanARed extends AutoRelic {
                 }
 
                 break;
-            case 5:
+            case 3:
                 // move straight
 
                 wheelDistanceAverage = (robot.motorLeftBackWheel.getCurrentPosition() +
@@ -223,17 +208,17 @@ public class AutoRianPlanARed extends AutoRelic {
 
                     moveAtSpeed(0.0);
                     timeStamp = System.currentTimeMillis();
-                    state = 6;
+                    state = 4;
 
                 }
 
                 break;
-            case 6:
+            case 4:
                 // release the glyph
 
                 time = System.currentTimeMillis();
 
-                if (time - timeStamp < 2000) {
+                if (time - timeStamp < 1000) {
 
                     robot.leftLiftWheel1.setPower(1.0);
                     robot.leftLiftWheel2.setPower(1.0);
@@ -244,17 +229,35 @@ public class AutoRianPlanARed extends AutoRelic {
 
                 } else {
 
+                    timeStamp = System.currentTimeMillis();
+                    state = 5;
+
+                }
+
+                break;
+            case 5:
+
+                time = System.currentTimeMillis();
+
+                if (time - timeStamp < 1000) {
+
+                    moveAtSpeed(-0.1);
+
+                } else {
+
+                    moveAtSpeed(0.0);
                     robot.leftLiftWheel1.setPower(0.0);
                     robot.leftLiftWheel2.setPower(0.0);
                     robot.leftLiftWheel3.setPower(0.0);
                     robot.rightLiftWheel1.setPower(0.0);
                     robot.rightLiftWheel2.setPower(0.0);
                     robot.rightLiftWheel3.setPower(0.0);
+                    state = 6;
 
                 }
 
                 break;
-            case 7:
+            case 6:
 
                 robot.stop();
 
