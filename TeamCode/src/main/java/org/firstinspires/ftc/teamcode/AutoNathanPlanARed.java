@@ -66,7 +66,7 @@ public class AutoNathanPlanARed extends AutoRelic {
         //        cryptoBoxStopDistance = 20;
         //        vuforiaDetectingPower = 0.2;
         rightColumnDistance = 2130;
-        centerColumnDistance = 2280;
+        centerColumnDistance = 2880;
         leftColumnDistance = 3630;
         //        cryptoBoxDistance = 500;
         //        backupDistance = -100;
@@ -155,8 +155,7 @@ public class AutoNathanPlanARed extends AutoRelic {
                 jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.1*rand.nextDouble()-0.05;
 
                 vuforia.identifyGlyphCrypto();
-                wheelDistanceLandMark = (robot.motorLeftWheel.getCurrentPosition() +
-                        robot.motorRightWheel.getCurrentPosition())/2;
+                wheelDistanceLandMark = getWheelOdometer();
 
                 break;
             case 1:
@@ -167,14 +166,7 @@ public class AutoNathanPlanARed extends AutoRelic {
                 computeGlyphColumnDistance();
 
                 //move forward with encoder
-                wheelDistanceAverage = (robot.motorLeftWheel.getCurrentPosition() +
-                                            robot.motorRightWheel.getCurrentPosition())/2;
-
-                if (wheelDistanceAverage < columnDistance) {
-
-                    moveAtSpeed(vuforiaDetectingPower);
-
-                } else {
+                if ( 0 == moveByDistance(vuforiaDetectingPower, columnDistance )) {
                     moveAtSpeed(0.0);
                     vuforia.relicTrackables.deactivate();
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -208,11 +200,7 @@ public class AutoNathanPlanARed extends AutoRelic {
                 // move straight
                 wheelDistanceAverage = (robot.motorLeftWheel.getCurrentPosition() +
                         robot.motorRightWheel.getCurrentPosition())/2;
-
-                if (wheelDistanceAverage - wheelDistanceLandMark < cryptoBoxDistance) {
-                    moveAtSpeed(0.25);
-
-                } else {
+                if (0 == moveByDistance(0.25, cryptoBoxDistance)) {
                     moveAtSpeed(0.0);
                     timeStamp = System.currentTimeMillis();
                     state = 7;
@@ -221,9 +209,8 @@ public class AutoNathanPlanARed extends AutoRelic {
                 break;
             case 7:
                 // release the glyph
-
                 time = System.currentTimeMillis();
-                if (time - timeStamp < 2000) {
+                if (time - timeStamp < 1000) {
                     robot.leftHand.setPosition(robot.leftHandOpenPosition);
                     robot.rightHand.setPosition(robot.rightHandOpenPosition);
                 } else {
@@ -233,18 +220,13 @@ public class AutoNathanPlanARed extends AutoRelic {
                     moveAtSpeed(-0.2);
                     timeStamp = System.currentTimeMillis();
                 }
-
                 break;
             case 8:
                 // backup
-                wheelDistanceAverage = (robot.motorLeftWheel.getCurrentPosition() +
-                        robot.motorRightWheel.getCurrentPosition())/2;
-
-                if (wheelDistanceAverage - wheelDistanceLandMark < backupDistance) {
+                if (0 == moveByDistance(-0.2, backupDistance)) {
                     moveAtSpeed(0.0);
                     state = 9;
                 }
-
                 break;
             default:
                 robot.stop();
@@ -269,10 +251,6 @@ public class AutoNathanPlanARed extends AutoRelic {
     public void turnAtSpeed (double speed) {
         robot.motorLeftWheel.setPower(speed);
         robot.motorRightWheel.setPower(-speed);
-    }
-
-    String format(OpenGLMatrix transformationMatrix) {
-        return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
     }
 
 }

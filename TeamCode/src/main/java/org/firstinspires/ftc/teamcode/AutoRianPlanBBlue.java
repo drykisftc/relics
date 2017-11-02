@@ -52,7 +52,6 @@ public class AutoRianPlanBBlue extends AutoRianPlanBRed {
     public AutoRianPlanBBlue () {
         teamColor = "blue";
         fGlyphTurnAngle = 180;
-        sideMovePower = -0.2; // move right
         leftColumnDistance = 2600;
         centerColumnDistance = 3350;
         rightColumnDistance = 3950;

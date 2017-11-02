@@ -52,7 +52,6 @@ public class AutoRianPlanABlue extends AutoRianPlanARed {
     public AutoRianPlanABlue () {
         teamColor = "blue";
         vuforiaDetectingPower = -0.2;
-        sideMovePower = -0.2; // move right
     }
 
 }

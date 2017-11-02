@@ -47,9 +47,9 @@ public class AutoRianPlanBRed extends AutoRianPlanARed {
     public AutoRianPlanBRed () {
         teamColor = "red";
         fGlyphTurnAngle = 0.0f;
-        leftColumnDistance = 3800;
+        rightColumnDistance = 3800;
         centerColumnDistance = 2350;
-        rightColumnDistance = 900;
+        leftColumnDistance = 900;
     }
 
     @Override
@@ -71,11 +71,8 @@ public class AutoRianPlanBRed extends AutoRianPlanARed {
                 wheelDistanceAverage = getWheelOdometer();
 
                 if (wheelDistanceAverage < offBalanceStoneDistance) {
-
                     moveAtPower(vuforiaDetectingPower);
-
                 } else {
-
                     moveAtPower(0.0);
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -83,27 +80,21 @@ public class AutoRianPlanBRed extends AutoRianPlanARed {
                 }
 
                 break;
-            case 2: // turn if necessary
-                if (fGlyphTurnAngle == 0.0f || 0 == navigation.turnByEncoderOpenLoop(glyTurnPower,fGlyphTurnAngle,
-                            robot.axleDistance, leftMotors, rightMotors)) {
-                    getWheelLandmarks();
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    state = 3;
-                }
-                break;
-            case 3:
+            case 2:
                 // move left
                 if ( 0 == sideMoveByDistance(sideMovePower, columnDistance) ){
                     wheelDistanceLandMark = getWheelOdometer();
+                    state = 3;
+                }
+
+                break;
+            case 3: // turn if necessary
+                if (fGlyphTurnAngle == 0.0f || 0 == navigation.turnByEncoderOpenLoop(glyTurnPower,fGlyphTurnAngle,
+                        robot.axleDistance, leftMotors, rightMotors)) {
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
                     state = 4;
                 }
-//                if (robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp > -columnDistance && robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp < columnDistance) {
-//                    sideMoveAtPower(sideMovePower);
-//                } else {
-//                    wheelDistanceLandMark = getWheelOdometer();
-//                    state = 4;
-//                }
-
                 break;
 
             case 4:

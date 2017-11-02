@@ -142,4 +142,55 @@ public class AutoRelic extends OpMode {
         return (transformationMatrix != null) ? transformationMatrix.formatAsTransform() : "null";
     }
 
+    public void moveAtPower(double p) {
+        for ( int i =0; i < leftMotors.length; i++) {
+            leftMotors[i].setPower(p);
+        }
+        for (int i =0; i < rightMotors.length; i++) {
+            rightMotors[i].setPower(p);
+        }
+    }
+
+    public int moveByDistance (double power, int d) {
+        int distance = Math.abs(d);
+        if (power == 0) {
+            return 0; // zero power do nothing
+        } else if (power> 0) {
+            if (getWheelOdometer() - wheelDistanceLandMark < distance) {
+                moveAtPower(power);
+            } else {
+                moveAtPower(0.0);
+                return 0;
+            }
+        } else {
+            if (wheelDistanceLandMark-getWheelOdometer() < distance) {
+                moveAtPower(power);
+            } else {
+                moveAtPower(0.0);
+                return 0;
+            }
+        }
+        return 1;
+    }
+    // positive power to turn left
+    public void turnAtPower(double p) {
+        for ( int i =0; i < leftMotors.length; i++) {
+            leftMotors[i].setPower(-p);
+        }
+        for (int i =0; i < rightMotors.length; i++) {
+            rightMotors[i].setPower(p);
+        }
+    }
+
+    public int getWheelOdometer() {
+        int d =0;
+        for ( int i =0; i < leftMotors.length; i++) {
+            d += leftMotors[i].getCurrentPosition();
+        }
+        for (int i =0; i < rightMotors.length; i++) {
+            d += rightMotors[i].getCurrentPosition();
+        }
+        return d/(leftMotors.length+rightMotors.length);
+    }
+
 }
