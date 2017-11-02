@@ -52,23 +52,6 @@ import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 @Disabled
 public class AutoRelic extends OpMode {
 
-    /**
-     * Note that the REV Robotics Color-Distance incorporates two sensors into one device.
-     * It has a light/distance (range) sensor.  It also has an RGB color sensor.
-     * The light/distance sensor saturates at around 2" (5cm).  This means that targets that are 2"
-     * or closer will display the same value for distance/light detected.
-     *
-     * Although you configure a single REV Robotics Color-Distance sensor in your configuration file,
-     * you can treat the sensor as two separate sensors that share the same name in your op mode.
-     *
-     * In this example, we represent the detected color by a hue, saturation, and value color
-     * model (see https://en.wikipedia.org/wiki/HSL_and_HSV).  We change the background
-     * color of the screen to match the detected color.
-     *
-     * In this example, we  also use the distance sensor to display the distance
-     * to the target object.  Note that the distance sensor saturates at around 2" (5 cm).
-     *
-     */
 
     protected String teamColor = "red";
 
@@ -85,6 +68,7 @@ public class AutoRelic extends OpMode {
     protected float fGlyphTurnAngle = -90; // positive turns left, negative turns right
     protected float fGlyphTurnAngle2 = 0;
     protected double glyTurnPower = -0.5;
+    protected float fCenterTurnAngle = 180;
 
     protected double glyphMovePower = 0.5;
     protected double sideMovePower = 0.2;
@@ -92,12 +76,15 @@ public class AutoRelic extends OpMode {
     protected double backupPower = -0.1;
 
     protected int cryptoBoxStopDistance = 20;
+    protected int offBalanceStoneDistance = 2600;
     protected int rightColumnDistance = 2600;
     protected int centerColumnDistance = 3350;
     protected int leftColumnDistance = 3950;
     protected int cryptoBoxDistance = 500;
     protected int backupDistance = -100;
-    protected int offBalanceStoneDistance = 2600;
+    protected int glyph2CenterDistance = 3880;
+    protected int center2GlyphDistance = 3880;
+
 
 
     protected JewelKicker jewelKicker= null;
@@ -191,6 +178,10 @@ public class AutoRelic extends OpMode {
             d += rightMotors[i].getCurrentPosition();
         }
         return d/(leftMotors.length+rightMotors.length);
+    }
+
+    public void getWheelLandmarks () {
+        wheelDistanceLandMark = getWheelOdometer();
     }
 
 }
