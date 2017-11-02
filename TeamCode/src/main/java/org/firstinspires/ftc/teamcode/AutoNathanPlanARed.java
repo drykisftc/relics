@@ -55,7 +55,7 @@ public class AutoNathanPlanARed extends AutoRelic {
         fCenterTurnAngle = -187;
 
         cryptoBoxDistance = 600;
-        glyphLiftPosition= 2000;
+        glyphLiftPosition= 2200;
         glyphLiftPosition2 = 2000;
 
         rightColumnDistance = 2130;
@@ -146,7 +146,7 @@ public class AutoNathanPlanARed extends AutoRelic {
 
                 // hitter arm to avoid jewel holes
                 jewelKicker.jewelArmActionPosition = jewelArmPos + 0.15*rand.nextDouble()-0.075;
-                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.1*rand.nextDouble()-0.05;
+                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.7*rand.nextDouble()-0.03;
 
                 vuforia.identifyGlyphCrypto();
                 getWheelLandmarks();
@@ -260,7 +260,7 @@ public class AutoNathanPlanARed extends AutoRelic {
                 // collect glyph
                  robot.leftHand.setPosition(robot.leftHandClosePosition);
                  robot.rightHand.setPosition(robot.rightHandClosePosition);
-                 if ( System.currentTimeMillis() - timeStamp < 2000) {
+                 if ( System.currentTimeMillis() - timeStamp < 3000) {
                      state = 13;
                      getWheelLandmarks();
                  }
@@ -279,7 +279,7 @@ public class AutoNathanPlanARed extends AutoRelic {
                 break;
             case 14:
                 // wait 1 second
-                if (System.currentTimeMillis() - timeStamp > 1000) {
+                if (System.currentTimeMillis() - timeStamp > 500) {
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
                     state = 15;
@@ -308,7 +308,7 @@ public class AutoNathanPlanARed extends AutoRelic {
                 // release glyph
                 robot.leftHand.setPosition(robot.leftHandOpenPosition);
                 robot.rightHand.setPosition(robot.rightHandOpenPosition);
-                if (System.currentTimeMillis() - timeStamp > 1000) {
+                if (System.currentTimeMillis() - timeStamp > 500) {
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     state = 18;
