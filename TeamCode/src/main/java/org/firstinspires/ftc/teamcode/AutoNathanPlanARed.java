@@ -226,7 +226,7 @@ public class AutoNathanPlanARed extends AutoRelic {
                 break;
             case 9:
                 // wait 1 second
-                if (System.currentTimeMillis() - timeStamp > 1000) {
+                if (System.currentTimeMillis() - timeStamp > 500) {
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
                     state = 10;
