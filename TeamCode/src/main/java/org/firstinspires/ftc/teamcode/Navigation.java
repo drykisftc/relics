@@ -31,7 +31,7 @@ public class Navigation {
     int turnDistanceRightWheel = 0;
     int leftWheelLandMark = 0;
     int rightWheelLandMark= 0;
-    float currentTurnAngle =0.0f;
+    double currentTurnAngle =0.0f;
     int convergeCount = 0;
     float angleErrorTolerance = 1.1f;
     int convergeCountThreshold = 5;
@@ -129,8 +129,8 @@ public class Navigation {
         turnState =0;
     }
 
-    public int turnByEncoderOpenLoop (double p, float angle,
-                                      float axleLength,
+    public int turnByEncoderOpenLoop (double p, double angle,
+                                      double axleLength,
                                       DcMotor [] leftMs, DcMotor[] rightMs) {
         double power = Math.abs(p);
         switch (turnState) {
@@ -302,17 +302,17 @@ public class Navigation {
     }
 
     // left turn is positive
-    float getTurnAngle (float leftDistance, float rightDistance, float axleDistance){
+    double getTurnAngle (double leftDistance, double rightDistance, double axleDistance){
         return (float)((360 * rightDistance * (rightDistance - leftDistance)) / (2 * 3.14 * axleDistance * rightDistance));
     }
 
     // if the result is positive, set right Motor move forward (left turn),
     // other wise (right turn)
-    float getTurnDistanceRightWheel (float angle, float axleDistance){
+    double getTurnDistanceRightWheel (double angle, double axleDistance){
         return (float)(axleDistance * angle * 3.14) / 360;
     }
 
-    double normalizeHeading (double value) {
+    double normalizeHeading360 (double value) {
         // set it to [-360, 360]
         double v = value/360.0;
         double v2 = (v-(int)v) * 360.0;
@@ -327,6 +327,12 @@ public class Navigation {
 
         double robotError;
         robotError = targetAngle - currentAngle;
+        while (robotError > 180)  robotError -= 360;
+        while (robotError <= -180) robotError += 360;
+        return robotError;
+    }
+
+    double normalizeHeading(double robotError) {
         while (robotError > 180)  robotError -= 360;
         while (robotError <= -180) robotError += 360;
         return robotError;

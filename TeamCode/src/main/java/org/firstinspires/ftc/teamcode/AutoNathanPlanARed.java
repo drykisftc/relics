@@ -46,16 +46,16 @@ public class AutoNathanPlanARed extends AutoRelic {
     int glyphLiftPosition2= 0;
     double jewelArmPos = 0;
     double jewelHitterPos = 0;
-    float centerGlyphAngle = 0;
+    float centerGlyphAngleOffset = 0;
     double encoderCountPerInch = 80.79;
 
     public AutoNathanPlanARed () {
         // team specific
         teamColor = "red";
         fGlyphTurnAngle = -90;
-        fCenterTurnAngle = -185;
+        fCenterTurnAngle = -180;
 
-        cryptoBoxDistance = 600;
+        cryptoBoxDistance = 500;
         glyphLiftPosition= 2200;
         glyphLiftPosition2 = 2000;
 
@@ -69,7 +69,7 @@ public class AutoNathanPlanARed extends AutoRelic {
         center2GlyphDistance = 2200;
 
         glyTurnPower = 0.20;
-        centerGlyphAngle = fCenterTurnAngle;
+        centerGlyphAngleOffset = 0;
 
     }
 
@@ -155,9 +155,9 @@ public class AutoNathanPlanARed extends AutoRelic {
                 computeGlyphColumnDistance();
 
                 if ("left" == vuforia.vumarkImage) {
-                    centerGlyphAngle = fCenterTurnAngle - 3;
+                    centerGlyphAngleOffset = -15;
                 } else if ("right" == vuforia.vumarkImage) {
-                    centerGlyphAngle = fCenterTurnAngle + 3;
+                    centerGlyphAngleOffset = 15;
                 }
 
                 getWheelLandmarks();
@@ -171,9 +171,9 @@ public class AutoNathanPlanARed extends AutoRelic {
                 computeGlyphColumnDistance();
 
                 if ("left" == vuforia.vumarkImage) {
-                    centerGlyphAngle = fCenterTurnAngle - 3;
+                    centerGlyphAngleOffset = -15;
                 } else if ("right" == vuforia.vumarkImage) {
-                    centerGlyphAngle = fCenterTurnAngle + 3;
+                    centerGlyphAngleOffset = 15;
                 }
 
                 //move forward with encoder
@@ -229,7 +229,7 @@ public class AutoNathanPlanARed extends AutoRelic {
                 break;
             case 8:
                 // backup
-                if (0 == moveByDistance(-0.2, backupDistance)) {
+                if (0 == moveByDistance(-0.25, backupDistance)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     timeStamp = System.currentTimeMillis();
@@ -251,7 +251,8 @@ public class AutoNathanPlanARed extends AutoRelic {
                 break;
             case 10:
                 // turn 180
-                 if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,centerGlyphAngle,
+                 if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,
+                         navigation.normalizeHeading(fCenterTurnAngle+centerGlyphAngleOffset),
                         robot.axleDistance, leftMotors, rightMotors)) {
                     state = 11;
                     getWheelLandmarks();
@@ -284,7 +285,7 @@ public class AutoNathanPlanARed extends AutoRelic {
                 break;
             case 13:
                 // back up
-                 if (0 == moveByDistance(-0.2, backupDistance)) {
+                 if (0 == moveByDistance(-0.25, backupDistance)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -304,7 +305,8 @@ public class AutoNathanPlanARed extends AutoRelic {
                 break;
             case 15:
                 // turn
-                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,centerGlyphAngle,
+                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,
+                        navigation.normalizeHeading(fCenterTurnAngle-centerGlyphAngleOffset),
                         robot.axleDistance, leftMotors, rightMotors)) {
                     state = 16;
                     getWheelLandmarks();
@@ -333,7 +335,7 @@ public class AutoNathanPlanARed extends AutoRelic {
                 break;
             case 18:
                 // backup
-                 if (0 == moveByDistance(-0.2, 500)) {
+                 if (0 == moveByDistance(-0.2, 300)) {
                      moveAtPower(0.0);
                  }
                 break;
