@@ -14,7 +14,7 @@ import java.util.concurrent.DelayQueue;
 /**
 
  24 inches have 1939 encoder counts that is 80.79encoder counts per inch
- Nathan has wheel base of 15.4 inches.
+ Nathan has wheel base of 15.25 inches.
  */
 public class HardwareNathen extends HardwareBase
 {
@@ -46,12 +46,12 @@ public class HardwareNathen extends HardwareBase
 
     double leftHandOpenPosition = 1.0;
     double leftHandClosePosition = 0.4;
-    double leftHandChargePosition = 0.7;
+    double leftHandChargePosition = 0.8;
     double rightHandOpenPosition = 0.0;
     double rightHandClosePosition = 0.6;
-    double rightHandChargePosition = 0.3;
+    double rightHandChargePosition = 0.2;
 
-    protected float axleDistance = 1248f;//1254
+    protected float axleDistance = 1232; //1248f;//1254
 
     /* Constructor */
     public HardwareNathen(){

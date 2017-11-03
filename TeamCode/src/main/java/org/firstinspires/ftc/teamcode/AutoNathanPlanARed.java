@@ -32,7 +32,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 import java.util.Random;
@@ -47,26 +46,31 @@ public class AutoNathanPlanARed extends AutoRelic {
     int glyphLiftPosition2= 0;
     double jewelArmPos = 0;
     double jewelHitterPos = 0;
+    float centerGlyphAngle = 0;
+    double encoderCountPerInch = 80.79;
 
     public AutoNathanPlanARed () {
         // team specific
         teamColor = "red";
         fGlyphTurnAngle = -90;
-        fCenterTurnAngle = -187;
+        fCenterTurnAngle = -185;
 
         cryptoBoxDistance = 600;
         glyphLiftPosition= 2200;
         glyphLiftPosition2 = 2000;
 
-        rightColumnDistance = 2130;
-        centerColumnDistance = 2880;
-        leftColumnDistance = 3630;
+        //the glyph box is 22.6 inches wide, 1826 steps
+        rightColumnDistance = 2200;
+        centerColumnDistance = (int)(rightColumnDistance + 913/encoderCountPerInch);
+        leftColumnDistance = (int)(rightColumnDistance + 1826/encoderCountPerInch);
 
-        backupDistance = -2800;
-        glyph2CenterDistance = 1080;
-        center2GlyphDistance = 1200;
+        backupDistance = -2000;
+        glyph2CenterDistance = 1880;
+        center2GlyphDistance = 2200;
 
-        glyTurnPower = 0.25;
+        glyTurnPower = 0.20;
+        centerGlyphAngle = fCenterTurnAngle;
+
     }
 
     @Override
@@ -97,7 +101,7 @@ public class AutoNathanPlanARed extends AutoRelic {
         jewelKicker.jewelArmActionPosition= 0.0;
         jewelKicker.jewelArmRestPosition= 1.0;
 
-        jewelKicker.jewelHitterRestPosition = 0.5;
+        jewelKicker.jewelHitterRestPosition = 0.48;
         jewelKicker.jewelHitterRedPosition = 0.0;
         jewelKicker.jewelHitterBluePosition = 1.0;
 
@@ -146,13 +150,31 @@ public class AutoNathanPlanARed extends AutoRelic {
 
                 // hitter arm to avoid jewel holes
                 jewelKicker.jewelArmActionPosition = jewelArmPos + 0.15*rand.nextDouble()-0.075;
-                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.7*rand.nextDouble()-0.03;
+                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.06*rand.nextDouble()-0.03;
 
-                vuforia.identifyGlyphCrypto();
+                if ("unknown" == vuforia.vumarkImage) {
+                    vuforia.identifyGlyphCrypto();
+                } else {
+                    if ("left" == vuforia.vumarkImage) {
+                        centerGlyphAngle = fCenterTurnAngle - 3;
+                    } else if ("right" == vuforia.vumarkImage) {
+                        centerGlyphAngle = fCenterTurnAngle + 3;
+                    }
+                }
                 getWheelLandmarks();
 
                 break;
             case 1:
+
+                if ("unknown" == vuforia.vumarkImage) {
+                    vuforia.identifyGlyphCrypto();
+                } else {
+                    if ("left" == vuforia.vumarkImage) {
+                        centerGlyphAngle = fCenterTurnAngle - 3;
+                    } else if ("right" == vuforia.vumarkImage) {
+                        centerGlyphAngle = fCenterTurnAngle + 3;
+                    }
+                }
 
                 VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, robot.liftMotorHolderPower);
 
@@ -163,13 +185,22 @@ public class AutoNathanPlanARed extends AutoRelic {
                 if ( 0 == moveByDistance(vuforiaDetectingPower, columnDistance )) {
                     moveAtPower(0.0);
                     vuforia.relicTrackables.deactivate();
-                    navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    timeStamp = System.currentTimeMillis();
                     state = 4;
                 }
 
                 break;
             case 4:
+                // wait 1 second
+                if (System.currentTimeMillis() - timeStamp > 500) {
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    state = 5;
+                }
+                break;
+            case 5:
                 // turn
                 if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,fGlyphTurnAngle,
                         robot.axleDistance, leftMotors, rightMotors)) {
@@ -179,15 +210,6 @@ public class AutoNathanPlanARed extends AutoRelic {
                 }
 
                 break;
-//            case 5:
-//                // turn
-//                if (0 == navigation.turnByGyroCloseLoop(0.0,robot.getGyroHeading(),
-//                        fGlyphTurnAngle, leftMotors, rightMotors)) {
-//                    state = 6;
-//                    wheelDistanceLandMark = (robot.motorLeftWheel.getCurrentPosition() +
-//                            robot.motorRightWheel.getCurrentPosition())/2;
-//                }
-//                break;
             case 6:
                 // move straight
                 if (0 == moveByDistance(0.25, cryptoBoxDistance)) {
@@ -234,7 +256,7 @@ public class AutoNathanPlanARed extends AutoRelic {
                 break;
             case 10:
                 // turn 180
-                 if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,fCenterTurnAngle,
+                 if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,centerGlyphAngle,
                         robot.axleDistance, leftMotors, rightMotors)) {
                     state = 11;
                     getWheelLandmarks();
@@ -287,7 +309,7 @@ public class AutoNathanPlanARed extends AutoRelic {
                 break;
             case 15:
                 // turn
-                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,fCenterTurnAngle,
+                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,centerGlyphAngle,
                         robot.axleDistance, leftMotors, rightMotors)) {
                     state = 16;
                     getWheelLandmarks();
