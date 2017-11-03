@@ -61,8 +61,8 @@ public class AutoNathanPlanARed extends AutoRelic {
 
         //the glyph box is 22.6 inches wide, 1826 steps
         rightColumnDistance = 2200;
-        centerColumnDistance = (int)(rightColumnDistance + 913/encoderCountPerInch);
-        leftColumnDistance = (int)(rightColumnDistance + 1826/encoderCountPerInch);
+        centerColumnDistance = (int)(rightColumnDistance + 7.63*encoderCountPerInch);
+        leftColumnDistance = (int)(rightColumnDistance + 15.26*encoderCountPerInch);
 
         backupDistance = -2000;
         glyph2CenterDistance = 1880;
@@ -152,34 +152,29 @@ public class AutoNathanPlanARed extends AutoRelic {
                 jewelKicker.jewelArmActionPosition = jewelArmPos + 0.15*rand.nextDouble()-0.075;
                 jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.06*rand.nextDouble()-0.03;
 
-                if ("unknown" == vuforia.vumarkImage) {
-                    vuforia.identifyGlyphCrypto();
-                } else {
-                    if ("left" == vuforia.vumarkImage) {
-                        centerGlyphAngle = fCenterTurnAngle - 3;
-                    } else if ("right" == vuforia.vumarkImage) {
-                        centerGlyphAngle = fCenterTurnAngle + 3;
-                    }
+                computeGlyphColumnDistance();
+
+                if ("left" == vuforia.vumarkImage) {
+                    centerGlyphAngle = fCenterTurnAngle - 3;
+                } else if ("right" == vuforia.vumarkImage) {
+                    centerGlyphAngle = fCenterTurnAngle + 3;
                 }
+
                 getWheelLandmarks();
 
                 break;
             case 1:
 
-                if ("unknown" == vuforia.vumarkImage) {
-                    vuforia.identifyGlyphCrypto();
-                } else {
-                    if ("left" == vuforia.vumarkImage) {
-                        centerGlyphAngle = fCenterTurnAngle - 3;
-                    } else if ("right" == vuforia.vumarkImage) {
-                        centerGlyphAngle = fCenterTurnAngle + 3;
-                    }
-                }
-
                 VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, robot.liftMotorHolderPower);
 
                 //read vumark
                 computeGlyphColumnDistance();
+
+                if ("left" == vuforia.vumarkImage) {
+                    centerGlyphAngle = fCenterTurnAngle - 3;
+                } else if ("right" == vuforia.vumarkImage) {
+                    centerGlyphAngle = fCenterTurnAngle + 3;
+                }
 
                 //move forward with encoder
                 if ( 0 == moveByDistance(vuforiaDetectingPower, columnDistance )) {
@@ -348,6 +343,7 @@ public class AutoNathanPlanARed extends AutoRelic {
 
         telemetry.addData("state", state);
         telemetry.addData("vumark", vuforia.vumarkImage);
+        telemetry.addData("Column distance ", columnDistance);
         telemetry.update();
     }
 

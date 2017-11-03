@@ -45,9 +45,8 @@ public class AutoNathanPlanABlue extends AutoNathanPlanARed {
         vuforiaDetectingPower = -0.2;
 
         leftColumnDistance = 2400;
-        centerColumnDistance = (int)(leftColumnDistance + 913/encoderCountPerInch);
-        rightColumnDistance = (int)(leftColumnDistance + 1826/encoderCountPerInch);
-
+        centerColumnDistance = (int)(leftColumnDistance + 7.63*encoderCountPerInch);
+        rightColumnDistance = (int)(leftColumnDistance + 15.26*encoderCountPerInch);
     }
 
 }
