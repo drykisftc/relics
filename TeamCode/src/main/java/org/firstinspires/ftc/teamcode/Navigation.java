@@ -3,12 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 /**
  * Created by hfu on 10/17/17.
@@ -16,9 +11,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 public class Navigation {
 
-    float distance;
-    float speed;
-    float heading;
+    double distance;
+    double speed;
+    double heading;
     long lastDistanceTimestamp;
     long lastSpeedTimestamp;
     long lastHeadingTimestamp;
@@ -33,8 +28,10 @@ public class Navigation {
     int rightWheelLandMark= 0;
     double currentTurnAngle =0.0f;
     int convergeCount = 0;
-    float angleErrorTolerance = 1.1f;
-    int convergeCountThreshold = 5;
+    double angleErrorTolerance = 1.1f;
+    int convergeCountThreshold = 3;
+
+    double maxTurnDeltaPower = 0.5;
 
     Telemetry telemetry = null;
 
@@ -56,10 +53,10 @@ public class Navigation {
 
         //heading control
         pidControlHeading = new PIDControl();
-        pidControlHeading.setKp(0.001f);
-        pidControlHeading.setKi(0.005f);
-        pidControlHeading.setKd(0.0001f);
-        pidControlHeading.setMaxIntegralError(0.4f/pidControlHeading.fKi);
+        pidControlHeading.setKp(0.004f);
+        pidControlHeading.setKi(0.002f);
+        pidControlHeading.setKd(0.00000001f);
+        pidControlHeading.setMaxIntegralError(0.6f/pidControlHeading.fKi);
 
         // update time stamp
         lastDistanceTimestamp= System.currentTimeMillis();
@@ -73,7 +70,7 @@ public class Navigation {
     /**
      return power
      */
-    public float getMaintainDistancePower(float targetDistance) {
+    public double getMaintainDistancePower(double targetDistance) {
         long lastT = lastDistanceTimestamp;
         lastDistanceTimestamp = System.currentTimeMillis();
         return pidControlDistance.update(targetDistance-distance, lastDistanceTimestamp-lastT);
@@ -82,7 +79,7 @@ public class Navigation {
     /**
      return power
      */
-    public float getMaintainSpeedPower(float targetSpeed) {
+    public double getMaintainSpeedPower(double targetSpeed) {
         long lastT = lastSpeedTimestamp;
         lastSpeedTimestamp = System.currentTimeMillis();
         return pidControlSpeed.update(targetSpeed-speed, lastSpeedTimestamp-lastT);
@@ -91,7 +88,7 @@ public class Navigation {
     /**
     return power
      */
-    public float getMaintainHeadingPower(float targetHeading) {
+    public double getMaintainHeadingPower(double targetHeading) {
         long lastT = lastHeadingTimestamp;
         lastHeadingTimestamp = System.currentTimeMillis();
         return pidControlHeading.update(targetHeading-heading, lastHeadingTimestamp-lastT);
@@ -215,8 +212,8 @@ public class Navigation {
         return 1;
     }
 
-    public int turnByEncoderCloseLoop (double power, float targetAngle,
-                                      float axleLength,
+    public int turnByEncoderCloseLoop (double power, double targetAngle,
+                                      double axleLength,
                                       DcMotor [] leftMs, DcMotor [] rightMs) {
         switch (turnState) {
             case 0:
@@ -236,7 +233,7 @@ public class Navigation {
                 break;
             case 1:
 
-                float errorAngle = (float)getAngleError(targetAngle,currentTurnAngle);
+                double errorAngle = (double)getAngleError(targetAngle,currentTurnAngle);
 
                 if (Math.abs(errorAngle) < angleErrorTolerance) {
                     convergeCount ++;
@@ -250,7 +247,7 @@ public class Navigation {
 
                 // adjust power
                 long currentT = System.currentTimeMillis();
-                float powerDiff = pidControlHeading.update(errorAngle,
+                double powerDiff = pidControlHeading.update(errorAngle,
                         currentT-lastHeadingTimestamp);
                 lastHeadingTimestamp = currentT;
                 for ( int i =0; i < leftMs.length; i++ ) {
@@ -279,7 +276,7 @@ public class Navigation {
         double targetAngle = normalizeHeading(targetA);
         switch (turnState) {
             case 0:
-                float errorAngle = (float)getAngleError(targetAngle,currentAngle);
+                double errorAngle = (double)getAngleError(targetAngle,currentAngle);
 
                 if (Math.abs(errorAngle) < angleErrorTolerance) {
                     convergeCount ++;
@@ -289,21 +286,23 @@ public class Navigation {
 
                 if (convergeCount > convergeCountThreshold) {
                     turnState = 1;
-                }
+                } else {
 
-                // adjust power
-                long currentT = System.currentTimeMillis();
-                float powerDiff = pidControlHeading.update(errorAngle,
-                        (currentT-lastHeadingTimestamp)/1000.0f); // use seconds
-                lastHeadingTimestamp = currentT;
-                for ( int i =0; i < leftMs.length; i++ ) {
-                    leftMs[i].setPower(Range.clip(power-powerDiff,-1.0,1.0));
-                }
-                for ( int i =0; i < rightMs.length; i++ ) {
-                    rightMs[i].setPower(Range.clip(power+powerDiff,-1.0,1.0));
+                    // adjust power
+                    long currentT = System.currentTimeMillis();
+                    double powerDiff = Range.clip(pidControlHeading.update(errorAngle,
+                            (currentT - lastHeadingTimestamp) / 1000.0f), -maxTurnDeltaPower, maxTurnDeltaPower); // use seconds
+                    lastHeadingTimestamp = currentT;
+                    for (int i = 0; i < leftMs.length; i++) {
+                        leftMs[i].setPower(Range.clip(power - powerDiff, -1.0, 1.0));
+                    }
+                    for (int i = 0; i < rightMs.length; i++) {
+                        rightMs[i].setPower(Range.clip(power + powerDiff, -1.0, 1.0));
+                    }
+                    telemetry.addData("delta power", powerDiff);
                 }
                 telemetry.addData("error:" , errorAngle);
-                telemetry.addData("delta power", powerDiff);
+
                 break;
             default:
                 for ( int i =0; i < leftMs.length; i++ ) {
@@ -323,13 +322,13 @@ public class Navigation {
 
     // left turn is positive
     double getTurnAngle (double leftDistance, double rightDistance, double axleDistance){
-        return (float)((360 * rightDistance * (rightDistance - leftDistance)) / (2 * 3.14 * axleDistance * rightDistance));
+        return (double)((360 * rightDistance * (rightDistance - leftDistance)) / (2 * 3.14 * axleDistance * rightDistance));
     }
 
     // if the result is positive, set right Motor move forward (left turn),
     // other wise (right turn)
     double getTurnDistanceRightWheel (double angle, double axleDistance){
-        return (float)(axleDistance * angle * 3.14) / 360;
+        return (double)(axleDistance * angle * 3.14) / 360;
     }
 
     double normalizeHeading360 (double value) {

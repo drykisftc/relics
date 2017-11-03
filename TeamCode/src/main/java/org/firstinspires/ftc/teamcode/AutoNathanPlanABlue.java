@@ -44,7 +44,7 @@ public class AutoNathanPlanABlue extends AutoNathanPlanARed {
         teamColor = "blue";
         vuforiaDetectingPower = -0.2;
 
-        leftColumnDistance = 2550;
+        leftColumnDistance = 2540;
         centerColumnDistance = (int)(leftColumnDistance + 7.63*encoderCountPerInch);
         rightColumnDistance = (int)(leftColumnDistance + 15.26*encoderCountPerInch);
     }

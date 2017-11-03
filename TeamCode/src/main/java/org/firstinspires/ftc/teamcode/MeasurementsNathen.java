@@ -73,6 +73,9 @@ public class MeasurementsNathen extends OpMode{
     Navigation navigation = null;
 
     int navigationState = 0;
+    double kp = 1.0;
+    double ki = 1.0;
+    double kd = 1.0;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -117,6 +120,9 @@ public class MeasurementsNathen extends OpMode{
     @Override
     public void start() {
         robot.jewelSensor.enableLed(true);
+        kp = navigation.pidControlHeading.fKp;
+        ki = navigation.pidControlHeading.fKi;
+        kd = navigation.pidControlHeading.fKd;
         telemetry.update();
     }
 
@@ -128,6 +134,7 @@ public class MeasurementsNathen extends OpMode{
 
         measurements();
         testGyroTurn();
+        adjustPID();
         telemetry.update();
     }
 
@@ -159,6 +166,21 @@ public class MeasurementsNathen extends OpMode{
         telemetry.addData("Heading    : ", robot.gyro.getHeading());
 
         telemetry.addData("Navigation state    : ", navigationState);
+
+        telemetry.addData("KP :", kp);
+        telemetry.addData("KI :", ki);
+        telemetry.addData("KD :", kd);
+    }
+
+    public void adjustPID () {
+        if (Math.abs(gamepad1.right_stick_y) > 0.02) {
+            kp += gamepad1.right_stick_y/100000;
+            navigation.pidControlHeading.setKp(kp);
+        }
+        if (Math.abs(gamepad1.left_stick_y) > 0.02) {
+            ki += gamepad1.left_stick_y/10000;
+            navigation.pidControlHeading.setKi(ki);
+        }
     }
 
     public void testGyroTurn () {
@@ -187,7 +209,7 @@ public class MeasurementsNathen extends OpMode{
                 break;
             case 3:
                if (0==navigation.turnByGyroCloseLoop(0.0, robot.gyro.getHeading(),
-                    navigation.normalizeHeading(-900), leftMotors, rightMotors)){
+                    navigation.normalizeHeading(-90), leftMotors, rightMotors)){
                     navigationState = 0;
                 }
                 break;

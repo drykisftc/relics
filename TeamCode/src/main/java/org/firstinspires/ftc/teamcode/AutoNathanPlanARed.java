@@ -55,7 +55,7 @@ public class AutoNathanPlanARed extends AutoRelic {
         fGlyphTurnAngle = -90;
         fCenterTurnAngle = -180;
 
-        cryptoBoxDistance = 500;
+        cryptoBoxDistance = 600;
         glyphLiftPosition= 2200;
         glyphLiftPosition2 = 2000;
 
@@ -65,8 +65,8 @@ public class AutoNathanPlanARed extends AutoRelic {
         leftColumnDistance = (int)(rightColumnDistance + 15.26*encoderCountPerInch);
 
         backupDistance = -1000;
-        glyph2CenterDistance = 2880;
-        center2GlyphDistance = 3200;
+        glyph2CenterDistance = 2380;
+        center2GlyphDistance = 2700;
 
         glyTurnPower = 0.20;
         centerGlyphAngleOffset = 0;
@@ -91,6 +91,11 @@ public class AutoNathanPlanARed extends AutoRelic {
         jewelKicker.init();
 
         navigation = new Navigation(telemetry);
+        navigation.pidControlHeading.setKp(0.004);
+        navigation.pidControlHeading.setKi(0.002);
+        navigation.pidControlHeading.setKd(0.0000001);
+        navigation.maxTurnDeltaPower = 0.4;
+        navigation.convergeCountThreshold = 6;
 
         vuforia = new HardwareVuforia(VuforiaLocalizer.CameraDirection.FRONT);
         vuforia.init(hardwareMap);
@@ -137,6 +142,8 @@ public class AutoNathanPlanARed extends AutoRelic {
         jewelKicker.start();
         jewelKicker.jewelWaitTime = 2000;
 
+        robot.gyro.resetZAxisIntegrator();
+
         // hold the glyph
         robot.leftHand.setPosition(robot.leftHandClosePosition);
         robot.rightHand.setPosition(robot.rightHandClosePosition);
@@ -151,15 +158,15 @@ public class AutoNathanPlanARed extends AutoRelic {
                 state = jewelKicker.loop(0, 1, teamColor);
 
                 // hitter arm to avoid jewel holes
-                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.15*rand.nextDouble()-0.075;
+                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.2*rand.nextDouble()-0.1;
                 jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.06*rand.nextDouble()-0.03;
 
                 computeGlyphColumnDistance();
 
                 if ("left" == vuforia.vumarkImage) {
-                    centerGlyphAngleOffset = -5;
+                    centerGlyphAngleOffset = 0;
                 } else if ("right" == vuforia.vumarkImage) {
-                    centerGlyphAngleOffset = 5;
+                    centerGlyphAngleOffset = 12;
                 }
 
                 getWheelLandmarks();
@@ -173,9 +180,9 @@ public class AutoNathanPlanARed extends AutoRelic {
                 computeGlyphColumnDistance();
 
                 if ("left" == vuforia.vumarkImage) {
-                    centerGlyphAngleOffset = -5;
+                    centerGlyphAngleOffset = 0;
                 } else if ("right" == vuforia.vumarkImage) {
-                    centerGlyphAngleOffset = 5;
+                    centerGlyphAngleOffset = 12;
                 }
 
                 //move forward with encoder
@@ -185,81 +192,87 @@ public class AutoNathanPlanARed extends AutoRelic {
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
                     timeStamp = System.currentTimeMillis();
-                    state = 4;
+                    state = 2;
                 }
 
                 break;
-            case 4:
+            case 2:
                 // wait 1 second
-                if (System.currentTimeMillis() - timeStamp > 500) {
+                if (System.currentTimeMillis() - timeStamp > 300) {
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
-                    state = 5;
+                    state = 3;
                 }
                 break;
-            case 5:
-                // turn
-                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,fGlyphTurnAngle, robot.axleDistance, leftMotors, rightMotors)
-                        && 0 == navigation.turnByGyroCloseLoop(0.0,robot.gyro.getHeading(),
-                        fGlyphTurnAngle,leftMotors,rightMotors)) {
-                    state = 6;
+            case 3:
+                // turn by encoder
+                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,fGlyphTurnAngle, robot.axleDistance, leftMotors, rightMotors)) {
+                    state = 4;
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
+                }
+                break;
+            case 4:// turn by gyro
+                if (0 == navigation.turnByGyroCloseLoop(0.0,robot.gyro.getHeading(), fGlyphTurnAngle,leftMotors,rightMotors) ) {
+                     state = 5;
+                    getWheelLandmarks();
+                }
+            case 5:
+                // move straight
+                if (0 == moveByDistance(0.2, cryptoBoxDistance)) {
+                    moveAtPower(0.0);
+                    timeStamp = System.currentTimeMillis();
+                    state = 6;
                 }
 
                 break;
             case 6:
-                // move straight
-                if (0 == moveByDistance(0.25, cryptoBoxDistance)) {
-                    moveAtPower(0.0);
-                    timeStamp = System.currentTimeMillis();
-                    state = 7;
-                }
-
-                break;
-            case 7:
                 // release the glyph
                 time = System.currentTimeMillis();
                 if (time - timeStamp < 1000) {
                     robot.leftHand.setPosition(robot.leftHandOpenPosition);
                     robot.rightHand.setPosition(robot.rightHandOpenPosition);
                 } else {
-                    state = 8;
+                    state = 7;
                     getWheelLandmarks();
                     moveAtPower(-0.2);
                     timeStamp = System.currentTimeMillis();
                 }
                 break;
-            case 8:
+            case 7:
                 // backup
                 if (0 == moveByDistance(-0.25, backupDistance)) {
                     moveAtPower(0.0);
-                    navigation.resetTurn(leftMotors, rightMotors);
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
                     // lower glyph bars
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, robot.liftMotorHolderPower);
 
+                    state = 8;
+                }
+                break;
+            case 8:
+                // wait 1 second
+                if (System.currentTimeMillis() - timeStamp > 300) {
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
                     state = 9;
                 }
                 break;
             case 9:
-                // wait 1 second
-                if (System.currentTimeMillis() - timeStamp > 500) {
+                // turn 180
+                 if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower, fCenterTurnAngle+centerGlyphAngleOffset, robot.axleDistance, leftMotors, rightMotors)) {
+                    state = 10;
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
-                    state = 10;
                 }
                 break;
             case 10:
                 // turn 180
-                 if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower, fCenterTurnAngle+centerGlyphAngleOffset, robot.axleDistance, leftMotors, rightMotors)
-                         && 0 == navigation.turnByGyroCloseLoop(0.0,robot.gyro.getHeading(),
-                         fGlyphTurnAngle+fCenterTurnAngle+centerGlyphAngleOffset,leftMotors,rightMotors)) {
+                 if (0 == navigation.turnByGyroCloseLoop(0.0,robot.gyro.getHeading(),fGlyphTurnAngle+fCenterTurnAngle+centerGlyphAngleOffset,leftMotors,rightMotors)) {
                     state = 11;
                     getWheelLandmarks();
-                    navigation.resetTurn(leftMotors, rightMotors);
                 }
                 break;
             case 11:
@@ -300,7 +313,7 @@ public class AutoNathanPlanARed extends AutoRelic {
                 break;
             case 14:
                 // wait 1 second
-                if (System.currentTimeMillis() - timeStamp > 500) {
+                if (System.currentTimeMillis() - timeStamp > 300) {
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
                     state = 15;
@@ -308,37 +321,40 @@ public class AutoNathanPlanARed extends AutoRelic {
                 break;
             case 15:
                 // turn
-                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower, fCenterTurnAngle, robot.axleDistance, leftMotors, rightMotors)
-                        && 0 == navigation.turnByGyroCloseLoop(0.0,robot.gyro.getHeading(),
-                        fGlyphTurnAngle,leftMotors,rightMotors)) {
+                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower, fCenterTurnAngle, robot.axleDistance, leftMotors, rightMotors)) {
                     state = 16;
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
                 break;
             case 16:
-                // move back to glyph grid
-                if (0 == moveByDistance(0.3, backupDistance)) {
-                    moveAtPower(0.0);
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    getWheelLandmarks();
-                    timeStamp = System.currentTimeMillis();
+                // turn
+                if (0 == navigation.turnByGyroCloseLoop(0.0,robot.gyro.getHeading(), fGlyphTurnAngle+8,leftMotors,rightMotors)) {
                     state = 17;
+                    getWheelLandmarks();
                 }
                 break;
             case 17:
-                // release glyph
-                robot.leftHand.setPosition(robot.leftHandOpenPosition);
-                robot.rightHand.setPosition(robot.rightHandOpenPosition);
-                if (System.currentTimeMillis() - timeStamp > 500) {
-                    navigation.resetTurn(leftMotors, rightMotors);
+                // move back to glyph grid
+                if (0 == moveByDistance(0.2, backupDistance)) {
+                    moveAtPower(0.0);
                     getWheelLandmarks();
+                    timeStamp = System.currentTimeMillis();
                     state = 18;
                 }
                 break;
             case 18:
+                // release glyph
+                robot.leftHand.setPosition(robot.leftHandOpenPosition);
+                robot.rightHand.setPosition(robot.rightHandOpenPosition);
+                if (System.currentTimeMillis() - timeStamp > 500) {
+                    getWheelLandmarks();
+                    state = 19;
+                }
+                break;
+            case 19:
                 // backup
-                 if (0 == moveByDistance(-0.2, 300)) {
+                 if (0 == moveByDistance(-0.15, 300)) {
                      moveAtPower(0.0);
                  }
                 break;
@@ -349,6 +365,7 @@ public class AutoNathanPlanARed extends AutoRelic {
         telemetry.addData("state", state);
         telemetry.addData("vumark", vuforia.vumarkImage);
         telemetry.addData("Column distance ", columnDistance);
+        telemetry.addData("Gyro ", robot.gyro.getHeading());
         telemetry.update();
     }
 

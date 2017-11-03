@@ -6,42 +6,42 @@ package org.firstinspires.ftc.teamcode;
 
 public class PIDControl {
 
-    float fKp;
-    float fKi;
-    float fKd;
+    double fKp;
+    double fKi;
+    double fKd;
 
-    float fError;
-    float fIntegral;
-    float fDerivative;
-    float fTime;
-    float fPrevError;
-    float fMaxIntegralError;
+    double fError;
+    double fIntegral;
+    double fDerivative;
+    double fTime;
+    double fPrevError;
+    double fMaxIntegralError;
 
     public PIDControl () {
         reset();
         fKp = 1.0f;
         fKi = 1.0f;
         fKd = 1.0f;
-        fMaxIntegralError = Float.MAX_VALUE;
+        fMaxIntegralError = Double.MAX_VALUE;
     }
 
-    public void setKp(float p) {
+    public void setKp(double p) {
         fKp = p;
     }
 
-    public void setKi(float i) {
+    public void setKi(double i) {
         fKi = i;
     }
 
-    public void setKd(float d){
+    public void setKd(double d){
         fKd = d;
     }
 
-    public void setMaxIntegralError(float maxV) {
+    public void setMaxIntegralError(double maxV) {
         fMaxIntegralError = Math.abs(maxV);
     }
 
-    public float update ( float e, float time){
+    public double update ( double e, double time){
         if (time != 0.0) {
             fIntegral += e*time;
             // cap the max error

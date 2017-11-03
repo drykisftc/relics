@@ -79,6 +79,7 @@ class JewelKicker {
     private Telemetry telemetry;
 
     long jewelWaitTime = 2000;
+    long jewelBailOutTime = 10000;
 
     JewelKicker (ColorSensor c,
                  Servo arm,
@@ -128,6 +129,9 @@ class JewelKicker {
                         timeStamp = System.currentTimeMillis();
                         state = 1;
                     }
+                }
+                if(System.currentTimeMillis() - timeStamp > jewelBailOutTime) {
+                    state = 1; // give up
                 }
                 telemetry.addData("Red  ", jewelSensor.red());
                 telemetry.addData("Green", jewelSensor.green());
