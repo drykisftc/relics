@@ -78,6 +78,7 @@ public class MeasurementsNathen extends OpMode{
          */
         robot.init(hardwareMap);
         robot.start();
+        robot.gyro.calibrate();
 
         updateTelemetry(telemetry);
     }
