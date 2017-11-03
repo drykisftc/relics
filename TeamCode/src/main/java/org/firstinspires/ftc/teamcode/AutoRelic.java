@@ -73,6 +73,7 @@ public class AutoRelic extends OpMode {
     protected double glyphMovePower = 0.5;
     protected double sideMovePower = 0.2;
     protected double vuforiaDetectingPower = 0.2;
+    protected double glyphDeliverPower = 0.2;
     protected double backupPower = -0.1;
 
     protected int cryptoBoxStopDistance = 20;

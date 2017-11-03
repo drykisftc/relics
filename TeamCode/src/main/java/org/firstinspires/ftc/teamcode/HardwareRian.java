@@ -54,7 +54,7 @@ public class HardwareRian extends HardwareBase
     BNO055IMU imu = null;
     Orientation angles = null;
 
-    protected float axleDistance = 1163.376f;
+    protected float axleDistance = 2326.752f; //1163.376f
 
     /* Constructor */
     public HardwareRian(){

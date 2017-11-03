@@ -52,6 +52,10 @@ public class AutoRianPlanABlue extends AutoRianPlanARed {
     public AutoRianPlanABlue () {
         teamColor = "blue";
         vuforiaDetectingPower = -0.2;
+
+        leftColumnDistance = -2370;
+        centerColumnDistance = -2950;
+        rightColumnDistance = -3600;
     }
 
 }

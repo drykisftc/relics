@@ -60,6 +60,7 @@ public class AutoRianPlanBRed extends AutoRianPlanARed {
                 state = jewelKicker.loop(0, 1, teamColor);
 
                 vuforia.identifyGlyphCrypto();
+                getWheelLandmarks();
 
                 break;
             case 1:
@@ -67,12 +68,7 @@ public class AutoRianPlanBRed extends AutoRianPlanARed {
                 //read vumark
                 computeGlyphColumnDistance();
 
-                //move forward with encoder
-                wheelDistanceAverage = getWheelOdometer();
-
-                if (wheelDistanceAverage < offBalanceStoneDistance) {
-                    moveAtPower(vuforiaDetectingPower);
-                } else {
+                if (0 == moveByDistance(vuforiaDetectingPower, offBalanceStoneDistance)) {
                     moveAtPower(0.0);
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -96,17 +92,9 @@ public class AutoRianPlanBRed extends AutoRianPlanARed {
                     state = 4;
                 }
                 break;
-
             case 4:
 
-                wheelDistanceAverage = getWheelOdometer();
-
-                if (wheelDistanceAverage - wheelDistanceLandMark < cryptoBoxDistance) {
-
-                    moveAtPower(sideMovePower);
-
-                } else {
-
+                if (0 == moveByDistance(glyphDeliverPower, cryptoBoxDistance)) {
                     timeStamp = System.currentTimeMillis();
                     state = 5;
 
