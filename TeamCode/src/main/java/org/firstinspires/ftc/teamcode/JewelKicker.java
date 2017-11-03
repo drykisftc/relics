@@ -73,9 +73,9 @@ class JewelKicker {
     private long timeStamp;
     double jewelArmRestPosition = 0.8;
     double jewelArmActionPosition = 0.15;
-    double jewelHitterRestPosition =0.5;
-    double jewelHitterBluePosition = 1.0;
-    double jewelHitterRedPosition = 0.0;
+    double jewelHitterRestPosition =0.45;
+    double jewelHitterBluePosition = 0.0;
+    double jewelHitterRedPosition = 1.0;
     private Telemetry telemetry;
 
     long jewelWaitTime = 2000;
