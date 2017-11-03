@@ -67,6 +67,13 @@ public class MeasurementsNathen extends OpMode{
             1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f,
             1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f};
 
+    DcMotor [] leftMotors;
+    DcMotor [] rightMotors;
+
+    Navigation navigation = null;
+
+    int navigationState = 0;
+
     /*
      * Code to run ONCE when the driver hits INIT
      */
@@ -79,6 +86,13 @@ public class MeasurementsNathen extends OpMode{
         robot.init(hardwareMap);
         robot.start();
         robot.gyro.calibrate();
+
+        leftMotors = new DcMotor[1];
+        leftMotors[0] = robot.motorLeftWheel;
+        rightMotors = new DcMotor[1];
+        rightMotors[0] = robot.motorRightWheel;
+
+        navigation = new Navigation(telemetry);
 
         updateTelemetry(telemetry);
     }
@@ -113,6 +127,7 @@ public class MeasurementsNathen extends OpMode{
     public void loop() {
 
         measurements();
+        testGyroTurn();
         telemetry.update();
     }
 
@@ -142,6 +157,51 @@ public class MeasurementsNathen extends OpMode{
         telemetry.addData("lift wheel : ", robot.liftMotor.getCurrentPosition());
 
         telemetry.addData("Heading    : ", robot.gyro.getHeading());
+
+        telemetry.addData("Navigation state    : ", navigationState);
+    }
+
+    public void testGyroTurn () {
+        if (gamepad1.y) {
+            navigationState = 1;
+        } else if (gamepad1.x) {
+            navigationState = 2;
+        } else if (gamepad1.b) {
+            navigationState = 3;
+        } else if (gamepad1.a) {
+            navigationState = 4;
+        }
+
+        switch (navigationState) {
+            case 1:
+                if (0==navigation.turnByGyroCloseLoop(0.0, robot.gyro.getHeading(),
+                    navigation.normalizeHeading(0), leftMotors, rightMotors)){
+                    navigationState = 0;
+                }
+                break;
+            case 2 :
+                if (0==navigation.turnByGyroCloseLoop(0.0, robot.gyro.getHeading(),
+                    navigation.normalizeHeading(90), leftMotors, rightMotors)){
+                    navigationState = 0;
+                }
+                break;
+            case 3:
+               if (0==navigation.turnByGyroCloseLoop(0.0, robot.gyro.getHeading(),
+                    navigation.normalizeHeading(-900), leftMotors, rightMotors)){
+                    navigationState = 0;
+                }
+                break;
+            case 4:
+                if (0==navigation.turnByGyroCloseLoop(0.0, robot.gyro.getHeading(),
+                    navigation.normalizeHeading(180), leftMotors, rightMotors)){
+                    navigationState = 0;
+                }
+                break;
+            default:
+                navigation.resetTurn(leftMotors, rightMotors);
+                break;
+
+        }
     }
 
     /*

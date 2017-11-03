@@ -64,9 +64,9 @@ public class AutoNathanPlanARed extends AutoRelic {
         centerColumnDistance = (int)(rightColumnDistance + 7.63*encoderCountPerInch);
         leftColumnDistance = (int)(rightColumnDistance + 15.26*encoderCountPerInch);
 
-        backupDistance = -2000;
-        glyph2CenterDistance = 1880;
-        center2GlyphDistance = 2200;
+        backupDistance = -1000;
+        glyph2CenterDistance = 2880;
+        center2GlyphDistance = 3200;
 
         glyTurnPower = 0.20;
         centerGlyphAngleOffset = 0;
@@ -157,9 +157,9 @@ public class AutoNathanPlanARed extends AutoRelic {
                 computeGlyphColumnDistance();
 
                 if ("left" == vuforia.vumarkImage) {
-                    centerGlyphAngleOffset = -10;
+                    centerGlyphAngleOffset = -5;
                 } else if ("right" == vuforia.vumarkImage) {
-                    centerGlyphAngleOffset = 10;
+                    centerGlyphAngleOffset = 5;
                 }
 
                 getWheelLandmarks();
@@ -173,9 +173,9 @@ public class AutoNathanPlanARed extends AutoRelic {
                 computeGlyphColumnDistance();
 
                 if ("left" == vuforia.vumarkImage) {
-                    centerGlyphAngleOffset = -10;
+                    centerGlyphAngleOffset = -5;
                 } else if ("right" == vuforia.vumarkImage) {
-                    centerGlyphAngleOffset = 10;
+                    centerGlyphAngleOffset = 5;
                 }
 
                 //move forward with encoder
@@ -199,8 +199,9 @@ public class AutoNathanPlanARed extends AutoRelic {
                 break;
             case 5:
                 // turn
-                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,fGlyphTurnAngle,
-                        robot.axleDistance, leftMotors, rightMotors)) {
+                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,fGlyphTurnAngle, robot.axleDistance, leftMotors, rightMotors)
+                        && 0 == navigation.turnByGyroCloseLoop(0.0,robot.gyro.getHeading(),
+                        fGlyphTurnAngle,leftMotors,rightMotors)) {
                     state = 6;
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -253,9 +254,9 @@ public class AutoNathanPlanARed extends AutoRelic {
                 break;
             case 10:
                 // turn 180
-                 if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,
-                         fCenterTurnAngle+centerGlyphAngleOffset,
-                        robot.axleDistance, leftMotors, rightMotors)) {
+                 if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower, fCenterTurnAngle+centerGlyphAngleOffset, robot.axleDistance, leftMotors, rightMotors)
+                         && 0 == navigation.turnByGyroCloseLoop(0.0,robot.gyro.getHeading(),
+                         fGlyphTurnAngle+fCenterTurnAngle+centerGlyphAngleOffset,leftMotors,rightMotors)) {
                     state = 11;
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -287,7 +288,7 @@ public class AutoNathanPlanARed extends AutoRelic {
                 break;
             case 13:
                 // back up
-                 if (0 == moveByDistance(-0.25, backupDistance)) {
+                 if (0 == moveByDistance(-0.25, glyph2CenterDistance)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -307,8 +308,9 @@ public class AutoNathanPlanARed extends AutoRelic {
                 break;
             case 15:
                 // turn
-                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower, fCenterTurnAngle,
-                        robot.axleDistance, leftMotors, rightMotors)) {
+                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower, fCenterTurnAngle, robot.axleDistance, leftMotors, rightMotors)
+                        && 0 == navigation.turnByGyroCloseLoop(0.0,robot.gyro.getHeading(),
+                        fGlyphTurnAngle,leftMotors,rightMotors)) {
                     state = 16;
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -316,7 +318,7 @@ public class AutoNathanPlanARed extends AutoRelic {
                 break;
             case 16:
                 // move back to glyph grid
-                if (0 == moveByDistance(0.3, center2GlyphDistance)) {
+                if (0 == moveByDistance(0.3, backupDistance)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();

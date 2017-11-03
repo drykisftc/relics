@@ -204,6 +204,12 @@ public class Navigation {
                 }
                 break;
             default:
+                for ( int i =0; i < leftMs.length; i++ ) {
+                    leftMs[i].setPower(0);
+                }
+                for ( int i =0; i < rightMs.length; i++ ) {
+                    rightMs[i].setPower(0);
+                }
                 return 0;
         }
         return 1;
@@ -255,14 +261,22 @@ public class Navigation {
                 }
                 break;
             default:
+                for ( int i =0; i < leftMs.length; i++ ) {
+                    leftMs[i].setPower(0);
+                }
+                for ( int i =0; i < rightMs.length; i++ ) {
+                    rightMs[i].setPower(0);
+                }
                 return 0;
         }
         return 1;
     }
 
-    public int turnByGyroCloseLoop (double power, float currentAngle,
-                                    float targetAngle,
+    public int turnByGyroCloseLoop (double power, double currentA,
+                                    double targetA,
                                     DcMotor [] leftMs, DcMotor [] rightMs) {
+        double currentAngle = normalizeHeading(currentA);
+        double targetAngle = normalizeHeading(targetA);
         switch (turnState) {
             case 0:
                 float errorAngle = (float)getAngleError(targetAngle,currentAngle);
@@ -292,6 +306,12 @@ public class Navigation {
                 telemetry.addData("delta power", powerDiff);
                 break;
             default:
+                for ( int i =0; i < leftMs.length; i++ ) {
+                    leftMs[i].setPower(0);
+                }
+                for ( int i =0; i < rightMs.length; i++ ) {
+                    rightMs[i].setPower(0);
+                }
                 return 0;
         }
         telemetry.addData("turnState:", turnState);
