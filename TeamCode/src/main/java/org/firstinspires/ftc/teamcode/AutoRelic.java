@@ -86,29 +86,35 @@ public class AutoRelic extends OpMode {
     protected int glyph2CenterDistance = 3880;
     protected int center2GlyphDistance = 3880;
 
+    protected double lastLeftPower = 0;
+    protected double lastRightPower = 0;
 
+    protected JewelKicker jewelKicker = null;
 
-    protected JewelKicker jewelKicker= null;
-
-    protected Navigation navigation =null;
+    protected Navigation navigation = null;
 
     protected HardwareVuforia vuforia = null;
 
     protected ColorSensor jewelSensor = null;
-    protected DistanceSensor jewelSensorDistance= null;
+    protected DistanceSensor jewelSensorDistance = null;
 
-    protected Servo jewelArm= null;
-    protected Servo jewelHitter= null;
+    protected Servo jewelArm = null;
+    protected Servo jewelHitter = null;
 
-    DcMotor [] leftMotors;
-    DcMotor [] rightMotors;
+    DcMotor[] leftMotors;
+    DcMotor[] rightMotors;
 
     @Override
-    public void init () {}
+    public void init() {
+    }
+
     @Override
-    public void start () {}
+    public void start() {
+    }
+
     @Override
-    public void loop () {}
+    public void loop() {
+    }
 
     public void computeGlyphColumnDistance() {
         vuforia.identifyGlyphCrypto();
@@ -131,19 +137,25 @@ public class AutoRelic extends OpMode {
     }
 
     public void moveAtPower(double p) {
-        for ( int i =0; i < leftMotors.length; i++) {
-            leftMotors[i].setPower(p);
+        if (lastLeftPower != p) {
+            for (int i = 0; i < leftMotors.length; i++) {
+                leftMotors[i].setPower(p);
+            }
+            lastLeftPower = p;
         }
-        for (int i =0; i < rightMotors.length; i++) {
-            rightMotors[i].setPower(p);
+        if (lastRightPower != p) {
+            for (int i = 0; i < rightMotors.length; i++) {
+                rightMotors[i].setPower(p);
+            }
+            lastRightPower = p;
         }
     }
 
-    public int moveByDistance (double power, int d) {
+    public int moveByDistance(double power, int d) {
         int distance = Math.abs(d);
         if (power == 0) {
             return 0; // zero power do nothing
-        } else if (power> 0) {
+        } else if (power > 0) {
             if (getWheelOdometer() - wheelDistanceLandMark < distance) {
                 moveAtPower(power);
             } else {
@@ -151,7 +163,7 @@ public class AutoRelic extends OpMode {
                 return 0;
             }
         } else {
-            if (wheelDistanceLandMark-getWheelOdometer() < distance) {
+            if (wheelDistanceLandMark - getWheelOdometer() < distance) {
                 moveAtPower(power);
             } else {
                 moveAtPower(0.0);
@@ -160,13 +172,52 @@ public class AutoRelic extends OpMode {
         }
         return 1;
     }
+
+    public int waitByDistance(double power, int d) {
+        int distance = Math.abs(d);
+        if (power == 0) {
+            return 0; // zero power do nothing
+        } else if (power > 0) {
+            if (getWheelOdometer() - wheelDistanceLandMark < distance) {
+
+            } else {
+                moveAtPower(0.0);
+                return 0;
+            }
+        } else {
+            if (wheelDistanceLandMark - getWheelOdometer() < distance) {
+
+            } else {
+                moveAtPower(0.0);
+                return 0;
+            }
+        }
+        return 1;
+    }
+
+
     // positive power to turn left
     public void turnAtPower(double p) {
-        for ( int i =0; i < leftMotors.length; i++) {
+
+        for (int i = 0; i < leftMotors.length; i++) {
             leftMotors[i].setPower(-p);
         }
-        for (int i =0; i < rightMotors.length; i++) {
+
+        for (int i = 0; i < rightMotors.length; i++) {
             rightMotors[i].setPower(p);
+        }
+
+    }
+
+    public void turnAtPower(double left, double right) {
+
+        for (int i = 0; i < leftMotors.length; i++) {
+            leftMotors[i].setPower(left);
+        }
+
+
+        for (int i = 0; i < rightMotors.length; i++) {
+            rightMotors[i].setPower(right);
         }
     }
 
