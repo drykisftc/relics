@@ -47,7 +47,7 @@ public class AutoNathanPlanBBlue extends AutoNathanPlanBRed {
         fGlyphTurnAngle = 90;
         glyphAngle = 180;
 
-        leftColumnDistance = 430;
+        leftColumnDistance = 1 ;
         centerColumnDistance = (int)(leftColumnDistance + 7.63*encoderCountPerInch);
         rightColumnDistance = (int)(leftColumnDistance + 15.26*encoderCountPerInch);
 
