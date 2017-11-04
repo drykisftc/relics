@@ -38,14 +38,20 @@ public class AutoNathanPlanBBlue extends AutoNathanPlanBRed {
 
 
     public AutoNathanPlanBBlue() {
+
+        super();
+
         // team specific
         teamColor = "blue";
         vuforiaDetectingPower = -0.2;
         fGlyphTurnAngle = 90;
+        glyphAngle = 180;
 
-        leftColumnDistance = 350;
+        leftColumnDistance = 430;
         centerColumnDistance = (int)(leftColumnDistance + 7.63*encoderCountPerInch);
         rightColumnDistance = (int)(leftColumnDistance + 15.26*encoderCountPerInch);
+
+        columnDistance = leftColumnDistance;
     }
 
 }

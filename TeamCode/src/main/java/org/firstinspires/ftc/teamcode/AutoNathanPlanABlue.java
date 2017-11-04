@@ -40,6 +40,9 @@ import java.util.Random;
 public class AutoNathanPlanABlue extends AutoNathanPlanARed {
 
     public AutoNathanPlanABlue() {
+
+        super();
+
         // team specific
         teamColor = "blue";
         vuforiaDetectingPower = -0.2;

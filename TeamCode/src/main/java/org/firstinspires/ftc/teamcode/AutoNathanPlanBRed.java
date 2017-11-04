@@ -39,19 +39,21 @@ import java.util.Random;
 @Autonomous(name = "Nathen_PlanB_Red", group = "Nathen")
 public class AutoNathanPlanBRed extends AutoNathanPlanARed {
 
-   int columnStopDistance = 2086;
+   int columnStopDistance = 2186;
    double columnTurnAngle = 90;
+   double glyphAngle = 0.0;
 
     public AutoNathanPlanBRed () {
         // team specific
+        super();
 
         cryptoBoxDistance = 1000;
 
-        leftColumnDistance = 430;
-        centerColumnDistance = (int)(leftColumnDistance + 7.63*encoderCountPerInch);
-        rightColumnDistance = (int)(leftColumnDistance + 15.26*encoderCountPerInch);
+        rightColumnDistance = 350;
+        centerColumnDistance = (int)(rightColumnDistance + 7.63*encoderCountPerInch);
+        leftColumnDistance = (int)(rightColumnDistance + 15.26*encoderCountPerInch);
 
-        columnDistance = leftColumnDistance;
+        columnDistance = rightColumnDistance;
     }
 
     @Override
@@ -111,12 +113,14 @@ public class AutoNathanPlanBRed extends AutoNathanPlanARed {
                 break;
             case 3:
                 // turn by encoder
-                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,columnTurnAngle, robot.axleDistance, leftMotors, rightMotors)) {
+                //if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,columnTurnAngle, robot.axleDistance, leftMotors, rightMotors)) {
+                if (0 == navigation.turnByGyroCloseLoop(glyTurnPower,robot.gyro.getHeading(), columnTurnAngle, leftMotors, rightMotors)) {
                     state = 4;
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
                 break;
+
             case 4:
                  if (0 == moveByDistance(0.2, columnDistance)) {
                     moveAtPower(0.0);
@@ -126,7 +130,7 @@ public class AutoNathanPlanBRed extends AutoNathanPlanARed {
                 break;
             case 5:
                 // turn by encoder
-                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,fGlyphTurnAngle, robot.axleDistance, leftMotors, rightMotors)) {
+                if (0 == navigation.turnByGyroCloseLoop(glyTurnPower,robot.gyro.getHeading(), glyphAngle, leftMotors, rightMotors)) {
                     state = 6;
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
