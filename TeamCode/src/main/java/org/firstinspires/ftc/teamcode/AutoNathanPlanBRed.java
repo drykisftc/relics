@@ -44,9 +44,14 @@ public class AutoNathanPlanBRed extends AutoNathanPlanARed {
 
     public AutoNathanPlanBRed () {
         // team specific
-        leftColumnDistance = 344;
+
+        cryptoBoxDistance = 1000;
+
+        leftColumnDistance = 430;
         centerColumnDistance = (int)(leftColumnDistance + 7.63*encoderCountPerInch);
         rightColumnDistance = (int)(leftColumnDistance + 15.26*encoderCountPerInch);
+
+        columnDistance = leftColumnDistance;
     }
 
     @Override

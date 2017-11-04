@@ -43,7 +43,7 @@ public class AutoNathanPlanBBlue extends AutoNathanPlanBRed {
         vuforiaDetectingPower = -0.2;
         fGlyphTurnAngle = 90;
 
-        leftColumnDistance = 2350;
+        leftColumnDistance = 350;
         centerColumnDistance = (int)(leftColumnDistance + 7.63*encoderCountPerInch);
         rightColumnDistance = (int)(leftColumnDistance + 15.26*encoderCountPerInch);
     }
