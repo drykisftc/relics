@@ -74,6 +74,7 @@ public class TeleOpNathen extends OpMode{
     double leftHandPosition = 0.0;
     double rightHandPosition = 0.0;
 
+
     /*
      * Code to run ONCE when the driver hits INIT
      */
