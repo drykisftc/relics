@@ -40,7 +40,7 @@ public class HardwareNathen extends HardwareBase
     //public DistanceSensor jewelSensorDistance;
 
     // limits
-    int liftHeightLimit = 4000;
+    int liftHeightLimit = 5500;
     int liftMotorPosition = 0;
     double liftMotorHolderPower = 0.3;
 

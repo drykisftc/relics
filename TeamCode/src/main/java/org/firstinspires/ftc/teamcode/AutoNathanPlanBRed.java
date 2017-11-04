@@ -39,38 +39,14 @@ import java.util.Random;
 @Autonomous(name = "Nathen_PlanB_Red", group = "Nathen")
 public class AutoNathanPlanBRed extends AutoNathanPlanARed {
 
-    protected HardwareNathen robot= null;
+   int columnStopDistance = 2086;
+   double columnTurnAngle = 90;
 
-    Random rand = new Random(System.currentTimeMillis());
-    int glyphLiftPosition = 0;
-    int glyphLiftPosition2= 0;
-    double jewelArmPos = 0;
-    double jewelHitterPos = 0;
-    float centerGlyphAngleOffset = 0;
-    double encoderCountPerInch = 80.79;
-
-    public AutoNathanPlanBRed() {
+    public AutoNathanPlanBRed () {
         // team specific
-        teamColor = "red";
-        fGlyphTurnAngle = -90;
-        fCenterTurnAngle = -180;
-
-        cryptoBoxDistance = 500;
-        glyphLiftPosition= 2200;
-        glyphLiftPosition2 = 2000;
-
-        //the glyph box is 22.6 inches wide, 1826 steps
-        rightColumnDistance = 2200;
-        centerColumnDistance = (int)(rightColumnDistance + 7.63*encoderCountPerInch);
-        leftColumnDistance = (int)(rightColumnDistance + 15.26*encoderCountPerInch);
-
-        backupDistance = -2000;
-        glyph2CenterDistance = 1880;
-        center2GlyphDistance = 2200;
-
-        glyTurnPower = 0.20;
-        centerGlyphAngleOffset = 0;
-
+        leftColumnDistance = 344;
+        centerColumnDistance = (int)(leftColumnDistance + 7.63*encoderCountPerInch);
+        rightColumnDistance = (int)(leftColumnDistance + 15.26*encoderCountPerInch);
     }
 
     @Override
@@ -82,15 +58,15 @@ public class AutoNathanPlanBRed extends AutoNathanPlanARed {
                 state = jewelKicker.loop(0, 1, teamColor);
 
                 // hitter arm to avoid jewel holes
-                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.15*rand.nextDouble()-0.075;
+                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.2*rand.nextDouble()-0.1;
                 jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.06*rand.nextDouble()-0.03;
 
                 computeGlyphColumnDistance();
 
                 if ("left" == vuforia.vumarkImage) {
-                    centerGlyphAngleOffset = -15;
+                    centerGlyphAngleOffset = 0;
                 } else if ("right" == vuforia.vumarkImage) {
-                    centerGlyphAngleOffset = 15;
+                    centerGlyphAngleOffset = 12;
                 }
 
                 getWheelLandmarks();
@@ -104,43 +80,56 @@ public class AutoNathanPlanBRed extends AutoNathanPlanARed {
                 computeGlyphColumnDistance();
 
                 if ("left" == vuforia.vumarkImage) {
-                    centerGlyphAngleOffset = -15;
+                    centerGlyphAngleOffset = 0;
                 } else if ("right" == vuforia.vumarkImage) {
-                    centerGlyphAngleOffset = 15;
+                    centerGlyphAngleOffset = 12;
                 }
 
                 //move forward with encoder
-                if ( 0 == moveByDistance(vuforiaDetectingPower, columnDistance )) {
-                    moveAtPower(0.0);
+                if ( 0 == moveByDistance(vuforiaDetectingPower, columnStopDistance )) {
                     vuforia.relicTrackables.deactivate();
+                    moveAtPower(0.0);
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
                     timeStamp = System.currentTimeMillis();
-                    state = 4;
+                    state = 2;
                 }
 
                 break;
-            case 4:
+            case 2:
                 // wait 1 second
-                if (System.currentTimeMillis() - timeStamp > 500) {
+                if (System.currentTimeMillis() - timeStamp > 300) {
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
+                    state = 3;
+                }
+                break;
+            case 3:
+                // turn by encoder
+                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,columnTurnAngle, robot.axleDistance, leftMotors, rightMotors)) {
+                    state = 4;
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                }
+                break;
+            case 4:
+                 if (0 == moveByDistance(0.2, columnDistance)) {
+                    moveAtPower(0.0);
+                    timeStamp = System.currentTimeMillis();
                     state = 5;
                 }
                 break;
             case 5:
-                // turn
-                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,fGlyphTurnAngle,
-                        robot.axleDistance, leftMotors, rightMotors)) {
+                // turn by encoder
+                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,fGlyphTurnAngle, robot.axleDistance, leftMotors, rightMotors)) {
                     state = 6;
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
-
                 break;
             case 6:
                 // move straight
-                if (0 == moveByDistance(0.25, cryptoBoxDistance)) {
+                if (0 == moveByDistance(0.2, cryptoBoxDistance)) {
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
                     state = 7;
@@ -164,7 +153,6 @@ public class AutoNathanPlanBRed extends AutoNathanPlanARed {
                 // backup
                 if (0 == moveByDistance(-0.25, backupDistance)) {
                     moveAtPower(0.0);
-                    navigation.resetTurn(leftMotors, rightMotors);
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -174,104 +162,6 @@ public class AutoNathanPlanBRed extends AutoNathanPlanARed {
                     state = 9;
                 }
                 break;
-            case 9:
-                // wait 1 second
-                if (System.currentTimeMillis() - timeStamp > 500) {
-                    getWheelLandmarks();
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    state = 10;
-                }
-                break;
-            case 10:
-                // turn 180
-                 if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,
-                         navigation.normalizeHeading(fCenterTurnAngle+centerGlyphAngleOffset),
-                        robot.axleDistance, leftMotors, rightMotors)) {
-                    state = 11;
-                    getWheelLandmarks();
-                    navigation.resetTurn(leftMotors, rightMotors);
-                }
-                break;
-            case 11:
-                // move to center
-                 if (0 == moveByDistance(0.3, glyph2CenterDistance)) {
-                    moveAtPower(0.0);
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    getWheelLandmarks();
-                    timeStamp = System.currentTimeMillis();
-                    state = 12;
-                }
-
-                // set glyph bars in collect positions
-                robot.leftHand.setPosition(robot.leftHandChargePosition);
-                robot.rightHand.setPosition(robot.rightHandChargePosition);
-
-                break;
-            case 12:
-                // collect glyph
-                 robot.leftHand.setPosition(robot.leftHandClosePosition);
-                 robot.rightHand.setPosition(robot.rightHandClosePosition);
-                 if ( System.currentTimeMillis() - timeStamp < 3000) {
-                     state = 13;
-                     getWheelLandmarks();
-                 }
-                break;
-            case 13:
-                // back up
-                 if (0 == moveByDistance(-0.25, backupDistance)) {
-                    moveAtPower(0.0);
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    getWheelLandmarks();
-                    state = 14;
-                }
-                // lift glyph bar
-                VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, robot.liftMotorHolderPower);
-
-                break;
-            case 14:
-                // wait 1 second
-                if (System.currentTimeMillis() - timeStamp > 500) {
-                    getWheelLandmarks();
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    state = 15;
-                }
-                break;
-            case 15:
-                // turn
-                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,
-                        navigation.normalizeHeading(fCenterTurnAngle-centerGlyphAngleOffset),
-                        robot.axleDistance, leftMotors, rightMotors)) {
-                    state = 16;
-                    getWheelLandmarks();
-                    navigation.resetTurn(leftMotors, rightMotors);
-                }
-                break;
-            case 16:
-                // move back to glyph grid
-                if (0 == moveByDistance(0.3, center2GlyphDistance)) {
-                    moveAtPower(0.0);
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    getWheelLandmarks();
-                    timeStamp = System.currentTimeMillis();
-                    state = 17;
-                }
-                break;
-            case 17:
-                // release glyph
-                robot.leftHand.setPosition(robot.leftHandOpenPosition);
-                robot.rightHand.setPosition(robot.rightHandOpenPosition);
-                if (System.currentTimeMillis() - timeStamp > 500) {
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    getWheelLandmarks();
-                    state = 18;
-                }
-                break;
-            case 18:
-                // backup
-                 if (0 == moveByDistance(-0.2, 300)) {
-                     moveAtPower(0.0);
-                 }
-                break;
             default:
                 robot.stop();
         }
@@ -279,6 +169,7 @@ public class AutoNathanPlanBRed extends AutoNathanPlanARed {
         telemetry.addData("state", state);
         telemetry.addData("vumark", vuforia.vumarkImage);
         telemetry.addData("Column distance ", columnDistance);
+        telemetry.addData("Gyro ", robot.gyro.getHeading());
         telemetry.update();
     }
 

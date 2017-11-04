@@ -39,26 +39,13 @@ public class AutoNathanPlanBBlue extends AutoNathanPlanBRed {
 
     public AutoNathanPlanBBlue() {
         // team specific
-        teamColor = "red";
-        fGlyphTurnAngle = -90;
-        fCenterTurnAngle = -180;
+        teamColor = "blue";
+        vuforiaDetectingPower = -0.2;
+        fGlyphTurnAngle = 90;
 
-        cryptoBoxDistance = 500;
-        glyphLiftPosition= 2200;
-        glyphLiftPosition2 = 2000;
-
-        //the glyph box is 22.6 inches wide, 1826 steps
-        rightColumnDistance = 2200;
-        centerColumnDistance = (int)(rightColumnDistance + 7.63*encoderCountPerInch);
-        leftColumnDistance = (int)(rightColumnDistance + 15.26*encoderCountPerInch);
-
-        backupDistance = -2000;
-        glyph2CenterDistance = 1880;
-        center2GlyphDistance = 2200;
-
-        glyTurnPower = 0.20;
-        centerGlyphAngleOffset = 0;
-
+        leftColumnDistance = 2350;
+        centerColumnDistance = (int)(leftColumnDistance + 7.63*encoderCountPerInch);
+        rightColumnDistance = (int)(leftColumnDistance + 15.26*encoderCountPerInch);
     }
 
 }
