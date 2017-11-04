@@ -45,11 +45,14 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 public class AutoRianPlanBRed extends AutoRianPlanARed {
 
     public AutoRianPlanBRed () {
+
+        super();
+
         teamColor = "red";
         fGlyphTurnAngle = 0.0f;
-        rightColumnDistance = 3800;
+        leftColumnDistance = 3800;
         centerColumnDistance = 2350;
-        leftColumnDistance = 900;
+        rightColumnDistance = 900;
     }
 
     @Override
@@ -119,7 +122,7 @@ public class AutoRianPlanBRed extends AutoRianPlanARed {
                 //back up
                 time = System.currentTimeMillis();
 
-                if (time - timeStamp < 1000) {
+                if (time - timeStamp < 2000) {
 
                     moveAtPower(backupPower);
 
@@ -138,6 +141,7 @@ public class AutoRianPlanBRed extends AutoRianPlanARed {
             default:
         }
 
+        telemetry.addData("teamColor", teamColor);
         telemetry.update();
     }
 }

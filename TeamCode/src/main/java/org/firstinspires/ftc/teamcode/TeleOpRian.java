@@ -201,14 +201,13 @@ public class TeleOpRian extends OpMode{
             robot.beltServo.setPower(-1.0);
 
         } else {
-                robot.leftLiftWheel1.setPower(0.0);
-                robot.leftLiftWheel2.setPower(0.0);
-                robot.leftLiftWheel3.setPower(0.0);
-                robot.rightLiftWheel1.setPower(0.0);
-                robot.rightLiftWheel2.setPower(0.0);
-                robot.rightLiftWheel3.setPower(0.0);
-                robot.beltServo.setPower(0.0);
-
+            robot.leftLiftWheel1.setPower(0.0);
+            robot.leftLiftWheel2.setPower(0.0);
+            robot.leftLiftWheel3.setPower(0.0);
+            robot.rightLiftWheel1.setPower(0.0);
+            robot.rightLiftWheel2.setPower(0.0);
+            robot.rightLiftWheel3.setPower(0.0);
+            robot.beltServo.setPower(0.0);
 
         }
 

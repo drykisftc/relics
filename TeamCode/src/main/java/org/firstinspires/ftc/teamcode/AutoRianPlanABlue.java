@@ -50,10 +50,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 public class AutoRianPlanABlue extends AutoRianPlanARed {
 
     public AutoRianPlanABlue () {
+        super();
         teamColor = "blue";
         vuforiaDetectingPower = -0.2;
 
-        leftColumnDistance = -2370;
+        leftColumnDistance = -2400;
         centerColumnDistance = -2950;
         rightColumnDistance = -3600;
     }

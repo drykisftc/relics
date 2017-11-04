@@ -112,7 +112,7 @@ class JewelKicker {
                         if(teamColor == "blue") {
                             telemetry.addData("kick ", "blue");
                             jewelHitter.setPosition(jewelHitterRedPosition);
-                        } else {
+                        } else if (teamColor == "red") {
                             telemetry.addData("kick ", "red");
                             jewelHitter.setPosition(jewelHitterBluePosition);
                         }
@@ -122,7 +122,7 @@ class JewelKicker {
                         if(teamColor == "red") {
                             telemetry.addData("kick ", "red");
                             jewelHitter.setPosition(jewelHitterRedPosition);
-                        } else {
+                        } else if (teamColor == "blue") {
                             telemetry.addData("kick ", "blue");
                             jewelHitter.setPosition(jewelHitterBluePosition);
                         }

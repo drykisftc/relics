@@ -60,12 +60,11 @@ public class AutoRianPlanARed extends AutoRelic {
     protected int rightFrontStamp;
 
     public AutoRianPlanARed () {
-
+        teamColor = "red";
     }
 
     @Override
     public void init() {
-        teamColor = "red";
         robot = new HardwareRian();
         robot.init(hardwareMap);
 
@@ -216,6 +215,7 @@ public class AutoRianPlanARed extends AutoRelic {
 
         telemetry.addData("state", state);
         telemetry.addData("vumark", vuforia.vumarkImage);
+        telemetry.addData("teamColor", teamColor);
         telemetry.update();
     }
 

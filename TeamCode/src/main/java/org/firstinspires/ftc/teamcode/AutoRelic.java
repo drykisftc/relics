@@ -78,8 +78,8 @@ public class AutoRelic extends OpMode {
 
     protected int cryptoBoxStopDistance = 20;
     protected int offBalanceStoneDistance = 2600;
-    protected int rightColumnDistance = 2600;
-    protected int centerColumnDistance = 3350;
+    protected int rightColumnDistance = 2550;
+    protected int centerColumnDistance = 3200;
     protected int leftColumnDistance = 3950;
     protected int cryptoBoxDistance = 500;
     protected int backupDistance = -100;
