@@ -101,6 +101,7 @@ public class TeleOpRian extends OpMode{
     @Override
     public void start() {
         robot.start();
+        robot.jewelArm.setPosition(0.6);
         telemetry.update();
     }
 
@@ -112,9 +113,7 @@ public class TeleOpRian extends OpMode{
 
         joystickWheelControl();
         glyphWheelControl();
-        glyphDebug();
-        //glyphLiftControl();
-        glyphLiftControl2();
+        glyphLiftControl();
         telemetry.update();
     }
 
@@ -200,6 +199,42 @@ public class TeleOpRian extends OpMode{
             robot.rightLiftWheel3.setPower(1.0);
             robot.beltServo.setPower(-1.0);
 
+        } else if (gamepad2.dpad_left) {
+
+            robot.leftLiftWheel1.setPower(1.0);
+            robot.leftLiftWheel2.setPower(1.0);
+            robot.leftLiftWheel3.setPower(1.0);
+            robot.rightLiftWheel1.setPower(1.0);
+            robot.rightLiftWheel2.setPower(1.0);
+            robot.rightLiftWheel3.setPower(1.0);
+
+        } else if (gamepad2.dpad_right) {
+
+            robot.leftLiftWheel1.setPower(-1.0);
+            robot.leftLiftWheel2.setPower(-1.0);
+            robot.leftLiftWheel3.setPower(-1.0);
+            robot.rightLiftWheel1.setPower(-1.0);
+            robot.rightLiftWheel2.setPower(-1.0);
+            robot.rightLiftWheel3.setPower(-1.0);
+
+        } else if (gamepad1.left_trigger > 0.5) {
+
+            robot.leftLiftWheel1.setPower(1.0);
+            robot.leftLiftWheel2.setPower(1.0);
+            robot.leftLiftWheel3.setPower(1.0);
+            robot.rightLiftWheel1.setPower(1.0);
+            robot.rightLiftWheel2.setPower(1.0);
+            robot.rightLiftWheel3.setPower(1.0);
+
+        } else if (gamepad1.right_trigger > 0.5) {
+
+            robot.leftLiftWheel1.setPower(-1.0);
+            robot.leftLiftWheel2.setPower(-1.0);
+            robot.leftLiftWheel3.setPower(-1.0);
+            robot.rightLiftWheel1.setPower(-1.0);
+            robot.rightLiftWheel2.setPower(-1.0);
+            robot.rightLiftWheel3.setPower(-1.0);
+
         } else {
             robot.leftLiftWheel1.setPower(0.0);
             robot.leftLiftWheel2.setPower(0.0);
@@ -208,59 +243,11 @@ public class TeleOpRian extends OpMode{
             robot.rightLiftWheel2.setPower(0.0);
             robot.rightLiftWheel3.setPower(0.0);
             robot.beltServo.setPower(0.0);
-
         }
-
     }
+
 
     public void glyphLiftControl () {
-
-        float liftPower = gamepad2.left_stick_y;
-
-        if (robot.liftMotor.getCurrentPosition() < liftHeightLimit && robot.liftMotor.getCurrentPosition() > -liftHeightLimit) {
-
-            if (gamepad1.dpad_up) {
-
-                robot.liftMotor.setPower(0.6);
-
-            } else if (gamepad1.dpad_down) {
-
-                robot.liftMotor.setPower(-0.6);
-
-            } else {
-
-                robot.liftMotor.setPower(liftPower);
-
-            }
-
-        } else if (liftPower < 0 && robot.liftMotor.getCurrentPosition() > liftHeightLimit) {
-
-            if (gamepad1.dpad_down) {
-
-                robot.liftMotor.setPower(-0.6);
-
-            } else {
-
-                robot.liftMotor.setPower(liftPower);
-
-            }
-
-        } else if (liftPower > 0 && robot.liftMotor.getCurrentPosition() < -liftHeightLimit) {
-
-            if (gamepad1.dpad_down) {
-
-                robot.liftMotor.setPower(-0.6);
-
-            } else {
-
-                robot.liftMotor.setPower(liftPower);
-
-            }
-
-        }
-    }
-
-    public void glyphLiftControl2 () {
         if ((gamepad2.right_stick_y > -liftHeightLimit && gamepad2.right_stick_y < 0) || (gamepad2.right_stick_y < liftHeightLimit && gamepad2.right_stick_y > 0)) {
 
             liftMotorPosition = robot.liftMotor.getCurrentPosition();
@@ -298,46 +285,6 @@ public class TeleOpRian extends OpMode{
         telemetry.addData("right arm pos ", "%6d", liftMotorPosition);
     }
 
-    public void glyphDebug () {
-        // fixing when glyph is stuck
-        if (gamepad2.dpad_left) {
-
-            robot.leftLiftWheel1.setPower(1.0);
-            robot.leftLiftWheel2.setPower(1.0);
-            robot.leftLiftWheel3.setPower(1.0);
-            robot.rightLiftWheel1.setPower(1.0);
-            robot.rightLiftWheel2.setPower(1.0);
-            robot.rightLiftWheel3.setPower(1.0);
-
-        } else if (gamepad2.dpad_right) {
-
-            robot.leftLiftWheel1.setPower(-1.0);
-            robot.leftLiftWheel2.setPower(-1.0);
-            robot.leftLiftWheel3.setPower(-1.0);
-            robot.rightLiftWheel1.setPower(-1.0);
-            robot.rightLiftWheel2.setPower(-1.0);
-            robot.rightLiftWheel3.setPower(-1.0);
-
-        } else if (gamepad1.left_trigger > 0.5) {
-
-            robot.leftLiftWheel1.setPower(1.0);
-            robot.leftLiftWheel2.setPower(1.0);
-            robot.leftLiftWheel3.setPower(1.0);
-            robot.rightLiftWheel1.setPower(1.0);
-            robot.rightLiftWheel2.setPower(1.0);
-            robot.rightLiftWheel3.setPower(1.0);
-
-        } else if (gamepad1.right_trigger > 0.5) {
-
-            robot.leftLiftWheel1.setPower(-1.0);
-            robot.leftLiftWheel2.setPower(-1.0);
-            robot.leftLiftWheel3.setPower(-1.0);
-            robot.rightLiftWheel1.setPower(-1.0);
-            robot.rightLiftWheel2.setPower(-1.0);
-            robot.rightLiftWheel3.setPower(-1.0);
-
-        }
-    }
 
     /*
      * Code to run ONCE after the driver hits STOP
