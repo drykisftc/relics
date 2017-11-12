@@ -71,7 +71,7 @@ class JewelKicker {
 
     private int state;
     private long timeStamp;
-    double jewelArmRestPosition = 0.8;
+    double jewelArmRestPosition = 0.9;
     double jewelArmActionPosition = 0.15;
     double jewelHitterRestPosition =0.45;
     double jewelHitterRedPosition = 0.0;
