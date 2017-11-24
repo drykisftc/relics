@@ -44,7 +44,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@Autonomous(name = "VLSB_PlanA_Red", group = "Rian")
+@Autonomous(name = "VLSB_PlanA_Red", group = "VLSB")
 
 public class AutoVLSBPlanARed extends AutoRelic {
 
@@ -398,6 +398,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
         robot.rightLiftWheel1.setPower(1.0);
         robot.rightLiftWheel2.setPower(1.0);
         robot.rightLiftWheel3.setPower(1.0);
+        robot.beltServo.setPower(-1.0);
     }
 
     public void stopGlyphWheels(){
