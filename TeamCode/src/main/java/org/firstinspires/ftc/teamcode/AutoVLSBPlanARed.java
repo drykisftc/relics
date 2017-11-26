@@ -83,6 +83,8 @@ public class AutoVLSBPlanARed extends AutoRelic {
         rightMotors[0] = robot.motorRightFrontWheel;
         rightMotors[1] = robot.motorRightBackWheel;
 
+        vuforiaDetectingPower = 0.4;
+
         jewelArm = robot.jewelArm;
         jewelHitter = robot.jewelHitter;
 
@@ -141,28 +143,8 @@ public class AutoVLSBPlanARed extends AutoRelic {
                     state = 2;
                 }
 
-                //move forward
-                /*if (!(robot.jewelSensorDistance.getDistance(DistanceUnit.CM) < cryptoBoxStopDistance)) {
-
-                    moveAtPower(vuforiaDetectingPower);
-
-                } else {
-
-                    moveAtPower(0);
-                    state = 2;
-                }*/
-
                 break;
             case 2:
-//                if (fGlyphTurnAngle == 0.0f || 0 == navigation.turnByEncoderOpenLoop(glyTurnPower,fGlyphTurnAngle,
-//                        robot.axleDistance, leftMotors, rightMotors)) {
-//                    turnAtPower(0.0);
-//                    telemetry.addData("left", robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp + robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp);
-//                    telemetry.addData("left", robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp);
-//                    getWheelLandmarks();
-//                    navigation.resetTurn(leftMotors, rightMotors);
-//                    state = 3;
-//                }
 
                 if ((robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp + robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp > 3575) && (robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp < -3575)) {
                     turnAtPower(0.0);
@@ -191,7 +173,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
 
                 time = System.currentTimeMillis();
 
-                if (time - timeStamp < 1000) {
+                if (time - timeStamp < 700) {
                     releaseGlyph();
                 } else {
 
@@ -205,7 +187,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
 
                 time = System.currentTimeMillis();
 
-                if (time - timeStamp < 2000) {
+                if (time - timeStamp < 1300) {
                     moveAtPower(backupPower);
                 } else {
                     moveAtPower(0.0);
@@ -215,7 +197,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 break;
             case 6:
 
-                if (0 == moveByDistance(-0.25, backupDistance)) {
+                if (0 == moveByDistance(-0.50, backupDistance)) {
 
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
@@ -259,7 +241,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 break;
             case 10:
                 // move to center
-                if (0 == moveByDistance(0.3, glyph2CenterDistance)) {
+                if (0 == moveByDistance(0.5, glyph2CenterDistance)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -279,7 +261,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 break;
             case 12:
                 // back up
-                if (0 == moveByDistance(-0.25, glyph2CenterDistance)) {
+                if (0 == moveByDistance(-0.5, glyph2CenterDistance)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -308,7 +290,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 break;
             case 15:
                 // move back to glyph grid
-                if (0 == waitByDistance(0.2, -backupDistance+400)) {
+                if (0 == waitByDistance(0.3, -backupDistance+400)) {
                     moveAtPower(0.0);
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();

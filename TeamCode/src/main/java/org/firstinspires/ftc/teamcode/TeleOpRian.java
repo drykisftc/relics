@@ -60,6 +60,8 @@ public class TeleOpRian extends OpMode{
 
     protected int liftHeightLimit = 4000;
     protected int liftMotorPosition = 0;
+    protected int liftMoveMotorPosition = 400;
+    protected double liftMotorMovePower = 0.5;
     protected double liftMotorHolderPower = 0.3;
 
     double [] wheelPowerLUT = {0.0f, 0.05f, 0.15f, 0.18f, 0.20f,
@@ -102,6 +104,7 @@ public class TeleOpRian extends OpMode{
     public void start() {
         robot.start();
         robot.jewelArm.setPosition(0.65);
+        robot.jewelHitter.setPosition(0.0);
         telemetry.update();
     }
 
@@ -151,10 +154,23 @@ public class TeleOpRian extends OpMode{
 
         }
 
+        if (robot.motorLeftFrontWheel.getPower() > 0.05 &&
+                robot.motorLeftBackWheel.getPower() > 0.05 &&
+                robot.motorRightFrontWheel.getPower() > 0.05 &&
+                robot.motorRightBackWheel.getPower() > 0.05 &&
+                Math.abs(robot.liftMotor.getCurrentPosition()) < liftMoveMotorPosition){
+
+            VortexUtils.moveMotorByEncoder(robot.liftMotor, liftMoveMotorPosition, liftMotorMovePower);
+
+        }
 
         // Send telemetry message to signify robot running;
         telemetry.addData("left",  "%.2f", left);
         telemetry.addData("right", "%.2f", right);
+        telemetry.addData("LBPower", "%.2f", robot.motorLeftBackWheel.getPower());
+        telemetry.addData("LFPower", "%.2f", robot.motorLeftFrontWheel.getPower());
+        telemetry.addData("RBPower", "%.2f", robot.motorRightBackWheel.getPower());
+        telemetry.addData("RFPower", "%.2f", robot.motorRightBackWheel.getPower());
     }
 
     public void glyphWheelControl() {
