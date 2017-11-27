@@ -101,7 +101,7 @@ public class TeleOpVLSB extends OpMode{
     @Override
     public void start() {
         robot.start();
-        robot.jewelArm.setPosition(0.65);
+        //robot.jewelArm.setPosition(0.65);
         telemetry.update();
     }
 
@@ -113,7 +113,8 @@ public class TeleOpVLSB extends OpMode{
 
         joystickWheelControl();
         glyphWheelControl();
-        glyphLiftControl();
+        glyphDepositeControl();
+        //glyphLiftControl();
         telemetry.update();
     }
 
@@ -160,93 +161,84 @@ public class TeleOpVLSB extends OpMode{
 
         if (gamepad2.dpad_up) {
             // up
-            robot.leftLiftWheel1.setPower(1.0);
-            robot.leftLiftWheel2.setPower(1.0);
-            robot.leftLiftWheel3.setPower(1.0);
-            robot.rightLiftWheel1.setPower(-1.0);
-            robot.rightLiftWheel2.setPower(-1.0);
-            robot.rightLiftWheel3.setPower(-1.0);
-            robot.beltServo.setPower(0.0);
+            robot.leftLiftWheel.setPower(0.5);
+            robot.rightLiftWheel.setPower(-0.5);
 
         } else if (gamepad2.dpad_down) {
             //down
-            robot.leftLiftWheel1.setPower(-1.0);
-            robot.leftLiftWheel2.setPower(-1.0);
-            robot.leftLiftWheel3.setPower(-1.0);
-            robot.rightLiftWheel1.setPower(1.0);
-            robot.rightLiftWheel2.setPower(1.0);
-            robot.rightLiftWheel3.setPower(1.0);
-            robot.beltServo.setPower(-1.0);
+            robot.leftLiftWheel.setPower(-0.5);
+            robot.rightLiftWheel.setPower(0.5);
 
         } else if (gamepad1.right_bumper) {
 
-            robot.leftLiftWheel1.setPower(1.0);
-            robot.leftLiftWheel2.setPower(1.0);
-            robot.leftLiftWheel3.setPower(1.0);
-            robot.rightLiftWheel1.setPower(-1.0);
-            robot.rightLiftWheel2.setPower(-1.0);
-            robot.rightLiftWheel3.setPower(-1.0);
-            robot.beltServo.setPower(0.0);
+            robot.leftLiftWheel.setPower(0.5);
+            robot.rightLiftWheel.setPower(-0.5);
 
         } else if (gamepad1.left_bumper) {
 
-            robot.leftLiftWheel1.setPower(-1.0);
-            robot.leftLiftWheel2.setPower(-1.0);
-            robot.leftLiftWheel3.setPower(-1.0);
-            robot.rightLiftWheel1.setPower(1.0);
-            robot.rightLiftWheel2.setPower(1.0);
-            robot.rightLiftWheel3.setPower(1.0);
-            robot.beltServo.setPower(-1.0);
+            robot.leftLiftWheel.setPower(-0.5);
+            robot.rightLiftWheel.setPower(0.5);
 
         } else if (gamepad2.dpad_left) {
 
-            robot.leftLiftWheel1.setPower(1.0);
-            robot.leftLiftWheel2.setPower(1.0);
-            robot.leftLiftWheel3.setPower(1.0);
-            robot.rightLiftWheel1.setPower(1.0);
-            robot.rightLiftWheel2.setPower(1.0);
-            robot.rightLiftWheel3.setPower(1.0);
+            robot.leftLiftWheel.setPower(0.5);
+            robot.rightLiftWheel.setPower(0.5);
 
         } else if (gamepad2.dpad_right) {
 
-            robot.leftLiftWheel1.setPower(-1.0);
-            robot.leftLiftWheel2.setPower(-1.0);
-            robot.leftLiftWheel3.setPower(-1.0);
-            robot.rightLiftWheel1.setPower(-1.0);
-            robot.rightLiftWheel2.setPower(-1.0);
-            robot.rightLiftWheel3.setPower(-1.0);
+            robot.leftLiftWheel.setPower(-0.5);
+            robot.rightLiftWheel.setPower(-0.5);
 
         } else if (gamepad1.left_trigger > 0.5) {
 
-            robot.leftLiftWheel1.setPower(1.0);
-            robot.leftLiftWheel2.setPower(1.0);
-            robot.leftLiftWheel3.setPower(1.0);
-            robot.rightLiftWheel1.setPower(1.0);
-            robot.rightLiftWheel2.setPower(1.0);
-            robot.rightLiftWheel3.setPower(1.0);
+            robot.leftLiftWheel.setPower(0.5);
+            robot.rightLiftWheel.setPower(0.5);
 
         } else if (gamepad1.right_trigger > 0.5) {
 
-            robot.leftLiftWheel1.setPower(-1.0);
-            robot.leftLiftWheel2.setPower(-1.0);
-            robot.leftLiftWheel3.setPower(-1.0);
-            robot.rightLiftWheel1.setPower(-1.0);
-            robot.rightLiftWheel2.setPower(-1.0);
-            robot.rightLiftWheel3.setPower(-1.0);
+            robot.leftLiftWheel.setPower(-0.5);
+            robot.rightLiftWheel.setPower(-0.5);
 
         } else {
-            robot.leftLiftWheel1.setPower(0.0);
-            robot.leftLiftWheel2.setPower(0.0);
-            robot.leftLiftWheel3.setPower(0.0);
-            robot.rightLiftWheel1.setPower(0.0);
-            robot.rightLiftWheel2.setPower(0.0);
-            robot.rightLiftWheel3.setPower(0.0);
-            robot.beltServo.setPower(0.0);
+
+            robot.leftLiftWheel.setPower(0.0);
+            robot.rightLiftWheel.setPower(0.0);
+
         }
     }
 
+    public void glyphDepositeControl() {
 
-    public void glyphLiftControl () {
+        if (gamepad2.right_bumper) {
+
+            robot.lowerBeltServo1.setPower(1.0);
+            robot.lowerBeltServo2.setPower(1.0);
+
+        } else if (gamepad2.left_bumper) {
+
+            robot.lowerBeltServo1.setPower(-1.0);
+            robot.lowerBeltServo2.setPower(-1.0);
+
+        } else if (gamepad1.a) {
+
+            robot.lowerBeltServo1.setPower(1.0);
+            robot.lowerBeltServo2.setPower(1.0);
+
+        } else if (gamepad1.b) {
+
+            robot.lowerBeltServo1.setPower(-1.0);
+            robot.lowerBeltServo2.setPower(-1.0);
+
+        } else {
+
+            robot.lowerBeltServo1.setPower(0.0);
+            robot.lowerBeltServo2.setPower(0.0);
+
+        }
+
+    }
+
+    /*public void glyphLiftControl () {
         if ((robot.liftMotor.getCurrentPosition() > -liftHeightLimit && gamepad2.right_stick_y < 0) || (robot.liftMotor.getCurrentPosition() < liftHeightLimit && gamepad2.right_stick_y > 0)) {
 
             liftMotorPosition = robot.liftMotor.getCurrentPosition();
@@ -282,7 +274,7 @@ public class TeleOpVLSB extends OpMode{
         }
 
         telemetry.addData("right arm pos ", "%6d", liftMotorPosition);
-    }
+    }*/
 
 
     /*

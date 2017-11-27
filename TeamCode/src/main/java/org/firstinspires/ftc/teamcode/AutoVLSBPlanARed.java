@@ -83,8 +83,6 @@ public class AutoVLSBPlanARed extends AutoRelic {
         rightMotors[0] = robot.motorRightFrontWheel;
         rightMotors[1] = robot.motorRightBackWheel;
 
-        vuforiaDetectingPower = 0.4;
-
         jewelArm = robot.jewelArm;
         jewelHitter = robot.jewelHitter;
 
@@ -241,7 +239,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 break;
             case 10:
                 // move to center
-                if (0 == moveByDistance(0.5, glyph2CenterDistance)) {
+                if (0 == moveByDistance(0.8, glyph2CenterDistance)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -261,7 +259,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 break;
             case 12:
                 // back up
-                if (0 == moveByDistance(-0.5, glyph2CenterDistance)) {
+                if (0 == moveByDistance(-0.8, glyph2CenterDistance)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
