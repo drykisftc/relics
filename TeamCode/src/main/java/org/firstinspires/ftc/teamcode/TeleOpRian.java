@@ -103,8 +103,7 @@ public class TeleOpRian extends OpMode{
     @Override
     public void start() {
         robot.start();
-        robot.jewelArm.setPosition(0.65);
-        robot.jewelHitter.setPosition(0.0);
+        jewelArmUp();
         telemetry.update();
     }
 
@@ -126,11 +125,11 @@ public class TeleOpRian extends OpMode{
         float throttle = -gamepad1.right_stick_y;
         float direction = gamepad1.right_stick_x;
         float parallel = -gamepad1.left_stick_x;
-        float diagonal = gamepad1.left_stick_y;
+        double diagonal = Math.pow(gamepad1.left_stick_y,3);
         float right = throttle - direction;
         float left = throttle + direction;
-        float diagonal1 = parallel + diagonal;
-        float diagonal2 = -parallel + diagonal;
+        double diagonal1 = parallel + diagonal;
+        double diagonal2 = -parallel + diagonal;
 
         if (Math.abs(parallel) > 0.05 || Math.abs(diagonal) > 0.05) {
 
@@ -162,6 +161,10 @@ public class TeleOpRian extends OpMode{
 
             VortexUtils.moveMotorByEncoder(robot.liftMotor, liftMoveMotorPosition, liftMotorMovePower);
 
+        }
+
+        if (gamepad1.y || gamepad2.y) {
+            jewelArmUp();
         }
 
         // Send telemetry message to signify robot running;
@@ -215,7 +218,7 @@ public class TeleOpRian extends OpMode{
             robot.rightLiftWheel3.setPower(1.0);
             robot.beltServo.setPower(-1.0);
 
-        } else if (gamepad2.dpad_left) {
+        } else if (gamepad1.left_trigger > 0.5|| gamepad2.dpad_left) {
 
             robot.leftLiftWheel1.setPower(1.0);
             robot.leftLiftWheel2.setPower(1.0);
@@ -224,25 +227,7 @@ public class TeleOpRian extends OpMode{
             robot.rightLiftWheel2.setPower(1.0);
             robot.rightLiftWheel3.setPower(1.0);
 
-        } else if (gamepad2.dpad_right) {
-
-            robot.leftLiftWheel1.setPower(-1.0);
-            robot.leftLiftWheel2.setPower(-1.0);
-            robot.leftLiftWheel3.setPower(-1.0);
-            robot.rightLiftWheel1.setPower(-1.0);
-            robot.rightLiftWheel2.setPower(-1.0);
-            robot.rightLiftWheel3.setPower(-1.0);
-
-        } else if (gamepad1.left_trigger > 0.5) {
-
-            robot.leftLiftWheel1.setPower(1.0);
-            robot.leftLiftWheel2.setPower(1.0);
-            robot.leftLiftWheel3.setPower(1.0);
-            robot.rightLiftWheel1.setPower(1.0);
-            robot.rightLiftWheel2.setPower(1.0);
-            robot.rightLiftWheel3.setPower(1.0);
-
-        } else if (gamepad1.right_trigger > 0.5) {
+        } else if (gamepad1.right_trigger > 0.5||gamepad2.dpad_right) {
 
             robot.leftLiftWheel1.setPower(-1.0);
             robot.leftLiftWheel2.setPower(-1.0);
@@ -301,6 +286,10 @@ public class TeleOpRian extends OpMode{
         telemetry.addData("right arm pos ", "%6d", liftMotorPosition);
     }
 
+    void jewelArmUp () {
+        robot.jewelArm.setPosition(0.65);
+        robot.jewelHitter.setPosition(0.0);
+    }
 
     /*
      * Code to run ONCE after the driver hits STOP

@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -37,6 +38,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import java.util.Random;
 
 @Autonomous(name = "Nathen_PlanB_Red", group = "Nathen")
+@Disabled
 public class AutoNathanPlanBRed extends AutoNathanPlanARed {
 
    int columnStopDistance = 2186;

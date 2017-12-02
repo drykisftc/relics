@@ -31,10 +31,12 @@ package org.firstinspires.ftc.teamcode;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import java.util.Random;
 
 @Autonomous(name = "Nathen_PlanB_Blue", group = "Nathen")
+@Disabled
 public class AutoNathanPlanBBlue extends AutoNathanPlanBRed {
 
 

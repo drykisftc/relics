@@ -98,6 +98,7 @@ class JewelKicker {
 
     public void start() {
         state = 0;
+        jewelHitter.setPosition(jewelHitterRestPosition);
         timeStamp = System.currentTimeMillis();
     }
 
