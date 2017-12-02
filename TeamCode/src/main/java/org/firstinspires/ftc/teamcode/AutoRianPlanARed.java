@@ -59,6 +59,8 @@ public class AutoRianPlanARed extends AutoRelic {
     protected int rightBackStamp;
     protected int rightFrontStamp;
 
+    protected double liftMotorHolderPower = 0.3;
+
     public AutoRianPlanARed () {
         teamColor = "red";
     }
@@ -84,8 +86,15 @@ public class AutoRianPlanARed extends AutoRelic {
 
         jewelKicker = new JewelKicker(jewelSensor,jewelArm,jewelHitter,telemetry);
         jewelKicker.init();
+        jewelKicker.jewelHitterRestPosition = 0.44;
 
         navigation = new Navigation(telemetry);
+        navigation.pidControlHeading.setKp(0.004);
+        navigation.pidControlHeading.setKi(0.002);
+        navigation.pidControlHeading.setKd(0.0000001);
+        navigation.maxTurnDeltaPower = 0.4;
+        navigation.convergeCountThreshold = 6;
+        navigation.angleErrorTolerance = 2.1;
 
         vuforia = new HardwareVuforia(VuforiaLocalizer.CameraDirection.BACK);
         vuforia.init(hardwareMap);
@@ -197,7 +206,7 @@ public class AutoRianPlanARed extends AutoRelic {
 
                 time = System.currentTimeMillis();
 
-                if (time - timeStamp < 2000) {
+                if (time - timeStamp < 1300) {
                     moveAtPower(backupPower);
                 } else {
                     moveAtPower(0.0);
@@ -207,10 +216,127 @@ public class AutoRianPlanARed extends AutoRelic {
                 break;
             case 6:
 
+                if (0 == moveByDistance(-0.80, backupDistance)) {
+
+                    moveAtPower(0.0);
+                    timeStamp = System.currentTimeMillis();
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    // lower glyph bars
+                    VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorHolderPower);
+
+                    state = 7;
+
+                }
+
+                break;
+            case 7:
+
+                if (System.currentTimeMillis() - timeStamp > 300) {
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    state = 8;
+                }
+
+                break;
+            case 8:
+                // turn 180
+                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower, fCenterTurnAngle + centerGlyphAngleOffset, robot.axleDistance, leftMotors, rightMotors)) {
+                    state = 9;
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                }
+                break;
+            case 9:
+                // turn 180
+                if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle+fCenterTurnAngle+centerGlyphAngleOffset,leftMotors,rightMotors)) {
+                    state = 10;
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                }
+
+                // set glyph bars in collect positions
+                collectGlyph();
+
+                break;
+            case 10:
+                // move to center
+                if (0 == moveByDistance(0.8, glyph2CenterDistance)) {
+                    moveAtPower(0.0);
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    getWheelLandmarks();
+                    timeStamp = System.currentTimeMillis();
+                    state = 11;
+                }
+
+                break;
+            case 11:
+                // collect glyph
+                collectGlyph();
+
+                if ( System.currentTimeMillis() - timeStamp < 2000) {
+                    state = 12;
+                    getWheelLandmarks();
+                }
+                break;
+            case 12:
+                // back up
+                if (0 == moveByDistance(-0.8, glyph2CenterDistance)) {
+                    moveAtPower(0.0);
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    getWheelLandmarks();
+                    state = 13;
+                }
+                // lift glyph bar
+                VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, liftMotorHolderPower);
+
+                break;
+            case 13:
+                // wait 1 second
+                if (System.currentTimeMillis() - timeStamp > 300) {
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    state = 14;
+                }
+                break;
+            case 14:
+                // turn
+                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower, fCenterTurnAngle, robot.axleDistance, leftMotors, rightMotors)) {
+                    state = 15;
+                    getWheelLandmarks();
+                    moveAtPower(0.2);
+                    VortexUtils.moveMotorByEncoder(robot.liftMotor, liftMoveMotorPosition2, liftMotorMovePower);
+                    navigation.resetTurn(leftMotors, rightMotors);
+                }
+                break;
+            case 15:
+                // move back to glyph grid
+                if (0 == waitByDistance(0.9, -backupDistance+700)) {
+                    moveAtPower(0.0);
+                    getWheelLandmarks();
+                    timeStamp = System.currentTimeMillis();
+                    state = 16;
+                }
+                break;
+            case 16:
+                // release glyph
+                releaseGlyph();
+                if (System.currentTimeMillis() - timeStamp > 1000) {
+                    getWheelLandmarks();
+                    state = 17;
+                }
+                break;
+            case 17:
+                // backup
+                if (0 == moveByDistance(-0.15, 250)) {
+                    moveAtPower(0.0);
+                    state = 18;
+                }
+                break;
+            default:
                 // stop
                 robot.stop();
                 break;
-            default:
         }
 
         telemetry.addData("state", state);
@@ -250,6 +376,16 @@ public class AutoRianPlanARed extends AutoRelic {
             return 0;
         }
         return 1;
+    }
+
+    public void collectGlyph () {
+        robot.leftLiftWheel1.setPower(-1.0);
+        robot.leftLiftWheel2.setPower(-1.0);
+        robot.leftLiftWheel3.setPower(-1.0);
+        robot.rightLiftWheel1.setPower(1.0);
+        robot.rightLiftWheel2.setPower(1.0);
+        robot.rightLiftWheel3.setPower(1.0);
+        robot.beltServo.setPower(-1.0);
     }
 
     public void releaseGlyph () {

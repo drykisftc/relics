@@ -52,6 +52,7 @@ import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 @Disabled
 public class AutoRelic extends OpMode {
 
+    protected HardwareRian robot= null;
 
     protected String teamColor = "red";
 
@@ -67,7 +68,7 @@ public class AutoRelic extends OpMode {
 
     protected float fGlyphTurnAngle = -90; // positive turns left, negative turns right
     protected float fGlyphTurnAngle2 = 0;
-    protected double glyTurnPower = -0.5;
+    protected double glyTurnPower = -0.8;
     protected float fCenterTurnAngle = 180;
 
     protected double glyphMovePower = 0.5;
@@ -85,6 +86,14 @@ public class AutoRelic extends OpMode {
     protected int backupDistance = -100;
     protected int glyph2CenterDistance = 3880;
     protected int center2GlyphDistance = 3880;
+
+    float centerGlyphAngleOffset = 0;
+
+    protected double liftMotorHolderPower = 0.3;
+    int glyphLiftPosition = 0;
+    protected double liftMotorMovePower = 0.5;
+    protected int liftMoveMotorPosition = 400;
+    protected int liftMoveMotorPosition2 = 1000;
 
     protected double lastLeftPower = 0;
     protected double lastRightPower = 0;
@@ -234,6 +243,34 @@ public class AutoRelic extends OpMode {
 
     public void getWheelLandmarks () {
         wheelDistanceLandMark = getWheelOdometer();
+    }
+
+    public void releaseGlyph () {
+        robot.leftLiftWheel1.setPower(1.0);
+        robot.leftLiftWheel2.setPower(1.0);
+        robot.leftLiftWheel3.setPower(1.0);
+        robot.rightLiftWheel1.setPower(-1.0);
+        robot.rightLiftWheel2.setPower(-1.0);
+        robot.rightLiftWheel3.setPower(-1.0);
+    }
+
+    public void collectGlyph () {
+        robot.leftLiftWheel1.setPower(-1.0);
+        robot.leftLiftWheel2.setPower(-1.0);
+        robot.leftLiftWheel3.setPower(-1.0);
+        robot.rightLiftWheel1.setPower(1.0);
+        robot.rightLiftWheel2.setPower(1.0);
+        robot.rightLiftWheel3.setPower(1.0);
+        robot.beltServo.setPower(-1.0);
+    }
+
+    public void stopGlyphWheels(){
+        robot.leftLiftWheel1.setPower(0.0);
+        robot.leftLiftWheel2.setPower(0.0);
+        robot.leftLiftWheel3.setPower(0.0);
+        robot.rightLiftWheel1.setPower(0.0);
+        robot.rightLiftWheel2.setPower(0.0);
+        robot.rightLiftWheel3.setPower(0.0);
     }
 
 }

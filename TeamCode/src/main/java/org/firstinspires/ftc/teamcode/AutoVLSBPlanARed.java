@@ -58,10 +58,6 @@ public class AutoVLSBPlanARed extends AutoRelic {
     protected int rightBackStamp;
     protected int rightFrontStamp;
 
-    protected double liftMotorHolderPower = 0.3;
-
-    int glyphLiftPosition = 0;
-    float centerGlyphAngleOffset = 0;
 
     public AutoVLSBPlanARed() {
         teamColor = "red";
