@@ -101,7 +101,7 @@ public class TeleOpVLSB extends OpMode{
     @Override
     public void start() {
         robot.start();
-        //robot.jewelArm.setPosition(0.65);
+        robot.jewelArm.setPosition(0.65);
         telemetry.update();
     }
 
@@ -114,7 +114,8 @@ public class TeleOpVLSB extends OpMode{
         joystickWheelControl();
         glyphWheelControl();
         glyphDepositeControl();
-        //glyphLiftControl();
+        glyphLiftControl();
+        jewelArmControl();
         telemetry.update();
     }
 
@@ -238,7 +239,7 @@ public class TeleOpVLSB extends OpMode{
 
     }
 
-    /*public void glyphLiftControl () {
+    public void glyphLiftControl () {
         if ((robot.liftMotor.getCurrentPosition() > -liftHeightLimit && gamepad2.right_stick_y < 0) || (robot.liftMotor.getCurrentPosition() < liftHeightLimit && gamepad2.right_stick_y > 0)) {
 
             liftMotorPosition = robot.liftMotor.getCurrentPosition();
@@ -274,8 +275,31 @@ public class TeleOpVLSB extends OpMode{
         }
 
         telemetry.addData("right arm pos ", "%6d", liftMotorPosition);
-    }*/
+    }
 
+    public void jewelArmControl() {
+
+        if (gamepad2.a) {
+
+            robot.jewelArm.setPosition(robot.jewelArm.getPosition() + 0.001);
+
+        } else if (gamepad2.b) {
+
+            robot.jewelArm.setPosition(robot.jewelArm.getPosition() - 0.001);
+
+        }
+
+        if (gamepad2.x) {
+
+            robot.jewelHitter.setPosition(robot.jewelHitter.getPosition() + 0.001);
+
+        } else if (gamepad2.y) {
+
+            robot.jewelHitter.setPosition(robot.jewelHitter.getPosition() - 0.001);
+
+        }
+
+    }
 
     /*
      * Code to run ONCE after the driver hits STOP
