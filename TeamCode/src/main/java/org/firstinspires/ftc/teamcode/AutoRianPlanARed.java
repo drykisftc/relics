@@ -174,7 +174,7 @@ public class AutoRianPlanARed extends AutoRelic {
                     state = 3;
 
                 } else {
-                    turnAtPower(glyTurnPower);
+                    turnAtPower(glyTurnPowerLow);
                 }
 
                 break;
@@ -246,37 +246,38 @@ public class AutoRianPlanARed extends AutoRelic {
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
-                break;
-            case 9:
-                // turn 180
-                if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle+fCenterTurnAngle+centerGlyphAngleOffset,leftMotors,rightMotors)) {
-                    state = 10;
-                    getWheelLandmarks();
-                    navigation.resetTurn(leftMotors, rightMotors);
-                }
 
                 // set glyph bars in collect positions
                 collectGlyph();
 
                 break;
-            case 10:
+            case 9:
                 // move to center
                 if (0 == moveByDistance(0.8, glyph2CenterDistance)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
-                    state = 11;
+                    state = 10;
                 }
 
                 break;
-            case 11:
+            case 10:
                 // collect glyph
                 collectGlyph();
 
                 if ( System.currentTimeMillis() - timeStamp < 2000) {
+                    state = 11;
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                }
+                break;
+            case 11:
+                // correct angle just incase it got knocked out the cource
+                if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle+fCenterTurnAngle+centerGlyphAngleOffset,leftMotors,rightMotors)) {
                     state = 12;
                     getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
                 }
                 break;
             case 12:
@@ -300,7 +301,7 @@ public class AutoRianPlanARed extends AutoRelic {
                 }
                 break;
             case 14:
-                // turn
+                // turn 180
                 if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower, fCenterTurnAngle, robot.axleDistance, leftMotors, rightMotors)) {
                     state = 15;
                     getWheelLandmarks();
@@ -328,7 +329,7 @@ public class AutoRianPlanARed extends AutoRelic {
                 break;
             case 17:
                 // backup
-                if (0 == moveByDistance(-0.15, 250)) {
+                if (0 == moveByDistance(-0.15, 300)) {
                     moveAtPower(0.0);
                     state = 18;
                 }

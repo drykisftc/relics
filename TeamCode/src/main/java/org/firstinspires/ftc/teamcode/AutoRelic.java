@@ -69,6 +69,7 @@ public class AutoRelic extends OpMode {
     protected float fGlyphTurnAngle = -90; // positive turns left, negative turns right
     protected float fGlyphTurnAngle2 = 0;
     protected double glyTurnPower = -0.8;
+    protected double glyTurnPowerLow = -0.5;
     protected float fCenterTurnAngle = 180;
 
     protected double glyphMovePower = 0.5;
@@ -78,7 +79,7 @@ public class AutoRelic extends OpMode {
     protected double backupPower = -0.1;
 
     protected int cryptoBoxStopDistance = 20;
-    protected int offBalanceStoneDistance = 2600;
+    protected int offBalanceStoneDistance = 2500;
     protected int rightColumnDistance = 2550;
     protected int centerColumnDistance = 3200;
     protected int leftColumnDistance = 3950;
