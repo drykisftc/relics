@@ -5,6 +5,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -28,19 +29,15 @@ public class HardwareVLSB extends HardwareBase
     public DcMotor motorRightFrontWheel =null;
     public DcMotor liftMotor = null;
 
+    public DcMotor leftLiftWheel = null;
+    public DcMotor rightLiftWheel = null;
+
     //servos
     public Servo jewelArm = null;
     public Servo jewelHitter = null;
 
-    public CRServo leftLiftWheel1 = null;
-    public CRServo leftLiftWheel2 = null;
-    public CRServo leftLiftWheel3 = null;
-
-    public CRServo rightLiftWheel1 = null;
-    public CRServo rightLiftWheel2 = null;
-    public CRServo rightLiftWheel3 = null;
-
-    public CRServo beltServo = null;
+    public CRServo lowerBeltServo1 = null;
+    public CRServo lowerBeltServo2 = null;
 
     //sensors
     public ColorSensor jewelSensor = null;
@@ -65,8 +62,8 @@ public class HardwareVLSB extends HardwareBase
 
         motorLeftBackWheel = hwMap.dcMotor.get("leftBackWheel");
         motorRightBackWheel = hwMap.dcMotor.get("rightBackWheel");
-        motorLeftBackWheel.setDirection(DcMotor.Direction.FORWARD);  // 20 to 1 andymark motor
-        motorRightBackWheel.setDirection(DcMotor.Direction.REVERSE); // 20 to 1 andymark motor
+        motorLeftBackWheel.setDirection(DcMotor.Direction.FORWARD);  // 40 to 1 andymark motor
+        motorRightBackWheel.setDirection(DcMotor.Direction.REVERSE); // 40 to 1 andymark motor
         motorLeftBackWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorRightBackWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLeftBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -74,8 +71,8 @@ public class HardwareVLSB extends HardwareBase
 
         motorLeftFrontWheel = hwMap.dcMotor.get("leftFrontWheel");
         motorRightFrontWheel = hwMap.dcMotor.get("rightFrontWheel");
-        motorLeftFrontWheel.setDirection(DcMotor.Direction.FORWARD);  // 20 to 1 andymark motor
-        motorRightFrontWheel.setDirection(DcMotor.Direction.REVERSE); // 20 to 1 andymark motor
+        motorLeftFrontWheel.setDirection(DcMotor.Direction.FORWARD);  // 40 to 1 andymark motor
+        motorRightFrontWheel.setDirection(DcMotor.Direction.REVERSE); // 40 to 1 andymark motor
         motorLeftFrontWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorRightFrontWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLeftFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -92,15 +89,18 @@ public class HardwareVLSB extends HardwareBase
         jewelSensor = hwMap.get(ColorSensor.class, "jewelSensor");
         jewelSensorDistance = hwMap.get(DistanceSensor.class, "jewelSensor");
 
-        leftLiftWheel1 = hwMap.crservo.get("leftLiftWheel1");
-        leftLiftWheel2 = hwMap.crservo.get("leftLiftWheel2");
-        leftLiftWheel3 = hwMap.crservo.get("leftLiftWheel3");
+        leftLiftWheel = hwMap.dcMotor.get("leftLiftWheel");
+        leftLiftWheel.setDirection(DcMotor.Direction.FORWARD);
+        leftLiftWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftLiftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        rightLiftWheel1 = hwMap.crservo.get("rightLiftWheel1");
-        rightLiftWheel2 = hwMap.crservo.get("rightLiftWheel2");
-        rightLiftWheel3 = hwMap.crservo.get("rightLiftWheel3");
+        rightLiftWheel = hwMap.dcMotor.get("rightLiftWheel");
+        rightLiftWheel.setDirection(DcMotor.Direction.FORWARD);
+        rightLiftWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightLiftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        beltServo = hwMap.crservo.get("beltServo");
+        lowerBeltServo1 = hwMap.crservo.get("lowerBeltServo1");
+        lowerBeltServo2 = hwMap.crservo.get("lowerBeltServo2");
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
@@ -138,7 +138,14 @@ public class HardwareVLSB extends HardwareBase
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftMotor.setPower(0.0);
 
-        jewelArm.setPosition(0.8);
+        leftLiftWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftLiftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftLiftWheel.setPower(0.0);
+
+        rightLiftWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightLiftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightLiftWheel.setPower(0.0);
+        //jewelArm.setPosition(0.8);
     }
 
     @Override
@@ -151,12 +158,18 @@ public class HardwareVLSB extends HardwareBase
 
         liftMotor.setPower(0.0);
 
+        leftLiftWheel.setPower(0.0);
+        rightLiftWheel.setPower(0.0);
+
         motorLeftBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorRightBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorLeftFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorRightFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        leftLiftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightLiftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     String formatAngle(AngleUnit angleUnit, double angle) {
