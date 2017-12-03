@@ -125,11 +125,11 @@ public class TeleOpVLSB extends OpMode{
         float throttle = -gamepad1.right_stick_y;
         float direction = gamepad1.right_stick_x;
         float parallel = -gamepad1.left_stick_x;
-        float diagonal = gamepad1.left_stick_y;
+        double diagonal = gamepad1.left_stick_y;
         float right = throttle - direction;
         float left = throttle + direction;
-        float diagonal1 = parallel + diagonal;
-        float diagonal2 = -parallel + diagonal;
+        double diagonal1 = parallel + diagonal;
+        double diagonal2 = -parallel + diagonal;
 
         if (Math.abs(parallel) > 0.05 || Math.abs(diagonal) > 0.05) {
 
@@ -160,7 +160,22 @@ public class TeleOpVLSB extends OpMode{
 
     public void glyphWheelControl() {
 
-        if (gamepad2.dpad_up) {
+        if (gamepad2.left_trigger > 0.03 || gamepad2.right_trigger > 0.03) {
+            // trigger control
+
+            if (gamepad2.left_stick_button) {
+
+                robot.leftLiftWheel.setPower(gamepad2.left_trigger);
+                robot.rightLiftWheel.setPower(-gamepad2.right_trigger);
+
+            } else {
+
+                robot.leftLiftWheel.setPower(-gamepad2.left_trigger);
+                robot.rightLiftWheel.setPower(gamepad2.right_trigger);
+
+            }
+
+        } else if (gamepad2.dpad_up) {
             // up
             robot.leftLiftWheel.setPower(0.5);
             robot.rightLiftWheel.setPower(-0.5);
