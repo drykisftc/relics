@@ -109,6 +109,7 @@ public class AutoRelic extends OpMode {
 
     protected Servo jewelArm = null;
     protected Servo jewelHitter = null;
+    protected Servo smolL = null;
 
     DcMotor[] leftMotors;
     DcMotor[] rightMotors;

@@ -58,7 +58,7 @@ public class TeleOpVLSB extends OpMode{
     /* Declare OpMode members. */
     protected HardwareVLSB robot = new HardwareVLSB();
 
-    protected int liftHeightLimit = 4000;
+    protected int liftHeightLimit = 10000;
     protected int liftMotorPosition = 0;
     protected double liftMotorHolderPower = 0.3;
 
@@ -116,6 +116,7 @@ public class TeleOpVLSB extends OpMode{
         glyphDepositeControl();
         glyphLiftControl();
         jewelArmControl();
+        smolLControl();
         telemetry.update();
     }
 
@@ -160,22 +161,7 @@ public class TeleOpVLSB extends OpMode{
 
     public void glyphWheelControl() {
 
-        if (gamepad2.left_trigger > 0.03 || gamepad2.right_trigger > 0.03) {
-            // trigger control
-
-            if (gamepad2.left_stick_button) {
-
-                robot.leftLiftWheel.setPower(gamepad2.left_trigger);
-                robot.rightLiftWheel.setPower(-gamepad2.right_trigger);
-
-            } else {
-
-                robot.leftLiftWheel.setPower(-gamepad2.left_trigger);
-                robot.rightLiftWheel.setPower(gamepad2.right_trigger);
-
-            }
-
-        } else if (gamepad2.dpad_up) {
+        if (gamepad2.dpad_up) {
             // up
             robot.leftLiftWheel.setPower(0.5);
             robot.rightLiftWheel.setPower(-0.5);
@@ -311,6 +297,20 @@ public class TeleOpVLSB extends OpMode{
         } else if (gamepad2.y) {
 
             robot.jewelHitter.setPosition(robot.jewelHitter.getPosition() - 0.001);
+
+        }
+
+    }
+
+    public void smolLControl() {
+
+        if (gamepad2.left_trigger > 0.05) {
+
+            robot.smolL.setPosition(0.00);
+
+        } else if (gamepad2.right_trigger > 0.05) {
+
+            robot.smolL.setPosition(0.55);
 
         }
 

@@ -51,7 +51,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
 
     protected BNO055IMU imuSensor = null;
 
-    protected HardwareRian robot= null;
+    protected HardwareVLSB robot= null;
 
     protected int leftBackStamp;
     protected int leftFrontStamp;
@@ -64,12 +64,13 @@ public class AutoVLSBPlanARed extends AutoRelic {
 
         glyphLiftPosition = 2200;
         centerGlyphAngleOffset = 0;
+        cryptoBoxDistance = -500;
 
     }
 
     @Override
     public void init() {
-        robot = new HardwareRian();
+        robot = new HardwareVLSB();
         robot.init(hardwareMap);
 
         leftMotors = new DcMotor[2];
@@ -81,6 +82,8 @@ public class AutoVLSBPlanARed extends AutoRelic {
 
         jewelArm = robot.jewelArm;
         jewelHitter = robot.jewelHitter;
+
+        smolL = robot.smolL;
 
         jewelSensor = robot.jewelSensor;
         jewelSensorDistance = robot.jewelSensorDistance;
@@ -108,6 +111,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
         timeStamp = System.currentTimeMillis();
         vuforia.vumarkImage = "Unknown";
         jewelKicker.start();
+        smolL.setPosition(0.55);
     }
 
     @Override
@@ -140,7 +144,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 break;
             case 2:
 
-                if ((robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp + robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp > 3575) && (robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp < -3575)) {
+                if ((robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp + robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp < -3575) && (robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp > 3575)) {
                     turnAtPower(0.0);
                     wheelDistanceLandMark = getWheelOdometer();
                     telemetry.addData("left", robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp + robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp);
@@ -155,7 +159,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 break;
             case 3:
                 // move straight
-                if ( 0== moveByDistance(0.5, cryptoBoxDistance)) {
+                if ( 0 == moveByDistance(-0.5, cryptoBoxDistance)) {
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
                     state = 4;
@@ -196,7 +200,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
-                    navigation.resetTurn(leftMotors, rightMotors);
+                    // navigation.resetTurn(leftMotors, rightMotors);
                     // lower glyph bars
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorHolderPower);
 
@@ -209,8 +213,8 @@ public class AutoVLSBPlanARed extends AutoRelic {
 
                 if (System.currentTimeMillis() - timeStamp > 300) {
                     getWheelLandmarks();
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    state = 8;
+                    // navigation.resetTurn(leftMotors, rightMotors);
+                    state = 10;
                 }
 
                 break;
@@ -237,7 +241,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 // move to center
                 if (0 == moveByDistance(0.8, glyph2CenterDistance)) {
                     moveAtPower(0.0);
-                    navigation.resetTurn(leftMotors, rightMotors);
+                    //navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
                     state = 11;
@@ -257,7 +261,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 // back up
                 if (0 == moveByDistance(-0.8, glyph2CenterDistance)) {
                     moveAtPower(0.0);
-                    navigation.resetTurn(leftMotors, rightMotors);
+                    //navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     state = 13;
                 }
@@ -269,8 +273,8 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 // wait 1 second
                 if (System.currentTimeMillis() - timeStamp > 300) {
                     getWheelLandmarks();
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    state = 14;
+                    //navigation.resetTurn(leftMotors, rightMotors);
+                    state = 15;
                 }
                 break;
             case 14:
@@ -359,31 +363,22 @@ public class AutoVLSBPlanARed extends AutoRelic {
     }
 
     public void releaseGlyph () {
-        robot.leftLiftWheel1.setPower(1.0);
-        robot.leftLiftWheel2.setPower(1.0);
-        robot.leftLiftWheel3.setPower(1.0);
-        robot.rightLiftWheel1.setPower(-1.0);
-        robot.rightLiftWheel2.setPower(-1.0);
-        robot.rightLiftWheel3.setPower(-1.0);
+        robot.smolL.setPosition(0.00);
+        robot.lowerBeltServo1.setPower(-1.0);
+        robot.lowerBeltServo2.setPower(-1.0);
     }
 
     public void collectGlyph () {
-        robot.leftLiftWheel1.setPower(-1.0);
-        robot.leftLiftWheel2.setPower(-1.0);
-        robot.leftLiftWheel3.setPower(-1.0);
-        robot.rightLiftWheel1.setPower(1.0);
-        robot.rightLiftWheel2.setPower(1.0);
-        robot.rightLiftWheel3.setPower(1.0);
-        robot.beltServo.setPower(-1.0);
+        robot.smolL.setPosition(0.50);
+        robot.leftLiftWheel.setPower(-1.0);
+        robot.rightLiftWheel.setPower(1.0);
+        robot.lowerBeltServo1.setPower(-1.0);
+        robot.lowerBeltServo2.setPower(-1.0);
     }
 
     public void stopGlyphWheels(){
-        robot.leftLiftWheel1.setPower(0.0);
-        robot.leftLiftWheel2.setPower(0.0);
-        robot.leftLiftWheel3.setPower(0.0);
-        robot.rightLiftWheel1.setPower(0.0);
-        robot.rightLiftWheel2.setPower(0.0);
-        robot.rightLiftWheel3.setPower(0.0);
+        robot.leftLiftWheel.setPower(0.0);
+        robot.rightLiftWheel.setPower(0.0);
     }
 
 }

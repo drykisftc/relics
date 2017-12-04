@@ -35,6 +35,7 @@ public class HardwareVLSB extends HardwareBase
     //servos
     public Servo jewelArm = null;
     public Servo jewelHitter = null;
+    public Servo smolL = null;
 
     public CRServo lowerBeltServo1 = null;
     public CRServo lowerBeltServo2 = null;
@@ -62,8 +63,8 @@ public class HardwareVLSB extends HardwareBase
 
         motorLeftBackWheel = hwMap.dcMotor.get("leftBackWheel");
         motorRightBackWheel = hwMap.dcMotor.get("rightBackWheel");
-        motorLeftBackWheel.setDirection(DcMotor.Direction.FORWARD);  // 40 to 1 andymark motor
-        motorRightBackWheel.setDirection(DcMotor.Direction.REVERSE); // 40 to 1 andymark motor
+        motorLeftBackWheel.setDirection(DcMotor.Direction.REVERSE);  // 40 to 1 andymark motor
+        motorRightBackWheel.setDirection(DcMotor.Direction.FORWARD); // 40 to 1 andymark motor
         motorLeftBackWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorRightBackWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLeftBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -71,8 +72,8 @@ public class HardwareVLSB extends HardwareBase
 
         motorLeftFrontWheel = hwMap.dcMotor.get("leftFrontWheel");
         motorRightFrontWheel = hwMap.dcMotor.get("rightFrontWheel");
-        motorLeftFrontWheel.setDirection(DcMotor.Direction.FORWARD);  // 40 to 1 andymark motor
-        motorRightFrontWheel.setDirection(DcMotor.Direction.REVERSE); // 40 to 1 andymark motor
+        motorLeftFrontWheel.setDirection(DcMotor.Direction.REVERSE);  // 40 to 1 andymark motor
+        motorRightFrontWheel.setDirection(DcMotor.Direction.FORWARD); // 40 to 1 andymark motor
         motorLeftFrontWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorRightFrontWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorLeftFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -85,6 +86,7 @@ public class HardwareVLSB extends HardwareBase
 
         jewelHitter = hwMap.servo.get("jewelHitter");
         jewelArm = hwMap.servo.get("jewelArm");
+        smolL = hwMap.servo.get("smolL");
 
         jewelSensor = hwMap.get(ColorSensor.class, "jewelSensor");
         jewelSensorDistance = hwMap.get(DistanceSensor.class, "jewelSensor");
