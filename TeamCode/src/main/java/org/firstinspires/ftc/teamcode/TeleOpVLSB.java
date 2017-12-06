@@ -101,7 +101,9 @@ public class TeleOpVLSB extends OpMode{
     @Override
     public void start() {
         robot.start();
-        robot.jewelArm.setPosition(0.65);
+        robot.jewelArm.setPosition(0.55);
+        robot.jewelHitter.setPosition(1.0);
+        robot.glyphPusher.setPosition( 0.01);
         telemetry.update();
     }
 
@@ -117,6 +119,7 @@ public class TeleOpVLSB extends OpMode{
         glyphLiftControl();
         jewelArmControl();
         smolLControl();
+        glyphPusherControl();
         telemetry.update();
     }
 
@@ -161,23 +164,13 @@ public class TeleOpVLSB extends OpMode{
 
     public void glyphWheelControl() {
 
-        if (gamepad2.dpad_up) {
+        if (gamepad2.dpad_up || gamepad1.right_bumper) {
             // up
             robot.leftLiftWheel.setPower(0.5);
             robot.rightLiftWheel.setPower(-0.5);
 
-        } else if (gamepad2.dpad_down) {
+        } else if (gamepad2.dpad_down || gamepad1.left_bumper) {
             //down
-            robot.leftLiftWheel.setPower(-0.5);
-            robot.rightLiftWheel.setPower(0.5);
-
-        } else if (gamepad1.right_bumper) {
-
-            robot.leftLiftWheel.setPower(0.5);
-            robot.rightLiftWheel.setPower(-0.5);
-
-        } else if (gamepad1.left_bumper) {
-
             robot.leftLiftWheel.setPower(-0.5);
             robot.rightLiftWheel.setPower(0.5);
 
@@ -191,15 +184,15 @@ public class TeleOpVLSB extends OpMode{
             robot.leftLiftWheel.setPower(-0.5);
             robot.rightLiftWheel.setPower(-0.5);
 
-        } else if (gamepad1.left_trigger > 0.5) {
+        } else if (gamepad1.left_trigger > 0.1) {
 
-            robot.leftLiftWheel.setPower(0.5);
-            robot.rightLiftWheel.setPower(0.5);
+            robot.leftLiftWheel.setPower(gamepad1.left_trigger*0.25);
+            robot.rightLiftWheel.setPower(gamepad1.left_trigger*0.25);
 
-        } else if (gamepad1.right_trigger > 0.5) {
+        } else if (gamepad1.right_trigger > 0.1) {
 
-            robot.leftLiftWheel.setPower(-0.5);
-            robot.rightLiftWheel.setPower(-0.5);
+            robot.leftLiftWheel.setPower(-gamepad1.right_trigger*0.25);
+            robot.rightLiftWheel.setPower(-gamepad1.right_trigger*0.25);
 
         } else {
 
@@ -290,30 +283,38 @@ public class TeleOpVLSB extends OpMode{
 
         }
 
-        if (gamepad2.x) {
-
-            robot.jewelHitter.setPosition(robot.jewelHitter.getPosition() + 0.001);
-
-        } else if (gamepad2.y) {
-
-            robot.jewelHitter.setPosition(robot.jewelHitter.getPosition() - 0.001);
-
-        }
+//        if (gamepad2.x) {
+//
+//            robot.jewelHitter.setPosition(robot.jewelHitter.getPosition() + 0.001);
+//
+//        } else if (gamepad2.y) {
+//
+//            robot.jewelHitter.setPosition(robot.jewelHitter.getPosition() - 0.001);
+//
+//        }
 
     }
 
     public void smolLControl() {
 
-        if (gamepad2.left_trigger > 0.05) {
+        if (gamepad1.dpad_left || gamepad2.left_trigger > 0.05) {
 
-            robot.smolL.setPosition(0.00);
+            robot.smolL.setPosition(0.15);
 
-        } else if (gamepad2.right_trigger > 0.05) {
+        } else if (gamepad1.dpad_right || gamepad2.right_trigger > 0.05) {
 
-            robot.smolL.setPosition(0.55);
+            robot.smolL.setPosition(0.65);
 
         }
+    }
 
+    public void glyphPusherControl() {
+        if (gamepad1.x || gamepad2.x) {
+            robot.glyphPusher.setPosition( 0.01);
+        }
+        if (gamepad1.y || gamepad2.y) {
+            robot.glyphPusher.setPosition(0.5);
+        }
     }
 
     /*

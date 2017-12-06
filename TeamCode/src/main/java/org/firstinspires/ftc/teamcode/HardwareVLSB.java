@@ -36,6 +36,7 @@ public class HardwareVLSB extends HardwareBase
     public Servo jewelArm = null;
     public Servo jewelHitter = null;
     public Servo smolL = null;
+    public Servo glyphPusher = null;
 
     public CRServo lowerBeltServo1 = null;
     public CRServo lowerBeltServo2 = null;
@@ -87,6 +88,7 @@ public class HardwareVLSB extends HardwareBase
         jewelHitter = hwMap.servo.get("jewelHitter");
         jewelArm = hwMap.servo.get("jewelArm");
         smolL = hwMap.servo.get("smolL");
+        glyphPusher = hwMap.servo.get("glyphPusher");
 
         jewelSensor = hwMap.get(ColorSensor.class, "jewelSensor");
         jewelSensorDistance = hwMap.get(DistanceSensor.class, "jewelSensor");
