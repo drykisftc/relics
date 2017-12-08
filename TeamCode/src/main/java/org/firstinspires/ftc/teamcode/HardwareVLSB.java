@@ -36,6 +36,7 @@ public class HardwareVLSB extends HardwareBase
     public Servo jewelArm = null;
     public Servo jewelHitter = null;
     public Servo smolL = null;
+    public Servo glyphPusher = null;
 
     public CRServo lowerBeltServo1 = null;
     public CRServo lowerBeltServo2 = null;
@@ -49,6 +50,15 @@ public class HardwareVLSB extends HardwareBase
     Orientation angles = null;
 
     protected float axleDistance = 2326.752f; //1163.376f
+
+    double pusherLoadPosition = 0.0;
+    double pusherActPosition = 0.5;
+
+    double blockerUnloadPosition = 0.15;
+    double blockerLoadPosition = 0.65;
+
+    double defaultGlyphWheelPower = 0.3;
+    double defaultGlyphLiftPower = 0.6;
 
     /* Constructor */
     public HardwareVLSB(){
@@ -87,6 +97,7 @@ public class HardwareVLSB extends HardwareBase
         jewelHitter = hwMap.servo.get("jewelHitter");
         jewelArm = hwMap.servo.get("jewelArm");
         smolL = hwMap.servo.get("smolL");
+        glyphPusher = hwMap.servo.get("glyphPusher");
 
         jewelSensor = hwMap.get(ColorSensor.class, "jewelSensor");
         jewelSensorDistance = hwMap.get(DistanceSensor.class, "jewelSensor");
