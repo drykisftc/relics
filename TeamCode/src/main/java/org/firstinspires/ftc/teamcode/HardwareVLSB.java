@@ -54,8 +54,8 @@ public class HardwareVLSB extends HardwareBase
     double pusherLoadPosition = 0.0;
     double pusherActPosition = 0.5;
 
-    double blockerUnloadPosition = 0.15;
-    double blockerLoadPosition = 0.65;
+    double blockerUnloadPosition = 0.00;
+    double blockerLoadPosition = 0.45;
 
     double defaultGlyphWheelPower = 0.3;
     double defaultGlyphLiftPower = 0.6;

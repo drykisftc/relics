@@ -44,7 +44,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@Autonomous(name = "VLSB_PlanA_Red", group = "VLSB")
+@Autonomous(name = "VLSB_PlanA_Red", group = "a_VLSB")
 
 public class AutoVLSBPlanARed extends AutoRelic {
 
@@ -90,12 +90,16 @@ public class AutoVLSBPlanARed extends AutoRelic {
         imuSensor = robot.imu;
 
         jewelKicker = new JewelKicker(jewelSensor,jewelArm,jewelHitter,telemetry);
-        jewelKicker.init();
+        //jewelKicker.init();
+        jewelKicker.jewelArmActionPosition = 0.05;
+        jewelKicker.jewelArmRestPosition = 0.50;
 
         navigation = new Navigation(telemetry);
 
         vuforia = new HardwareVuforia(VuforiaLocalizer.CameraDirection.BACK);
         vuforia.init(hardwareMap);
+
+        vuforiaDetectingPower = -0.2;
 
         telemetry.addData("jewelArm", jewelArm.getPosition());
         telemetry.addData("jewelHitter", jewelHitter.getPosition());

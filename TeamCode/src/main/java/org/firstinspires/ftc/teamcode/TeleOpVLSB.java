@@ -132,7 +132,7 @@ public class TeleOpVLSB extends OpMode{
         float throttle = -gamepad1.right_stick_y;
         float direction = gamepad1.right_stick_x;
         float parallel = -gamepad1.left_stick_x;
-        double diagonal = Math.pow(gamepad1.left_stick_y, 1.8);
+        double diagonal = gamepad1.left_stick_y;
         float right = throttle - direction;
         float left = throttle + direction;
         double diagonal1 = parallel + diagonal;
@@ -172,12 +172,12 @@ public class TeleOpVLSB extends OpMode{
 
         if (gamepad2.right_bumper || gamepad1.right_bumper) {
             // out
-            robot.leftLiftWheel.setPower(robot.defaultGlyphWheelPower);
-            robot.rightLiftWheel.setPower(-robot.defaultGlyphWheelPower);
-        } else if (gamepad2.left_bumper || gamepad1.left_bumper) {
-            // in
             robot.leftLiftWheel.setPower(-robot.defaultGlyphWheelPower);
             robot.rightLiftWheel.setPower(robot.defaultGlyphWheelPower);
+        } else if (gamepad2.left_bumper || gamepad1.left_bumper) {
+            // in
+            robot.leftLiftWheel.setPower(robot.defaultGlyphWheelPower);
+            robot.rightLiftWheel.setPower(-robot.defaultGlyphWheelPower);
             robot.glyphPusher.setPosition(robot.pusherLoadPosition); //make sure that pusher is out of the way
         } else if ( Math.abs(lw) > 0.05 ||  Math.abs(rw) > 0.05 ) {
             robot.leftLiftWheel.setPower(lw*-0.25);
@@ -191,12 +191,26 @@ public class TeleOpVLSB extends OpMode{
 
     public void glyphDepositControl() {
 
-        if (gamepad2.left_trigger > 0.05 || gamepad1.left_trigger > 0.05) {
-            robot.lowerBeltServo1.setPower(1.0);
-            robot.lowerBeltServo2.setPower(1.0);
-        } else if (gamepad2.right_trigger > 0.05 || gamepad1.right_trigger > 0.05) {
+        if (gamepad2.left_trigger > 0.05) {
+
             robot.lowerBeltServo1.setPower(-1.0);
             robot.lowerBeltServo2.setPower(-1.0);
+
+        } else if (gamepad2.right_trigger > 0.05) {
+
+            robot.lowerBeltServo1.setPower(1.0);
+            robot.lowerBeltServo2.setPower(1.0);
+
+        } else if (gamepad1.left_trigger > 0.05) {
+
+            robot.lowerBeltServo1.setPower(-1.0);
+            robot.lowerBeltServo2.setPower(-1.0);
+
+        } else if (gamepad1.right_trigger > 0.05) {
+
+            robot.lowerBeltServo1.setPower(1.0);
+            robot.lowerBeltServo2.setPower(1.0);
+
         } else {
             robot.lowerBeltServo1.setPower(0.0);
             robot.lowerBeltServo2.setPower(0.0);
@@ -205,21 +219,41 @@ public class TeleOpVLSB extends OpMode{
 
     public void glyphLiftControl () {
 
-       if (gamepad1.dpad_up || gamepad2.dpad_up) {
+        if (gamepad1.dpad_up) {
+
             liftMotorPosition = robot.liftMotor.getCurrentPosition();
             if (liftMotorPosition < liftHeightLimit) {
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 robot.liftMotor.setPower(robot.defaultGlyphLiftPower);
             }
-        } else if (gamepad1.dpad_down || gamepad2.dpad_down) {
+
+        } else if (gamepad1.dpad_down) {
+
             liftMotorPosition = robot.liftMotor.getCurrentPosition();
             if (liftMotorPosition > -liftHeightLimit) {
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                robot.liftMotor.setPower(-robot.defaultGlyphWheelPower);
+                robot.liftMotor.setPower(-robot.defaultGlyphLiftPower);
             }
+
+        } else if (gamepad2.dpad_up) {
+
+            liftMotorPosition = robot.liftMotor.getCurrentPosition();
+            if (liftMotorPosition < liftHeightLimit) {
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.liftMotor.setPower(robot.defaultGlyphLiftPower);
+            }
+
+        } else if (gamepad2.dpad_down) {
+
+            liftMotorPosition = robot.liftMotor.getCurrentPosition();
+            if (liftMotorPosition > -liftHeightLimit) {
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.liftMotor.setPower(-robot.defaultGlyphLiftPower);
+            }
+
         } else {
-           // hold position
-           VortexUtils.moveMotorByEncoder(robot.liftMotor, liftMotorPosition, liftMotorHolderPower);
+            // hold position
+            VortexUtils.moveMotorByEncoder(robot.liftMotor, liftMotorPosition, liftMotorHolderPower);
         }
 
         telemetry.addData("right arm pos ", "%6d", liftMotorPosition);
