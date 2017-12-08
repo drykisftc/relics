@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -56,6 +57,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  */
 
 @TeleOp(name="TeleOp: A Pro Nathen", group="TeleOp")
+@Disabled
 public class TeleOpNathen extends OpMode{
 
     /* Declare OpMode members. */
@@ -210,8 +212,6 @@ public class TeleOpNathen extends OpMode{
         telemetry.addData("right arm pos ", "%6d", robot.liftMotorPosition);
     }
 
-
-
     /*
      * Code to run ONCE after the driver hits STOP
      */
@@ -219,5 +219,6 @@ public class TeleOpNathen extends OpMode{
     public void stop() {
         robot.stop();
     }
+
 
 }
