@@ -126,7 +126,7 @@ public class TeleOpVLSB extends OpMode{
         float throttle = -gamepad1.right_stick_y;
         float direction = gamepad1.right_stick_x;
         float parallel = -gamepad1.left_stick_x;
-        double diagonal = gamepad1.left_stick_y;
+        double diagonal = Math.pow(gamepad1.left_stick_y, 1.8);
         float right = throttle - direction;
         float left = throttle + direction;
         double diagonal1 = parallel + diagonal;
