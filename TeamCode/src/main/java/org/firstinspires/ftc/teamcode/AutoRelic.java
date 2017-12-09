@@ -56,8 +56,6 @@ public class AutoRelic extends OpMode {
 
     protected String teamColor = "red";
 
-    protected float axleDiagonalDistance;
-
     protected int state;
     protected long timeStamp;
     protected float wheelDistanceLandMark;
@@ -79,6 +77,7 @@ public class AutoRelic extends OpMode {
     protected double glyphBackupPower = 0.2;
     protected double center2GlyphBoxPower = -0.8;
     protected double move2CenterPower = 0.8;
+    protected double collectingGlyphPower = 0.3;
     protected double glyphDeliverPower = 0.2;
     protected double backupPower = -0.1;
 

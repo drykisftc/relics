@@ -49,7 +49,7 @@ public class HardwareVLSB extends HardwareBase
     BNO055IMU imu = null;
     Orientation angles = null;
 
-    protected float axleDistance = 2326.752f; //1163.376f
+    protected float axleDistance = 2282; //80.79 * 14;
 
     double pusherLoadPosition = 0.0;
     double pusherActPosition = 0.5;
@@ -218,4 +218,12 @@ public class HardwareVLSB extends HardwareBase
         rightLiftWheel.setPower(-defaultGlyphWheelPower);
         glyphPusher.setPosition(pusherLoadPosition);
     }
+
+    void initAllDevices() {
+        jewelArm.setPosition(0.55 );
+        jewelHitter.setPosition(1.0);
+        glyphPusher.setPosition( 0.05);
+        smolL.setPosition(blockerLoadPosition);
+    }
+
 }

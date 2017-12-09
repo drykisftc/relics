@@ -103,9 +103,7 @@ public class TeleOpVLSB extends OpMode{
     @Override
     public void start() {
         robot.start();
-        robot.jewelArm.setPosition(0.55);
-        robot.jewelHitter.setPosition(1.0);
-        robot.glyphPusher.setPosition( 0.01);
+        robot.initAllDevices();
         robot.smolL.setPosition(robot.blockerLoadPosition);
         telemetry.update();
     }
