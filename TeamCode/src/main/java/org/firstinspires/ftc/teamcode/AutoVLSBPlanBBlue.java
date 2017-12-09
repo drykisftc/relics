@@ -40,17 +40,23 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@Autonomous(name = "VLSB_PlanA_Blue", group = "a_VLSB")
-public class AutoVLSBPlanABlue extends AutoVLSBPlanARed {
+@Autonomous(name = "VLSB_PlanB_Blue", group = "A_VLSB")
 
-    public AutoVLSBPlanABlue() {
+public class AutoVLSBPlanBBlue extends AutoVLSBPlanBRed {
+
+    public AutoVLSBPlanBBlue() {
         super();
-        teamColor = "blue";
-        vuforiaDetectingPower = 0.2;
 
-        leftColumnDistance = -2400;
-        centerColumnDistance = -2950;
-        rightColumnDistance = -3600;
+        teamColor = "blue";
+        fGlyphTurnAngle = 180;
+
+        vuforiaDetectingPower = -0.2;
+
+        rightColumnDistance = 3800;
+        centerColumnDistance = 2400;
+        leftColumnDistance = 1000;
+
+        sideWayDistance = -1600;
     }
 
 }
