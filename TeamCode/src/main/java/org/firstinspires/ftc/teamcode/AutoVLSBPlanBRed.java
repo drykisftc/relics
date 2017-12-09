@@ -44,9 +44,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@Autonomous(name = "VLSB_PlanA_Red", group = "a_VLSB")
+@Autonomous(name = "VLSB_PlanB_Red", group = "a_VLSB")
 
-public class AutoVLSBPlanARed extends AutoRelic {
+public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
 
 
     protected BNO055IMU imuSensor = null;
@@ -59,7 +59,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
     protected int rightFrontStamp;
 
 
-    public AutoVLSBPlanARed() {
+    public AutoVLSBPlanBRed() {
         teamColor = "red";
 
         glyphLiftPosition = 2200;
@@ -68,54 +68,9 @@ public class AutoVLSBPlanARed extends AutoRelic {
 
         vuforiaDetectingPower = -0.2;
 
-    }
-
-    @Override
-    public void init() {
-        robot = new HardwareVLSB();
-        robot.init(hardwareMap);
-
-        leftMotors = new DcMotor[2];
-        leftMotors[0] = robot.motorLeftFrontWheel;
-        leftMotors[1] = robot.motorLeftBackWheel;
-        rightMotors = new DcMotor[2];
-        rightMotors[0] = robot.motorRightFrontWheel;
-        rightMotors[1] = robot.motorRightBackWheel;
-
-        jewelArm = robot.jewelArm;
-        jewelHitter = robot.jewelHitter;
-
-        smolL = robot.smolL;
-
-        jewelSensor = robot.jewelSensor;
-        jewelSensorDistance = robot.jewelSensorDistance;
-        imuSensor = robot.imu;
-
-        jewelKicker = new JewelKicker(jewelSensor,jewelArm,jewelHitter,telemetry);
-        //jewelKicker.init();
-        jewelKicker.jewelArmActionPosition = 0.05;
-        jewelKicker.jewelArmRestPosition = 0.50;
-
-        navigation = new Navigation(telemetry);
-
-        vuforia = new HardwareVuforia(VuforiaLocalizer.CameraDirection.BACK);
-        vuforia.init(hardwareMap);
-
-        telemetry.addData("jewelArm", jewelArm.getPosition());
-        telemetry.addData("jewelHitter", jewelHitter.getPosition());
-        telemetry.update();
-    }
-
-
-    @Override
-    public void start() {
-        robot.start();
-        vuforia.start();
-        state = 0;
-        timeStamp = System.currentTimeMillis();
-        vuforia.vumarkImage = "Unknown";
-        jewelKicker.start();
-        smolL.setPosition(0.55);
+        leftColumnDistance = 3800;
+        centerColumnDistance = 2350;
+        rightColumnDistance = 900;
     }
 
     @Override
@@ -136,9 +91,8 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 //read vumark
                 computeGlyphColumnDistance();
 
-                //move forward with encoder
-                if (0 == moveByDistance(vuforiaDetectingPower, columnDistance)) {
-                    vuforia.relicTrackables.deactivate();
+                //move backward with encoder
+                if (0 == moveByDistance(vuforiaDetectingPower, offBalanceStoneDistance)) {
                     moveAtPower(0.0);
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -147,17 +101,10 @@ public class AutoVLSBPlanARed extends AutoRelic {
 
                 break;
             case 2:
-
-                if ((robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp + robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp < -3575) && (robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp > 3575)) {
-                    turnAtPower(0.0);
+                //side movement
+                if ( 0 == sideMoveByDistance(sideMovePower, columnDistance) ){
                     wheelDistanceLandMark = getWheelOdometer();
-                    telemetry.addData("left", robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp + robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp);
-                    telemetry.addData("left", robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp);
-                    getWheelLandmarks();
                     state = 3;
-
-                } else {
-                    turnAtPower(glyTurnPower);
                 }
 
                 break;
