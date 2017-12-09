@@ -50,13 +50,12 @@ public class AutoVLSBPlanBBlue extends AutoVLSBPlanBRed {
         teamColor = "blue";
         fGlyphTurnAngle = 180;
 
-        vuforiaDetectingPower = -0.2;
-
         rightColumnDistance = 3800;
         centerColumnDistance = 2400;
         leftColumnDistance = 1000;
 
-        sideWayDistance = -1600;
+        sideMovePower = -0.2;
+        vuforiaDetectingPower = 0.2;
     }
 
 }

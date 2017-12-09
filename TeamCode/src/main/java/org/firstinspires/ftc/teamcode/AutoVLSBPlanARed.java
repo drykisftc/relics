@@ -272,7 +272,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                     robot.glyphWheelUnload();
 
                     // lift glyph bar
-                    VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition*3, liftMotorMovePower);
+                    VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition*2, liftMotorMovePower);
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
                 break;
@@ -350,11 +350,9 @@ public class AutoVLSBPlanARed extends AutoRelic {
         int distance = Math.abs(d);
         if (power == 0) {
             return 0; // zero power do nothing
-        } else if (power < 0){
-            distance = -distance;
         }
-        if (robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp > -distance
-                && robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp < distance) {
+        if (Math.abs(robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp) < distance
+                && Math.abs(robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp) < distance) {
             sideMoveAtPower(sideMovePower);
         } else {
             sideMoveAtPower(0.0);

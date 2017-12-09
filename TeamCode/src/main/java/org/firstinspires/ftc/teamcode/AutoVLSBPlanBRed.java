@@ -44,7 +44,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
 
-    int sideWayDistance = 1600;
+    int sideWayDistance = 6200;
 
     public AutoVLSBPlanBRed() {
 
@@ -60,6 +60,10 @@ public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
         glyph2CenterDistance = 3000;
 
         backupDistance = 300;
+
+        sideMovePower = -0.2;
+
+        glyphDeliverPower = -0.2;
     }
 
     @Override
@@ -136,13 +140,13 @@ public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
                 if (0 == moveByDistance(glyphDeliverPower, backupDistance)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
-                    state = 7;
+                    state = 20;
                 }
 
                 break;
             case 7:
                 // move side way
-                if ( 0 == sideMoveByDistance(sideMovePower, sideWayDistance) ){
+                if ( 0 == sideMoveByDistance(sideMovePower, sideWayDistance-columnDistance) ){
                     wheelDistanceLandMark = getWheelOdometer();
                     getWheelLandmarks();
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorHolderPower);
@@ -153,7 +157,7 @@ public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
                 break;
             case 8:
                 // move to center
-                if (0 == moveByDistance(glyphDeliverPower, glyph2CenterDistance)) {
+                if (0 == moveByDistance(move2CenterPower, glyph2CenterDistance)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 9;
@@ -180,7 +184,7 @@ public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
                 break;
             case 11:
                 // move away from center
-                if (0 == moveByDistance(glyphDeliverPower, -glyph2CenterDistance)) {
+                if (0 == moveByDistance(-move2CenterPower, glyph2CenterDistance)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 12;
@@ -188,7 +192,7 @@ public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
                 break;
             case 12:
                 // move side way
-                if ( 0 == sideMoveByDistance(sideMovePower, -sideWayDistance) ){
+                if ( 0 == sideMoveByDistance(-sideMovePower, sideWayDistance-columnDistance) ){
                     wheelDistanceLandMark = getWheelOdometer();
                     getWheelLandmarks();
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorHolderPower);
@@ -214,7 +218,7 @@ public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
                 break;
             case 15:
                 // back up
-                if (0 == moveByDistance(glyphDeliverPower, backupDistance)) {
+                if (0 == moveByDistance(-glyphDeliverPower, backupDistance)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 16;
