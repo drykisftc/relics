@@ -192,4 +192,30 @@ public class HardwareVLSB extends HardwareBase
     String formatDegrees(double degrees){
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
+
+    void beltDepositGlyph() {
+        lowerBeltServo1.setPower(1.0);
+        lowerBeltServo2.setPower(1.0);
+    }
+
+    void beltSpitOutGlytph() {
+        lowerBeltServo1.setPower(-1.0);
+        lowerBeltServo2.setPower(-1.0);
+    }
+
+    void beltStop() {
+        lowerBeltServo1.setPower(0);
+        lowerBeltServo2.setPower(0);
+    }
+
+    void glyphWheelLoad(){
+        leftLiftWheel.setPower(-defaultGlyphWheelPower);
+        rightLiftWheel.setPower(defaultGlyphWheelPower);
+    }
+
+    void glyphWheelUnload() {
+        leftLiftWheel.setPower(defaultGlyphWheelPower);
+        rightLiftWheel.setPower(-defaultGlyphWheelPower);
+        glyphPusher.setPosition(pusherLoadPosition);
+    }
 }

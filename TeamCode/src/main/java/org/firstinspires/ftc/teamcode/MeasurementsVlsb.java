@@ -37,6 +37,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 /**
  * This file provides basic Telop driving for a Pushbot robot.
  * The code is structured as an Iterative OpMode
@@ -52,15 +54,11 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="TeleOp: A Pro VLSB", group="TeleOp")
-public class TeleOpVLSB extends OpMode{
+@TeleOp(name="TeleOp: VLSB Measurement", group="Utilities")
+public class MeasurementsVlsb extends OpMode{
 
     /* Declare OpMode members. */
     protected HardwareVLSB robot = new HardwareVLSB();
-
-    protected int liftHeightLimit = 10000;
-    protected int liftMotorPosition = 0;
-    protected double liftMotorHolderPower = 0.3;
 
     double [] wheelPowerLUT = {0.0f, 0.05f, 0.15f, 0.18f, 0.20f,
             0.22f, 0.24f, 0.26f, 0.28f, 0.30f, 0.32f, 0.34f, 0.36f,
@@ -80,11 +78,19 @@ public class TeleOpVLSB extends OpMode{
          */
         robot.init(hardwareMap);
 
+        // wheels
+        robot.motorLeftBackWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motorRightBackWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motorLeftBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.motorRightBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.motorLeftBackWheel.setPower(0.0);
+        robot.motorRightBackWheel.setPower(0.0);
+
+
+
         // Send telemetry message to signify robot waiting;
         telemetry.addData("TeleOp", "Hello Vortex");    //
         updateTelemetry(telemetry);
-
-        robot.pusherLoadPosition = 0.15;
     }
 
     /*
@@ -102,11 +108,24 @@ public class TeleOpVLSB extends OpMode{
      */
     @Override
     public void start() {
-        robot.start();
-        robot.jewelArm.setPosition(0.55);
-        robot.jewelHitter.setPosition(1.0);
-        robot.glyphPusher.setPosition( 0.01);
-        robot.smolL.setPosition(robot.blockerLoadPosition);
+
+        // wheels
+        robot.motorLeftBackWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motorRightBackWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motorLeftBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.motorRightBackWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.motorLeftBackWheel.setPower(0.0);
+        robot.motorRightBackWheel.setPower(0.0);
+
+        robot.motorLeftFrontWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motorRightFrontWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        robot.motorLeftFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.motorRightFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.motorLeftFrontWheel.setPower(0.0);
+        robot.motorRightFrontWheel.setPower(0.0);
+
+
+
         telemetry.update();
     }
 
@@ -117,26 +136,21 @@ public class TeleOpVLSB extends OpMode{
     public void loop() {
 
         joystickWheelControl();
-        glyphWheelControl();
-        glyphDepositControl();
-        glyphLiftControl();
         jewelArmControl();
-        smolLControl();
-        glyphPusherControl();
+        measurements();
         telemetry.update();
     }
 
     public void joystickWheelControl() {
 
         // Mecanum wheel driving system (note: The joystick goes negative when pushed forwards, so negate it)
-        float throttle = -gamepad1.right_stick_y;
         float direction = gamepad1.right_stick_x;
         float parallel = -gamepad1.left_stick_x;
-        double diagonal = gamepad1.left_stick_y;
-        float right = throttle - direction;
-        float left = throttle + direction;
-        double diagonal1 = parallel + diagonal;
-        double diagonal2 = -parallel + diagonal;
+        float diagonal = gamepad1.left_stick_y;
+        float right = -direction;
+        float left = direction;
+        float diagonal1 = parallel + diagonal;
+        float diagonal2 = -parallel + diagonal;
 
         if (Math.abs(parallel) > 0.05 || Math.abs(diagonal) > 0.05) {
 
@@ -160,116 +174,54 @@ public class TeleOpVLSB extends OpMode{
 
         }
 
+
         // Send telemetry message to signify robot running;
         telemetry.addData("left",  "%.2f", left);
         telemetry.addData("right", "%.2f", right);
     }
 
-    public void glyphWheelControl() {
-
-        double lw = gamepad2.left_stick_y;
-        double rw = gamepad2.right_stick_y;
-
-        if (gamepad2.right_bumper || gamepad1.right_bumper) {
-            robot.glyphWheelLoad();
-        } else if (gamepad2.left_bumper || gamepad1.left_bumper) {
-            robot.glyphWheelUnload();
-        } else if (Math.abs(lw) > 0.05 || Math.abs(rw) > 0.05) {
-            robot.leftLiftWheel.setPower(lw * -0.25);
-            robot.rightLiftWheel.setPower(rw * 0.25);
-            robot.glyphPusher.setPosition(robot.pusherLoadPosition); //make sure that pusher is out of the way
-        } else {
-            robot.leftLiftWheel.setPower(0.0);
-            robot.rightLiftWheel.setPower(0.0);
-        }
-    }
-
-    public void glyphDepositControl() {
-
-        if (gamepad2.left_trigger > 0.05 || gamepad1.left_trigger > 0.05) {
-            robot.beltSpitOutGlytph();
-        } else if (gamepad2.right_trigger > 0.05 || gamepad1.right_trigger > 0.05) {
-            robot.beltDepositGlyph();
-        } else {
-           robot.beltStop();
-        }
-    }
-
-    public void glyphLiftControl () {
-
-        if (gamepad1.dpad_up) {
-
-            liftMotorPosition = robot.liftMotor.getCurrentPosition();
-            if (liftMotorPosition < liftHeightLimit) {
-                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                robot.liftMotor.setPower(robot.defaultGlyphLiftPower);
-            }
-
-        } else if (gamepad1.dpad_down) {
-
-            liftMotorPosition = robot.liftMotor.getCurrentPosition();
-            if (liftMotorPosition > -liftHeightLimit) {
-                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                robot.liftMotor.setPower(-robot.defaultGlyphLiftPower);
-            }
-
-        } else if (gamepad2.dpad_up) {
-
-            liftMotorPosition = robot.liftMotor.getCurrentPosition();
-            if (liftMotorPosition < liftHeightLimit) {
-                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                robot.liftMotor.setPower(robot.defaultGlyphLiftPower);
-            }
-
-        } else if (gamepad2.dpad_down) {
-
-            liftMotorPosition = robot.liftMotor.getCurrentPosition();
-            if (liftMotorPosition > -liftHeightLimit) {
-                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                robot.liftMotor.setPower(-robot.defaultGlyphLiftPower);
-            }
-
-        } else {
-            // hold position
-            VortexUtils.moveMotorByEncoder(robot.liftMotor, liftMotorPosition, liftMotorHolderPower);
-        }
-
-        telemetry.addData("right arm pos ", "%6d", liftMotorPosition);
-    }
-
     public void jewelArmControl() {
 
-        if (gamepad1.dpad_left || gamepad2.dpad_left) {
+        double jewelArmPosition = robot.jewelArm.getPosition();
+        double jewelHitterPosition = robot.jewelHitter.getPosition();
 
-            robot.jewelArm.setPosition(robot.jewelArm.getPosition() + 0.001);
-
-        } else if (gamepad1.dpad_right || gamepad2.dpad_right) {
-
-            robot.jewelArm.setPosition(robot.jewelArm.getPosition() - 0.001);
-
+        if (gamepad2.left_bumper) {
+            robot.jewelArm.setPosition(jewelArmPosition + 0.01);
+        } else if (gamepad2.right_bumper) {
+            robot.jewelArm.setPosition(jewelArmPosition - 0.01);
         }
+
+        if (gamepad2.dpad_left) {
+            robot.jewelHitter.setPosition(jewelHitterPosition + 0.01);
+        } else if (gamepad2.dpad_right) {
+            robot.jewelHitter.setPosition(jewelHitterPosition - 0.01);
+        }
+
+        telemetry.addData("armPosition", "%.2f", jewelArmPosition);
+        telemetry.addData("hitterPosition", "%.2f", jewelHitterPosition);
+
     }
 
-    public void smolLControl() {
+    public void measurements() {
 
-        if (gamepad1.a || gamepad2.a) {
+        //measure sensors, servos, and motors
+        telemetry.addData("armDistanceSensor: ", robot.jewelSensorDistance.getDistance(DistanceUnit.CM));
 
-            robot.smolL.setPosition(robot.blockerUnloadPosition);
-
-        } else if (gamepad1.b || gamepad2.b ) {
-
-            robot.smolL.setPosition(robot.blockerLoadPosition);
-
+        //jewel color detection
+        if (robot.jewelSensor.blue() > robot.jewelSensor.red() && robot.jewelSensor.blue() > robot.jewelSensor.green()) {
+            telemetry.addData("jewelColor", "blue");
+        } else if (robot.jewelSensor.red() > robot.jewelSensor.green() && robot.jewelSensor.red() > robot.jewelSensor.blue()) {
+            telemetry.addData("jewelColor", "red");
+        } else {
+            telemetry.addData("jewelColor", "noJewel");
         }
-    }
 
-    public void glyphPusherControl() {
-        if (gamepad1.x || gamepad2.x) {
-            robot.glyphPusher.setPosition(robot.pusherLoadPosition);
-        }
-        if (gamepad1.y || gamepad2.y) {
-            robot.glyphPusher.setPosition(robot.pusherActPosition);
-        }
+        //motors
+        telemetry.addData("leftBackWheel: ", -robot.motorLeftBackWheel.getCurrentPosition());
+        telemetry.addData("leftFrontWheel: ", -robot.motorLeftFrontWheel.getCurrentPosition());
+        telemetry.addData("rightBackWheel: ", -robot.motorRightBackWheel.getCurrentPosition());
+        telemetry.addData("rightFrontWheel: ", -robot.motorRightFrontWheel.getCurrentPosition());
+
     }
 
     /*

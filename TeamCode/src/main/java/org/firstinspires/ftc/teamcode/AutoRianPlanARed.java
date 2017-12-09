@@ -142,45 +142,22 @@ public class AutoRianPlanARed extends AutoRelic {
                     state = 2;
                 }
 
-                //move forward
-                /*if (!(robot.jewelSensorDistance.getDistance(DistanceUnit.CM) < cryptoBoxStopDistance)) {
-
-                    moveAtPower(vuforiaDetectingPower);
-
-                } else {
-
-                    moveAtPower(0);
-                    state = 2;
-                }*/
-
                 break;
             case 2:
-//                if (fGlyphTurnAngle == 0.0f || 0 == navigation.turnByEncoderOpenLoop(glyTurnPower,fGlyphTurnAngle,
-//                        robot.axleDistance, leftMotors, rightMotors)) {
-//                    turnAtPower(0.0);
-//                    telemetry.addData("left", robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp + robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp);
-//                    telemetry.addData("left", robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp);
-//                    getWheelLandmarks();
-//                    navigation.resetTurn(leftMotors, rightMotors);
-//                    state = 3;
-//                }
-
-                if ((robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp + robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp > 3575) && (robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp < -3575)) {
+                if (fGlyphTurnAngle == 0.0f || 0 == navigation.turnByEncoderOpenLoop(glyTurnPower,fGlyphTurnAngle,
+                        robot.axleDistance, leftMotors, rightMotors)) {
                     turnAtPower(0.0);
-                    wheelDistanceLandMark = getWheelOdometer();
                     telemetry.addData("left", robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp + robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp);
                     telemetry.addData("left", robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp);
                     getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
                     state = 3;
-
-                } else {
-                    turnAtPower(glyTurnPowerLow);
                 }
 
                 break;
             case 3:
                 // move straight
-                if ( 0== moveByDistance(0.5, cryptoBoxDistance)) {
+                if ( 0== moveByDistance(move2GlyphBoxPower, cryptoBoxDistance)) {
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
                     state = 4;
