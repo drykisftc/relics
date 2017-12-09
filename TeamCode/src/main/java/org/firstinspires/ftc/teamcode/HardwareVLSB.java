@@ -49,7 +49,7 @@ public class HardwareVLSB extends HardwareBase
     BNO055IMU imu = null;
     Orientation angles = null;
 
-    protected float axleDistance = 2282; //80.79 * 14;
+    protected float axleDistance = 2200; //80.79 * 14;
 
     double pusherLoadPosition = 0.0;
     double pusherActPosition = 0.5;
@@ -198,7 +198,7 @@ public class HardwareVLSB extends HardwareBase
         lowerBeltServo2.setPower(1.0);
     }
 
-    void beltSpitOutGlytph() {
+    void beltSpitOutGlyph() {
         lowerBeltServo1.setPower(-1.0);
         lowerBeltServo2.setPower(-1.0);
     }

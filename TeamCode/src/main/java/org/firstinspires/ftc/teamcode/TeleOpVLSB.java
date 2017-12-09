@@ -185,7 +185,7 @@ public class TeleOpVLSB extends OpMode{
     public void glyphDepositControl() {
 
         if (gamepad2.left_trigger > 0.05 || gamepad1.left_trigger > 0.05) {
-            robot.beltSpitOutGlytph();
+            robot.beltSpitOutGlyph();
         } else if (gamepad2.right_trigger > 0.05 || gamepad1.right_trigger > 0.05) {
             robot.beltDepositGlyph();
         } else {

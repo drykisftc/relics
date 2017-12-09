@@ -72,9 +72,12 @@ public class AutoVLSBPlanARed extends AutoRelic {
         center2GlyphBoxPower = -0.8;
         glyTurnPower = -0.4;
 
-        leftColumnDistance = 3950;
-        centerColumnDistance = 3200;
-        rightColumnDistance = 2000;
+        cryptoBoxDistance = 800;
+        center2GlyphDistance = 3500;
+
+        leftColumnDistance = 3860;
+        centerColumnDistance = 3150;
+        rightColumnDistance = 2500;
     }
 
     @Override
@@ -102,7 +105,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
         jewelKicker = new JewelKicker(jewelSensor,jewelArm,jewelHitter,telemetry);
         //jewelKicker.init();
         jewelKicker.jewelArmActionPosition = 0.05;
-        jewelKicker.jewelArmRestPosition = 0.50;
+        jewelKicker.jewelArmRestPosition = 0.55;
 
         navigation = new Navigation(telemetry);
 
@@ -194,23 +197,12 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 } else {
 
                     timeStamp = System.currentTimeMillis();
-                    state = 5;
-
-                }
-
-                break;
-            case 5:
-
-                time = System.currentTimeMillis();
-
-                if (time - timeStamp < 1300) {
-                    moveAtPower(backupPower);
-                } else {
-                    moveAtPower(0.0);
                     state = 6;
+
                 }
 
                 break;
+
             case 6:
 
                 if (0 == moveByDistance(-move2GlyphBoxPower, backupDistance)) {
@@ -224,7 +216,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorHolderPower);
 
                     navigation.resetTurn(leftMotors, rightMotors);
-                    state = 7;
+                    state = 8;
 
                 }
 
@@ -234,7 +226,6 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle,leftMotors,rightMotors)) {
                     state = 8;
                     getWheelLandmarks();
-                    collectGlyph();
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
                 break;
@@ -245,6 +236,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
+                    collectGlyph();
                     robot.beltDepositGlyph();
                     state = 9;
                 }
@@ -274,6 +266,11 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle,leftMotors,rightMotors)) {
                     state = 12;
                     getWheelLandmarks();
+
+                    // spit out jammed glyphs
+                    robot.defaultGlyphWheelPower = 0.3;
+                    robot.glyphWheelUnload();
+
                     // lift glyph bar
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition*3, liftMotorMovePower);
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -281,10 +278,11 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 break;
             case 12:
                 // back up
-                if (0 == moveByDistance(center2GlyphBoxPower, glyph2CenterDistance)) {
+                if (0 == moveByDistance(center2GlyphBoxPower, center2GlyphDistance)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
+                    timeStamp = System.currentTimeMillis();
                     state = 13;
                 }
 
@@ -294,6 +292,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 if (System.currentTimeMillis() - timeStamp > 500) {
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
+                    timeStamp = System.currentTimeMillis();
                     state = 14;
                 }
                 break;

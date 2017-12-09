@@ -45,7 +45,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@Autonomous(name = "Rian_PlanA_Blue", group = "Rian")
+@Autonomous(name = "Rian_PlanA_Blue", group = "A_VLSB")
 
 public class AutoRianPlanABlue extends AutoRianPlanARed {
 
@@ -54,9 +54,9 @@ public class AutoRianPlanABlue extends AutoRianPlanARed {
         teamColor = "blue";
         vuforiaDetectingPower = -0.2;
 
-        leftColumnDistance = -2400;
-        centerColumnDistance = -2950;
-        rightColumnDistance = -3600;
+        leftColumnDistance = -2500;
+        centerColumnDistance = -3147;
+        rightColumnDistance = -3794;
     }
 
 }
