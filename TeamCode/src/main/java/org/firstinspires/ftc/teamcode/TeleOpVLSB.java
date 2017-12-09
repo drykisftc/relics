@@ -171,17 +171,12 @@ public class TeleOpVLSB extends OpMode{
         double rw = gamepad2.right_stick_y;
 
         if (gamepad2.right_bumper || gamepad1.right_bumper) {
-            // out
-            robot.leftLiftWheel.setPower(-robot.defaultGlyphWheelPower);
-            robot.rightLiftWheel.setPower(robot.defaultGlyphWheelPower);
+            robot.glyphWheelLoad();
         } else if (gamepad2.left_bumper || gamepad1.left_bumper) {
-            // in
-            robot.leftLiftWheel.setPower(robot.defaultGlyphWheelPower);
-            robot.rightLiftWheel.setPower(-robot.defaultGlyphWheelPower);
-            robot.glyphPusher.setPosition(robot.pusherLoadPosition); //make sure that pusher is out of the way
-        } else if ( Math.abs(lw) > 0.05 ||  Math.abs(rw) > 0.05 ) {
-            robot.leftLiftWheel.setPower(lw*-0.25);
-            robot.rightLiftWheel.setPower(rw*0.25);
+            robot.glyphWheelUnload();
+        } else if (Math.abs(lw) > 0.05 || Math.abs(rw) > 0.05) {
+            robot.leftLiftWheel.setPower(lw * -0.25);
+            robot.rightLiftWheel.setPower(rw * 0.25);
             robot.glyphPusher.setPosition(robot.pusherLoadPosition); //make sure that pusher is out of the way
         } else {
             robot.leftLiftWheel.setPower(0.0);
@@ -191,29 +186,12 @@ public class TeleOpVLSB extends OpMode{
 
     public void glyphDepositControl() {
 
-        if (gamepad2.left_trigger > 0.05) {
-
-            robot.lowerBeltServo1.setPower(-1.0);
-            robot.lowerBeltServo2.setPower(-1.0);
-
-        } else if (gamepad2.right_trigger > 0.05) {
-
-            robot.lowerBeltServo1.setPower(1.0);
-            robot.lowerBeltServo2.setPower(1.0);
-
-        } else if (gamepad1.left_trigger > 0.05) {
-
-            robot.lowerBeltServo1.setPower(-1.0);
-            robot.lowerBeltServo2.setPower(-1.0);
-
-        } else if (gamepad1.right_trigger > 0.05) {
-
-            robot.lowerBeltServo1.setPower(1.0);
-            robot.lowerBeltServo2.setPower(1.0);
-
+        if (gamepad2.left_trigger > 0.05 || gamepad1.left_trigger > 0.05) {
+            robot.beltSpitOutGlytph();
+        } else if (gamepad2.right_trigger > 0.05 || gamepad1.right_trigger > 0.05) {
+            robot.beltDepositGlyph();
         } else {
-            robot.lowerBeltServo1.setPower(0.0);
-            robot.lowerBeltServo2.setPower(0.0);
+           robot.beltStop();
         }
     }
 
