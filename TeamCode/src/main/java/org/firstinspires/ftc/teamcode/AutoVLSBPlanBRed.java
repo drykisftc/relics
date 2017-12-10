@@ -59,7 +59,7 @@ public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
 
         glyph2CenterDistance = 3000;
 
-        backupDistance = 300;
+        backupDistance = 500;
 
         sideMovePower = -0.2;
 
@@ -137,7 +137,7 @@ public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
                 break;
             case 6:
                 //back up
-                if (0 == moveByDistance(glyphDeliverPower, backupDistance)) {
+                if (0 == moveByDistance(-glyphDeliverPower, backupDistance)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 20;
@@ -226,6 +226,7 @@ public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
                 break;
             default:
                 // stop
+                vuforia.relicTrackables.deactivate();
                 robot.stop();
         }
 

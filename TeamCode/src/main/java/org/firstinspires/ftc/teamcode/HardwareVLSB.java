@@ -52,7 +52,7 @@ public class HardwareVLSB extends HardwareBase
     protected float axleDistance = 2200; //80.79 * 14;
 
     double pusherLoadPosition = 0.0;
-    double pusherActPosition = 0.5;
+    double pusherActPosition = 0.6;
 
     double blockerUnloadPosition = 0.00;
     double blockerLoadPosition = 0.40;

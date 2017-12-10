@@ -141,10 +141,10 @@ public class TeleOpVLSB extends OpMode{
             //parallel and diagonal movement
             diagonal1 = Range.clip(diagonal1, -1, 1);
             diagonal2 = Range.clip(diagonal2, -1, 1);
-            robot.motorLeftBackWheel.setPower(-diagonal2);
-            robot.motorLeftFrontWheel.setPower(-diagonal1);
-            robot.motorRightBackWheel.setPower(-diagonal1);
-            robot.motorRightFrontWheel.setPower(-diagonal2);
+            robot.motorLeftBackWheel.setPower(-diagonal2*Math.abs(diagonal2));
+            robot.motorLeftFrontWheel.setPower(-diagonal1*Math.abs(diagonal1));
+            robot.motorRightBackWheel.setPower(-diagonal1*Math.abs(diagonal1));
+            robot.motorRightFrontWheel.setPower(-diagonal2*Math.abs(diagonal2));
 
         } else {
 

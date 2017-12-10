@@ -91,7 +91,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
         rightMotors = new DcMotor[2];
         rightMotors[0] = robot.motorRightFrontWheel;
         rightMotors[1] = robot.motorRightBackWheel;
-        robot.defaultGlyphWheelPower = 0.02;
+        robot.defaultGlyphWheelPower = 0.15;
 
         jewelArm = robot.jewelArm;
         jewelHitter = robot.jewelHitter;
@@ -313,6 +313,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 break;
             default:
                 // stop
+                vuforia.relicTrackables.deactivate();
                 robot.stop();
                 break;
         }
