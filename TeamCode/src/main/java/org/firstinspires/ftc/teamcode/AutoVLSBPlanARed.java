@@ -180,7 +180,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 break;
             case 3:
                 // move straight
-                if ( 0== moveByDistance(move2GlyphBoxPower, cryptoBoxDistance)) {
+                if (0 == moveByDistance(move2GlyphBoxPower, cryptoBoxDistance)) {
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
                     state = 4;
@@ -222,7 +222,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
 
                 break;
             case 7:
-                // correct angle just increase it got knocked out the cource
+                // correct angle just in case it got knocked out the cource
                 if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle,leftMotors,rightMotors)) {
                     state = 8;
                     getWheelLandmarks();
@@ -236,7 +236,6 @@ public class AutoVLSBPlanARed extends AutoRelic {
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
-                    collectGlyph();
                     robot.beltDepositGlyph();
                     state = 9;
                 }
@@ -244,18 +243,19 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 break;
             case 9:
                 // move to center
-                if (0 == moveByDistance(collectingGlyphPower, glyph2CenterDistance/2)) {
+                if (0 == moveByDistance(collectingGlyphPower, glyph2CenterDistance/3)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
+                    collectGlyph();
                     robot.beltDepositGlyph();
                     state = 10;
                 }
 
                 break;
             case 10:
-                if ( System.currentTimeMillis() - timeStamp < 500) {
+                if (System.currentTimeMillis() - timeStamp > 1000) {
                     state = 11;
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
