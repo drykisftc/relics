@@ -88,7 +88,6 @@ public class TeleOpPrototype extends OpMode{
         robot.start();
 
         robot.relicGrabber.setPosition(robot.relicGrabberReleasePosition);
-        robot.relicHand.setPower(0.0);
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("TeleOp", "Hello Vortex");    //
@@ -111,8 +110,8 @@ public class TeleOpPrototype extends OpMode{
     @Override
     public void start() {
 
-
         telemetry.update();
+
     }
 
     /*
@@ -122,7 +121,7 @@ public class TeleOpPrototype extends OpMode{
     public void loop() {
 
         joystickWheelControl();
-        jewelHandControl();
+        relicHandControl();
         relicArmControl();
         telemetry.update();
     }
@@ -149,12 +148,11 @@ public class TeleOpPrototype extends OpMode{
 
     public void relicArmControl() {
 
-        float joystickY = gamepad1.left_stick_y;
+        robot.relicHand.setPower(gamepad1.left_stick_y);
 
-        robot.relicHand.setPower(joystickY);
     }
 
-    public void jewelHandControl () {
+    public void relicHandControl () {
         if(gamepad1.a) {
             robot.relicGrabber.setPosition(robot.relicGrabberReleasePosition);
         } else if (gamepad1.b) {

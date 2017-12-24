@@ -31,7 +31,7 @@ public class HardwarePrototype extends HardwareBase
     //public DistanceSensor jewelSensorDistance;
 
     // limits
-    double relicGrabberGrabPosition = 0.05;
+    double relicGrabberGrabPosition = 0.0;
     double relicGrabberReleasePosition = 1.0;
 
     protected float axleDistance = 1323;//1232; //1248f;//1254
@@ -83,6 +83,7 @@ public class HardwarePrototype extends HardwareBase
         motorLeftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorRightWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        relicHand.setPower(0.0);
     }
 
     public float getGyroHeading () {
