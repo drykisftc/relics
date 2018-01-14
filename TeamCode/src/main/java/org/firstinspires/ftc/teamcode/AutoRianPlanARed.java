@@ -166,7 +166,6 @@ public class AutoRianPlanARed extends AutoRelic {
                 break;
             case 4:
                 // release the glyph
-
                 time = System.currentTimeMillis();
 
                 if (time - timeStamp < 1000) {
@@ -208,11 +207,15 @@ public class AutoRianPlanARed extends AutoRelic {
 
                 break;
             case 7:
-
-                if (System.currentTimeMillis() - timeStamp > 300) {
+                if (0 == moveByDistance(0.80, -backupDistance)) {
+                    moveAtPower(0.0);
+                    timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
+                    // lower glyph bars
+                    VortexUtils.moveMotorByEncoder(robot.liftMotor,0, liftMotorHolderPower);
                     state = 8;
+
                 }
 
                 break;
