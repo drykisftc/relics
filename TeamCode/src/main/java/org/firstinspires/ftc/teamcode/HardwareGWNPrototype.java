@@ -19,7 +19,7 @@ import java.util.Locale;
  Nathan has wheel base of 14.4 inches.
  */
 
-public class HardwareGMNPrototype extends HardwareBase
+public class HardwareGWNPrototype extends HardwareBase
 {
     // DC Motors
     public DcMotor leftWheel = null;
@@ -32,14 +32,16 @@ public class HardwareGMNPrototype extends HardwareBase
     //servos
 //    public Servo jewelArm = null;
 //    public Servo jewelHitter = null;
+    public Servo leftFlipper = null;
+    public Servo rightFlipper = null;
 
     //sensors
     public ColorSensor jewelSensor = null;
     public DistanceSensor jewelSensorDistance = null;
 
     // Orientation sensor
-    BNO055IMU imu = null;
-    Orientation angles = null;
+//    BNO055IMU imu = null;
+//    Orientation angles = null;
 
     protected float axleDistance = 2200; //80.79 * 14;
 
@@ -53,7 +55,7 @@ public class HardwareGMNPrototype extends HardwareBase
     double defaultGlyphLiftPower = 0.8;
 
     /* Constructor */
-    public HardwareGMNPrototype(){
+    public HardwareGWNPrototype(){
 
     }
 
@@ -63,8 +65,8 @@ public class HardwareGMNPrototype extends HardwareBase
 
         super.init(ahwMap);
 
-        leftWheel = hwMap.dcMotor.get("leftBackWheel");
-        rightWheel = hwMap.dcMotor.get("rightBackWheel");
+        leftWheel = hwMap.dcMotor.get("leftWheel");
+        rightWheel = hwMap.dcMotor.get("rightWheel");
         leftWheel.setDirection(DcMotor.Direction.REVERSE);  // rev motor
         rightWheel.setDirection(DcMotor.Direction.FORWARD); // rev motor
         leftWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -80,6 +82,9 @@ public class HardwareGMNPrototype extends HardwareBase
 //        jewelHitter = hwMap.servo.get("jewelHitter");
 //        jewelArm = hwMap.servo.get("jewelArm");
 
+        leftFlipper = hwMap.servo.get("leftFlipper");
+        rightFlipper = hwMap.servo.get("rightFlipper");
+
 //        jewelSensor = hwMap.get(ColorSensor.class, "jewelSensor");
 //        jewelSensorDistance = hwMap.get(DistanceSensor.class, "jewelSensor");
 
@@ -93,19 +98,19 @@ public class HardwareGMNPrototype extends HardwareBase
         rightBelt.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightBelt.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = true;
-        parameters.loggingTag          = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-
-        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
-        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
-        // and named "imu".
-        imu = hwMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
+//        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+//        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+//        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+//        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+//        parameters.loggingEnabled      = true;
+//        parameters.loggingTag          = "IMU";
+//        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+//
+//        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
+//        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
+//        // and named "imu".
+//        imu = hwMap.get(BNO055IMU.class, "imu");
+//        imu.initialize(parameters);
     }
 
     @Override
@@ -193,5 +198,10 @@ public class HardwareGMNPrototype extends HardwareBase
         glyphPusher.setPosition(0.05);
         smolL.setPosition(blockerLoadPosition);
     }*/
+
+    void setFlipperPositions(Double position) {
+        leftFlipper.setPosition(1 - position);
+        rightFlipper.setPosition(position);
+    }
 
 }

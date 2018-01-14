@@ -34,7 +34,6 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
 /**
@@ -52,11 +51,11 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="TeleOp: A Pro VLSB", group="TeleOp")
-public class TeleOpGMNPrototype extends OpMode{
+@TeleOp(name="TeleOp: A Pro GWNPrototype", group="TeleOp")
+public class TeleOpGWNPrototype extends OpMode{
 
     /* Declare OpMode members. */
-    protected HardwareGMNPrototype robot = new HardwareGMNPrototype();
+    protected HardwareGWNPrototype robot = new HardwareGWNPrototype();
 
     protected int liftHeightLimit = 10000;
     protected int liftMotorPosition = 0;
@@ -116,7 +115,7 @@ public class TeleOpGMNPrototype extends OpMode{
 
         joystickWheelControl();
         glyphWheelControl();
-//        glyphDepositControl();
+        glyphDepositControl();
 //        glyphLiftControl();
 //        jewelArmControl();
 //        smolLControl();
@@ -165,16 +164,26 @@ public class TeleOpGMNPrototype extends OpMode{
         }
     }
 
-    /*public void glyphDepositControl() {
+    public void glyphDepositControl() {
 
-        if (gamepad2.left_trigger > 0.05 || gamepad1.left_trigger > 0.05) {
-            robot.beltSpitOutGlyph();
-        } else if (gamepad2.right_trigger > 0.05 || gamepad1.right_trigger > 0.05) {
-            robot.beltDepositGlyph();
+        if (gamepad2.right_trigger > 0.05) {
+
+            robot.setFlipperPositions((double) gamepad2.right_trigger);
+
+        } else if (gamepad1.right_trigger > 0.05) {
+
+            robot.setFlipperPositions((double) gamepad1.right_trigger);
+
         } else {
-           robot.beltStop();
+
+            robot.setFlipperPositions(0.7);
+
         }
-    }*/
+
+        telemetry.addData("Left Flipper Position: ", robot.leftFlipper.getPosition());
+        telemetry.addData("Right Flipper Position: ", robot.rightFlipper.getPosition());
+
+    }
 
     /*public void glyphLiftControl () {
 

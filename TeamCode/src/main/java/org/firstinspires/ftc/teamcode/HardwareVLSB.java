@@ -58,7 +58,7 @@ public class HardwareVLSB extends HardwareBase
     double blockerLoadPosition = 0.40;
 
     double defaultGlyphWheelPower = 0.3;
-    double defaultGlyphLiftPower = 0.8;
+    double defaultGlyphLiftPower = 0.9;
 
     /* Constructor */
     public HardwareVLSB(){
