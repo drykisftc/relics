@@ -126,10 +126,10 @@ public class TeleOpGWNPrototype extends OpMode{
     public void joystickWheelControl() {
 
         // Mecanum wheel driving system (note: The joystick goes negative when pushed forwards, so negate it)
-        float throttle = -gamepad1.right_stick_y;
-        float direction = gamepad1.right_stick_x;
-        float right = throttle - direction;
-        float left = throttle + direction;
+        float throttle = -gamepad1.left_stick_y;
+        float direction = gamepad1.left_stick_x;
+        float right = throttle + direction;
+        float left = throttle - direction;
 
         // clip the right/left values so that the values never exceed +/- 1
         right = Range.clip(right, -1, 1);
@@ -152,8 +152,8 @@ public class TeleOpGWNPrototype extends OpMode{
             robot.leftBelt.setPower(1.0);
             robot.rightBelt.setPower(1.0);
         } else if (gamepad2.left_bumper || gamepad1.left_bumper) {
-            robot.leftBelt.setPower(0.0);
-            robot.rightBelt.setPower(0.0);
+            robot.leftBelt.setPower(-1.0);
+            robot.rightBelt.setPower(-1.0);
         } else if (Math.abs(lw) > 0.05 || Math.abs(rw) > 0.05) {
             robot.leftBelt.setPower(lw * -0.25);
             robot.rightBelt.setPower(rw * 0.25);
@@ -176,7 +176,7 @@ public class TeleOpGWNPrototype extends OpMode{
 
         } else {
 
-            robot.setFlipperPositions(0.7);
+            robot.setFlipperPositions(0.3);
 
         }
 

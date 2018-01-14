@@ -5,6 +5,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -67,8 +68,8 @@ public class HardwareGWNPrototype extends HardwareBase
 
         leftWheel = hwMap.dcMotor.get("leftWheel");
         rightWheel = hwMap.dcMotor.get("rightWheel");
-        leftWheel.setDirection(DcMotor.Direction.REVERSE);  // rev motor
-        rightWheel.setDirection(DcMotor.Direction.FORWARD); // rev motor
+        leftWheel.setDirection(DcMotor.Direction.FORWARD);  // rev motor
+        rightWheel.setDirection(DcMotor.Direction.REVERSE); // rev motor
         leftWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
