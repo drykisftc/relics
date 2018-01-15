@@ -40,13 +40,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@Autonomous(name = "VLSB_PlanB_Red", group = "B_VLSB")
+@Autonomous(name = "GWN_PlanB_Red", group = "A_GWN")
 
-public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
+public class AutoGWNPlanBRed extends AutoVLSBPlanARed {
 
     int sideWayDistance = 6200;
 
-    public AutoVLSBPlanBRed() {
+    public AutoGWNPlanBRed() {
 
         super();
 
@@ -105,7 +105,8 @@ public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
                 }
 
                 break;
-            case 3: // turn if necessary
+            case 3:
+                // turn if necessary
                 if (fGlyphTurnAngle == 0.0f || 0 == navigation.turnByEncoderOpenLoop(glyTurnPower,fGlyphTurnAngle,
                         robot.axleDistance, leftMotors, rightMotors)) {
                     getWheelLandmarks();

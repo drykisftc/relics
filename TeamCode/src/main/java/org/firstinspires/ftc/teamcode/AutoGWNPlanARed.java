@@ -44,14 +44,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@Autonomous(name = "VLSB_PlanA_Red", group = "B_VLSB")
+@Autonomous(name = "VGWN_PlanA_Red", group = "A_GWN")
 
-public class AutoVLSBPlanARed extends AutoRelic {
+public class AutoGWNPlanARed extends AutoRelic {
 
 
     protected BNO055IMU imuSensor = null;
 
-    protected HardwareVLSB robot= null;
+    protected HardwareGWN robot= null;
 
     protected int leftBackStamp;
     protected int leftFrontStamp;
@@ -59,7 +59,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
     protected int rightFrontStamp;
 
 
-    public AutoVLSBPlanARed() {
+    public AutoGWNPlanARed() {
         teamColor = "red";
 
         glyphLiftPosition = 1200;
@@ -82,7 +82,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
 
     @Override
     public void init() {
-        robot = new HardwareVLSB();
+        robot = new HardwareGWN();
         robot.init(hardwareMap);
 
         leftMotors = new DcMotor[2];
@@ -96,7 +96,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
         jewelArm = robot.jewelArm;
         jewelHitter = robot.jewelHitter;
 
-        smolL = robot.smolL;
+        //smolL = robot.smolL;
 
         jewelSensor = robot.jewelSensor;
         jewelSensorDistance = robot.jewelSensorDistance;
@@ -154,7 +154,8 @@ public class AutoVLSBPlanARed extends AutoRelic {
 
                 //set jewel hitter position
                 robot.jewelHitter.setPosition(1.00);
-                robot.beltDepositGlyph();
+                robot.setFlipperPositions(robot.flipperDepositePosition);
+                //robot.beltDepositGlyph();
 
                 //move forward with encoder
                 if (0 == moveByDistance(vuforiaDetectingPower, columnDistance)) {
@@ -236,7 +237,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
-                    robot.beltDepositGlyph();
+                    //robot.beltDepositGlyph();
                     state = 9;
                 }
 
@@ -249,7 +250,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
                     collectGlyph();
-                    robot.beltDepositGlyph();
+                    //robot.beltDepositGlyph();
                     state = 10;
                 }
 
@@ -269,7 +270,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
 
                     // spit out jammed glyphs
                     robot.defaultGlyphWheelPower = 0.3;
-                    robot.glyphWheelUnload();
+                    //robot.glyphWheelUnload();
 
                     // lift glyph bar
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition*2, liftMotorMovePower);
@@ -363,20 +364,19 @@ public class AutoVLSBPlanARed extends AutoRelic {
     }
 
     public void releaseGlyph () {
-        robot.smolL.setPosition(0.00);
-        robot.beltDepositGlyph();
+        //robot.smolL.setPosition(0.00);
+        robot.setFlipperPositions(robot.flipperDepositePosition);
     }
 
     public void collectGlyph () {
-        robot.smolL.setPosition(robot.blockerLoadPosition);
-        robot.glyphPusher.setPosition(robot.pusherLoadPosition);
+        //robot.smolL.setPosition(robot.blockerLoadPosition);
+        //robot.glyphPusher.setPosition(robot.pusherLoadPosition);
         robot.glyphWheelLoad();
-        robot.beltDepositGlyph();
     }
 
     public void stopGlyphWheels(){
-        robot.leftLiftWheel.setPower(0.0);
-        robot.rightLiftWheel.setPower(0.0);
+        robot.leftTrack.setPower(0.0);
+        robot.rightTrack.setPower(0.0);
     }
 
 }
