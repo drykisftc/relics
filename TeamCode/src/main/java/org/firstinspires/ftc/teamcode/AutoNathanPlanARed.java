@@ -43,11 +43,8 @@ public class AutoNathanPlanARed extends AutoRelic {
 
     protected HardwareNathen robot= null;
 
-    Random rand = new Random(System.currentTimeMillis());
     int glyphLiftPosition = 0;
     int glyphLiftPosition2= 0;
-    double jewelArmPos = 0;
-    double jewelHitterPos = 0;
     float centerGlyphAngleOffset = 0;
     double encoderCountPerInch = 86.75;//80.79;
 

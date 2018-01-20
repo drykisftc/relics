@@ -107,6 +107,9 @@ public class AutoVLSBPlanARed extends AutoRelic {
         jewelKicker.jewelArmActionPosition = 0.05;
         jewelKicker.jewelArmRestPosition = 0.55;
 
+        jewelArmPos = jewelKicker.jewelArmActionPosition;
+        jewelHitterPos = jewelKicker.jewelHitterRestPosition;
+
         navigation = new Navigation(telemetry);
 
         vuforia = new HardwareVuforia(VuforiaLocalizer.CameraDirection.BACK);
@@ -138,6 +141,10 @@ public class AutoVLSBPlanARed extends AutoRelic {
 
                 // jewel handling
                 state = jewelKicker.loop(0, 1, teamColor);
+
+                // hitter arm to avoid jewel holes
+                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.2*rand.nextDouble()-0.1;
+                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.06*rand.nextDouble()-0.03;
 
                 vuforia.identifyGlyphCrypto();
 

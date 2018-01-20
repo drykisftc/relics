@@ -39,6 +39,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 
+import java.util.Random;
+
 /*
  * This is an example LinearOpMode that shows how to use
  * the REV Robotics Color-Distance Sensor.
@@ -56,6 +58,9 @@ public class AutoRelic extends OpMode {
 
     protected String teamColor = "red";
 
+
+    Random rand = new Random(System.currentTimeMillis());
+
     protected int state;
     protected long timeStamp;
     protected float wheelDistanceLandMark;
@@ -70,6 +75,9 @@ public class AutoRelic extends OpMode {
     protected double glyTurnPowerLow = -0.5;
     protected float fCenterTurnAngle = 180;
 
+
+    protected double jewelArmPos = 0;
+    protected double jewelHitterPos = 0;
     protected double glyphMovePower = 0.5;
     protected double sideMovePower = 0.2;
     protected double vuforiaDetectingPower = 0.3;
