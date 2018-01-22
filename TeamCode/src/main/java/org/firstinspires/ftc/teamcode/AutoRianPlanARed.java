@@ -208,7 +208,7 @@ public class AutoRianPlanARed extends AutoRelic {
 
                 break;
             case 7:
-                if (0 == moveByDistance(0.6, pushDistance + 100)) {
+                if (0 == moveByDistance(0.6, pushDistance + 150)) {
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
@@ -237,6 +237,8 @@ public class AutoRianPlanARed extends AutoRelic {
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
 
+                VortexUtils.moveMotorByEncoder(robot.liftMotor, liftMoveMotorPosition2, liftMotorMovePower);
+
                 //lift the glyph bar
                 //VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, liftMotorHolderPower);
 
@@ -252,7 +254,7 @@ public class AutoRianPlanARed extends AutoRelic {
 
                 //lift the glyph bar
                 //VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, liftMotorHolderPower);
-                VortexUtils.moveMotorByEncoder(robot.liftMotor, liftMoveMotorPosition2, liftMotorMovePower);
+
                 break;
             case 11:
                 // correct angle just in case it got knocked out the course
@@ -286,7 +288,7 @@ public class AutoRianPlanARed extends AutoRelic {
                 break;
             case 14:
                 // move forward back to the glyph box
-                if (0 == moveByDistance(0.8, glyph2CenterDistance)) {
+                if (0 == moveByDistance(0.8, glyph2CenterDistance+300)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -378,8 +380,8 @@ public class AutoRianPlanARed extends AutoRelic {
                 }
                 break;
             case 18:
-                // move right by 300
-                if (0 == sideMoveByDistance(-0.3, 300)) {
+                // move right by 500
+                if (0 == sideMoveByDistance(-0.3, -500)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();

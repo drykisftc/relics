@@ -64,7 +64,7 @@ public class AutoRelic extends OpMode {
     protected int leftBackStamp;
     protected int rightBackStamp;
 
-    protected float fGlyphTurnAngle = -90; // positive turns left, negative turns right
+    protected float fGlyphTurnAngle = -85; // positive turns left, negative turns right
     protected float fGlyphTurnAngle2 = 0;
     protected double glyTurnPower = -0.8;
     protected double glyTurnPowerLow = -0.5;
@@ -96,9 +96,9 @@ public class AutoRelic extends OpMode {
 
     protected double liftMotorHolderPower = 0.3;
     int glyphLiftPosition = 0;
-    protected double liftMotorMovePower = 0.5;
+    protected double liftMotorMovePower = 0.8;
     protected int liftMoveMotorPosition = 400;
-    protected int liftMoveMotorPosition2 = 2000;
+    protected int liftMoveMotorPosition2 = 4000;
 
     protected double lastLeftPower = 0;
     protected double lastRightPower = 0;
