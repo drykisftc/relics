@@ -88,7 +88,8 @@ public class AutoRelic extends OpMode {
     protected int leftColumnDistance = 3950;
     protected int cryptoBoxDistance = 500;
     protected int backupDistance = -100;
-    protected int glyph2CenterDistance = 3080;
+    protected int pushDistance = 600;
+    protected int glyph2CenterDistance = 3200;
     protected int center2GlyphDistance = 3080;
 
     float centerGlyphAngleOffset = 0;
@@ -97,7 +98,7 @@ public class AutoRelic extends OpMode {
     int glyphLiftPosition = 0;
     protected double liftMotorMovePower = 0.5;
     protected int liftMoveMotorPosition = 400;
-    protected int liftMoveMotorPosition2 = 1000;
+    protected int liftMoveMotorPosition2 = 2000;
 
     protected double lastLeftPower = 0;
     protected double lastRightPower = 0;
