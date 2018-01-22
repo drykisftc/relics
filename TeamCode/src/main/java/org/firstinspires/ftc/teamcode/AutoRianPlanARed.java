@@ -158,7 +158,7 @@ public class AutoRianPlanARed extends AutoRelic {
                 break;
             case 3:
                 // move straight
-                if ( 0== moveByDistance(move2GlyphBoxPower, cryptoBoxDistance)) {
+                if ( 0== moveByDistance(move2GlyphBoxPower, cryptoBoxDistance - 20)) {
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
                     state = 4;
@@ -353,7 +353,7 @@ public class AutoRianPlanARed extends AutoRelic {
             */
             case 15:
                 // backup
-                if (0 == moveByDistance(-0.3, 300)) {
+                if (0 == moveByDistance(-0.3, 700)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -372,19 +372,11 @@ public class AutoRianPlanARed extends AutoRelic {
                 break;
             case 17:
                 // move left by 300
-                if (0 == sideMoveByDistance(0.3, 300)) {
+                if (0 == sideMoveByDistance(-0.5, 1500)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     state = 18;
-                }
-                break;
-            case 18:
-                // move right by 500
-                if (0 == sideMoveByDistance(-0.3, -500)) {
-                    moveAtPower(0.0);
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    getWheelLandmarks();
                 }
                 break;
             default:
