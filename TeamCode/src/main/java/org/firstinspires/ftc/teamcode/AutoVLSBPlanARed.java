@@ -381,6 +381,13 @@ public class AutoVLSBPlanARed extends AutoRelic {
         robot.beltDepositGlyph();
     }
 
+    public void reverseWheels() {
+        robot.smolL.setPosition(robot.blockerLoadPosition);
+        robot.glyphPusher.setPosition(robot.pusherLoadPosition);
+        robot.glyphWheelLoad();
+        robot.beltDepositGlyph();
+    }
+
     public void stopGlyphWheels(){
         robot.leftLiftWheel.setPower(0.0);
         robot.rightLiftWheel.setPower(0.0);
