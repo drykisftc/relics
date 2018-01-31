@@ -270,22 +270,22 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 break;
             case 11:
                 // correct angle just increase it got knocked out of course
-                if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle,leftMotors,rightMotors)) {
+                if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle + 180,leftMotors,rightMotors)) {
                     state = 12;
                     getWheelLandmarks();
 
                     // spit out jammed glyphs
                     robot.defaultGlyphWheelPower = 0.3;
-                    robot.glyphWheelUnload();
+                    //robot.glyphWheelUnload();
 
                     // lift glyph bar
-                    VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition*2, liftMotorMovePower);
+                    //VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition*2, liftMotorMovePower);
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
                 break;
             case 12:
                 // back up
-                if (0 == moveByDistance(center2GlyphBoxPower, center2GlyphDistance)) {
+                if (0 == moveByDistance(-center2GlyphBoxPower, center2GlyphDistance)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -295,7 +295,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
 
                 break;
             case 13:
-                // wait 1 second
+                // wait 0.5 second
                 if (System.currentTimeMillis() - timeStamp > 500) {
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -305,7 +305,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 break;
             case 14:
                 // release glyph
-                releaseGlyph();
+                reverseWheels();
                 if (System.currentTimeMillis() - timeStamp > 3000) {
                     getWheelLandmarks();
                     state = 15;
@@ -313,7 +313,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 break;
             case 15:
                 // backup
-                if (0 == moveByDistance(-move2GlyphBoxPower, 300)) {
+                if (0 == moveByDistance(move2GlyphBoxPower, 300)) {
                     moveAtPower(0.0);
                     state = 16;
                 }
@@ -384,8 +384,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
     public void reverseWheels() {
         robot.smolL.setPosition(robot.blockerLoadPosition);
         robot.glyphPusher.setPosition(robot.pusherLoadPosition);
-        robot.glyphWheelLoad();
-        robot.beltDepositGlyph();
+        robot.glyphWheelUnload();
     }
 
     public void stopGlyphWheels(){

@@ -299,7 +299,7 @@ public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
                 break;
             case 23:
                 // backup
-                if (0 == moveByDistance(-move2GlyphBoxPower, 300)) {
+                if (0 == moveByDistance(move2GlyphBoxPower, 300)) {
                     moveAtPower(0.0);
                     state = 24;
                 }
