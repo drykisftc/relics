@@ -79,7 +79,7 @@ class JewelKicker {
     private Telemetry telemetry;
 
     long jewelWaitTime = 2000;
-    long jewelBailOutTime = 10000;
+    long jewelBailOutTime = 6000;
 
     JewelKicker (ColorSensor c,
                  Servo arm,

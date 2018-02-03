@@ -69,7 +69,7 @@ public class AutoRelic extends OpMode {
     protected int leftBackStamp;
     protected int rightBackStamp;
 
-    protected float fGlyphTurnAngle = -90; // positive turns left, negative turns right
+    protected float fGlyphTurnAngle = -85; // positive turns left, negative turns right
     protected float fGlyphTurnAngle2 = 0;
     protected double glyTurnPower = -0.8;
     protected double glyTurnPowerLow = -0.5;
@@ -80,7 +80,7 @@ public class AutoRelic extends OpMode {
     protected double jewelHitterPos = 0;
     protected double glyphMovePower = 0.5;
     protected double sideMovePower = 0.2;
-    protected double vuforiaDetectingPower = 0.3;
+    protected double vuforiaDetectingPower = 0.4;
     protected double move2GlyphBoxPower = 0.2;
     protected double glyphBackupPower = 0.2;
     protected double center2GlyphBoxPower = -0.8;
@@ -93,19 +93,21 @@ public class AutoRelic extends OpMode {
     protected int offBalanceStoneDistance = 2500;
     protected int rightColumnDistance = 2550;
     protected int centerColumnDistance = 3200;
-    protected int leftColumnDistance = 3950;
+    protected int leftColumnDistance = 3850;
     protected int cryptoBoxDistance = 500;
     protected int backupDistance = -100;
-    protected int glyph2CenterDistance = 3080;
+    protected int pushDistance = 600;
+    protected int glyph2CenterDistance = 3200;
     protected int center2GlyphDistance = 3080;
+    protected float glyphOffAngle = 0;
 
     float centerGlyphAngleOffset = 0;
 
     protected double liftMotorHolderPower = 0.3;
     int glyphLiftPosition = 0;
-    protected double liftMotorMovePower = 0.5;
+    protected double liftMotorMovePower = 0.8;
     protected int liftMoveMotorPosition = 400;
-    protected int liftMoveMotorPosition2 = 1000;
+    protected int liftMoveMotorPosition2 = 4000;
 
     protected double lastLeftPower = 0;
     protected double lastRightPower = 0;
@@ -142,10 +144,13 @@ public class AutoRelic extends OpMode {
         vuforia.identifyGlyphCrypto();
         if (vuforia.vumarkImage == "left") {
             columnDistance = leftColumnDistance;
+            glyphOffAngle = -20;
         } else if (vuforia.vumarkImage == "center") {
             columnDistance = centerColumnDistance;
+            glyphOffAngle = -15;;
         } else if (vuforia.vumarkImage == "right") {
             columnDistance = rightColumnDistance;
+            glyphOffAngle = 20;
         } else {
             columnDistance = rightColumnDistance;
         }
