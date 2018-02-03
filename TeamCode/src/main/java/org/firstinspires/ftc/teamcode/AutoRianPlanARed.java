@@ -62,7 +62,11 @@ public class AutoRianPlanARed extends AutoRelic {
     protected double liftMotorHolderPower = 0.3;
 
     public AutoRianPlanARed () {
+
         teamColor = "red";
+        rightColumnDistance = 2550;
+        centerColumnDistance = 3200;
+        leftColumnDistance = 3850;
     }
 
     @Override
@@ -113,6 +117,7 @@ public class AutoRianPlanARed extends AutoRelic {
         timeStamp = System.currentTimeMillis();
         vuforia.vumarkImage = "Unknown";
         jewelKicker.start();
+
     }
 
     @Override
@@ -213,16 +218,16 @@ public class AutoRianPlanARed extends AutoRelic {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
+
                     // lower glyph bars
                     VortexUtils.moveMotorByEncoder(robot.liftMotor,0, liftMotorHolderPower);
                     state = 8;
-
                 }
 
                 break;
             case 8:
                 // backup
-                if (0 == moveByDistance(-0.8, backupDistance - 100)) {
+                if (0 == moveByDistance(-0.8, backupDistance - 200)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -288,7 +293,7 @@ public class AutoRianPlanARed extends AutoRelic {
                 break;
             case 14:
                 // move forward back to the glyph box
-                if (0 == moveByDistance(0.8, glyph2CenterDistance+300)) {
+                if (0 == moveByDistance(0.8, glyph2CenterDistance+900)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -357,12 +362,12 @@ public class AutoRianPlanARed extends AutoRelic {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
-                    state = 16;
+                    state = 18;
                 }
                 break;
             case 16:
                 // turn 90 degrees
-                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower, 90, robot.axleDistance, leftMotors, rightMotors)) {
+                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower, -90, robot.axleDistance, leftMotors, rightMotors)) {
                     state = 17;
                     getWheelLandmarks();
                     moveAtPower(0.2);
@@ -372,7 +377,7 @@ public class AutoRianPlanARed extends AutoRelic {
                 break;
             case 17:
                 // move left by 300
-                if (0 == sideMoveByDistance(-0.5, -1500)) {
+                if (0 == sideMoveByDistance(0.8, 2000)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();

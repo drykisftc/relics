@@ -80,7 +80,7 @@ public class AutoRelic extends OpMode {
     protected double jewelHitterPos = 0;
     protected double glyphMovePower = 0.5;
     protected double sideMovePower = 0.2;
-    protected double vuforiaDetectingPower = 0.3;
+    protected double vuforiaDetectingPower = 0.4;
     protected double move2GlyphBoxPower = 0.2;
     protected double glyphBackupPower = 0.2;
     protected double center2GlyphBoxPower = -0.8;
@@ -144,13 +144,13 @@ public class AutoRelic extends OpMode {
         vuforia.identifyGlyphCrypto();
         if (vuforia.vumarkImage == "left") {
             columnDistance = leftColumnDistance;
-            glyphOffAngle = -10;
+            glyphOffAngle = -20;
         } else if (vuforia.vumarkImage == "center") {
             columnDistance = centerColumnDistance;
-            glyphOffAngle = -5;;
+            glyphOffAngle = -15;;
         } else if (vuforia.vumarkImage == "right") {
             columnDistance = rightColumnDistance;
-            glyphOffAngle = 10;;
+            glyphOffAngle = 20;
         } else {
             columnDistance = rightColumnDistance;
         }
