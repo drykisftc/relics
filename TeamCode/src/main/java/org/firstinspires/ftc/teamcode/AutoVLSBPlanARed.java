@@ -65,8 +65,8 @@ public class AutoVLSBPlanARed extends AutoRelic {
         glyphLiftPosition = 1200;
         centerGlyphAngleOffset = 0;
         cryptoBoxDistance = -200;
-        vuforiaDetectingPower = -0.2;
-        move2GlyphBoxPower = -0.2;
+        vuforiaDetectingPower = -0.4;
+        move2GlyphBoxPower = -0.4;
         move2CenterPower = 0.8;
         fGlyphTurnAngle = -90;
         center2GlyphBoxPower = -0.8;
@@ -104,7 +104,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
 
         jewelKicker = new JewelKicker(jewelSensor,jewelArm,jewelHitter,telemetry);
         //jewelKicker.init();
-        jewelKicker.jewelArmActionPosition = 0.05;
+        jewelKicker.jewelArmActionPosition = 0.10;
         jewelKicker.jewelArmRestPosition = 0.55;
 
         jewelArmPos = jewelKicker.jewelArmActionPosition;
@@ -143,8 +143,8 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 state = jewelKicker.loop(0, 1, teamColor);
 
                 // hitter arm to avoid jewel holes
-                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.2*rand.nextDouble()-0.1;
-                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.06*rand.nextDouble()-0.03;
+                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.1*rand.nextDouble()-0.1;
+                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.03*rand.nextDouble()-0.03;
 
                 vuforia.identifyGlyphCrypto();
 
@@ -211,111 +211,135 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 break;
 
             case 6:
-
+                // back up from the crypto box
                 if (0 == moveByDistance(-move2GlyphBoxPower, backupDistance)) {
 
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
-                    navigation.resetTurn(leftMotors, rightMotors);
 
                     // lower glyph bars
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorHolderPower);
 
                     navigation.resetTurn(leftMotors, rightMotors);
+                    state = 7;
+
+                }
+                break;
+            case 7:
+                // push glyph into place
+                if (0 == moveByDistance(move2GlyphBoxPower*2, 700)) {
+
+                    moveAtSpeed(0.0);
+                    timeStamp = System.currentTimeMillis();
+                    getWheelLandmarks();
+
+                    navigation.resetTurn(leftMotors, rightMotors);
                     state = 8;
 
                 }
-
                 break;
-            case 7:
+            case 8:
                 // correct angle just in case it got knocked out the cource
                 if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle,leftMotors,rightMotors)) {
-                    state = 8;
+                    state = 9;
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
                 break;
-            case 8:
+            case 9:
                 // move to center
-                if (0 == moveByDistance(move2CenterPower, glyph2CenterDistance/2)) {
+                if (0 == moveByDistance(move2CenterPower, glyph2CenterDistance/2 + backupDistance)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
                     robot.beltDepositGlyph();
-                    state = 9;
+                    collectGlyph();
+                    state = 10;
                 }
 
                 break;
-            case 9:
+            case 10:
                 // move to center
                 if (0 == moveByDistance(collectingGlyphPower, glyph2CenterDistance/3)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
-                    collectGlyph();
                     robot.beltDepositGlyph();
-                    state = 10;
+                    state = 11;
                 }
 
                 break;
-            case 10:
-                if (System.currentTimeMillis() - timeStamp > 1000) {
-                    state = 11;
+            case 11:
+                if (System.currentTimeMillis() - timeStamp > 500) {
+                    state = 12;
                     getWheelLandmarks();
+                    stopGlyphWheels();
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
                 break;
-            case 11:
+            case 12:
                 // correct angle just increase it got knocked out of course
-                if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle + 180,leftMotors,rightMotors)) {
-                    state = 12;
+                if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle,leftMotors,rightMotors)) {
+                    state = 13;
                     getWheelLandmarks();
 
                     // spit out jammed glyphs
                     robot.defaultGlyphWheelPower = 0.3;
                     //robot.glyphWheelUnload();
 
-                    // lift glyph bar
-                    //VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition*2, liftMotorMovePower);
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
                 break;
-            case 12:
+            case 13:
                 // back up
-                if (0 == moveByDistance(-center2GlyphBoxPower, center2GlyphDistance)) {
+                if (0 == moveByDistance(center2GlyphBoxPower, center2GlyphDistance/2)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
-                    timeStamp = System.currentTimeMillis();
-                    state = 13;
-                }
-
-                break;
-            case 13:
-                // wait 0.5 second
-                if (System.currentTimeMillis() - timeStamp > 500) {
-                    getWheelLandmarks();
-                    navigation.resetTurn(leftMotors, rightMotors);
                     timeStamp = System.currentTimeMillis();
                     state = 14;
                 }
+
                 break;
             case 14:
-                // release glyph
-                reverseWheels();
-                if (System.currentTimeMillis() - timeStamp > 3000) {
-                    getWheelLandmarks();
+                //turn 180 degrees
+                if(0 == navigation.turnByEncoderOpenLoop(glyTurnPower,fCenterTurnAngle+glyphOffAngle, robot.axleDistance, leftMotors, rightMotors)) {
                     state = 15;
+                    getWheelLandmarks();
+                    moveAtPower(0.2);
+                    reverseBelt();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    timeStamp = System.currentTimeMillis();
                 }
+
                 break;
             case 15:
-                // backup
-                if (0 == moveByDistance(move2GlyphBoxPower, 300)) {
+                // go forward
+                if (0 == moveByDistance(-center2GlyphBoxPower, center2GlyphDistance/2)) {
                     moveAtPower(0.0);
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    getWheelLandmarks();
+                    timeStamp = System.currentTimeMillis();
                     state = 16;
+                }
+
+                break;
+            case 16:
+                // release glyph
+                reverseWheels();
+                if (System.currentTimeMillis() - timeStamp > 2000) {
+                    getWheelLandmarks();
+                    state = 17;
+                }
+                break;
+            case 17:
+                // backup
+                if (0 == moveByDistance(move2GlyphBoxPower * 2, 300)) {
+                    moveAtPower(0.0);
+                    state = 18;
                 }
                 break;
             default:
@@ -369,27 +393,32 @@ public class AutoVLSBPlanARed extends AutoRelic {
         return 1;
     }
 
-    public void releaseGlyph () {
+    public void releaseGlyph() {
         robot.smolL.setPosition(0.00);
         robot.beltDepositGlyph();
     }
 
-    public void collectGlyph () {
+    public void collectGlyph() {
         robot.smolL.setPosition(robot.blockerLoadPosition);
         robot.glyphPusher.setPosition(robot.pusherLoadPosition);
         robot.glyphWheelLoad();
         robot.beltDepositGlyph();
     }
 
+    public void reverseBelt() {
+        robot.beltSpitOutGlyph();
+    }
+
     public void reverseWheels() {
         robot.smolL.setPosition(robot.blockerLoadPosition);
-        robot.glyphPusher.setPosition(robot.pusherLoadPosition);
+        robot.beltSpitOutGlyph();
         robot.glyphWheelUnload();
     }
 
     public void stopGlyphWheels(){
         robot.leftLiftWheel.setPower(0.0);
         robot.rightLiftWheel.setPower(0.0);
+        robot.beltStop();
     }
 
 }

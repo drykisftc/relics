@@ -53,6 +53,8 @@ public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
         teamColor = "red";
         fGlyphTurnAngle = 0.0f;
 
+        vuforiaDetectingPower = 0.4;
+
         leftColumnDistance = 3800;
         centerColumnDistance = 2350;
         rightColumnDistance = 900;
@@ -243,15 +245,15 @@ public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
                 if (0 == moveByDistance(glyphDeliverPower, -glyph2CenterDistance*2)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
-                    collectGlyph();
                     state = 18;
                 }
                 break;
             case 18:
                 //collect glyphs
-                if ( System.currentTimeMillis() - timeStamp > 2000) {
+                if ( System.currentTimeMillis() - timeStamp > 500) {
                     stopGlyphWheels();
                     getWheelLandmarks();
+                    stopGlyphWheels();
                     navigation.resetTurn(leftMotors, rightMotors);
                     state = 19;
                 }
