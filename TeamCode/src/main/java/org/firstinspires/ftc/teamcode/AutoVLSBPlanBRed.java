@@ -162,7 +162,7 @@ public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
 
                 break;
             case 8:
-                if (0 == moveByDistance(-glyphDeliverPower, backupDistance - 150)) {
+                if (0 == moveByDistance(-glyphDeliverPower, 300)) {
 
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
