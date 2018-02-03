@@ -299,7 +299,7 @@ public class AutoRianPlanARed extends AutoRelic {
                 break;
             case 14:
                 // move forward back to the glyph box
-                if (0 == moveByDistance(0.8, glyph2CenterDistance+900)) {
+                if (0 == moveByDistance(0.8, glyph2CenterDistance+1100)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -364,7 +364,7 @@ public class AutoRianPlanARed extends AutoRelic {
             */
             case 15:
                 // backup
-                if (0 == moveByDistance(-0.3, 700)) {
+                if (0 == moveByDistance(-0.3, 200)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
