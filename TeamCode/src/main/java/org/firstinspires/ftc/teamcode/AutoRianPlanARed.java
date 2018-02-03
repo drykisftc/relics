@@ -268,7 +268,7 @@ public class AutoRianPlanARed extends AutoRelic {
                 break;
             case 12:
                 // turn 180 degrees slowly
-                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower / 2, fCenterTurnAngle, robot.axleDistance, leftMotors, rightMotors)) {
+                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower, fCenterTurnAngle+glyphOffAngle, robot.axleDistance, leftMotors, rightMotors)) {
                     state = 13;
                     getWheelLandmarks();
                     moveAtPower(0.2);
@@ -372,7 +372,7 @@ public class AutoRianPlanARed extends AutoRelic {
                 break;
             case 17:
                 // move left by 300
-                if (0 == sideMoveByDistance(-0.5, 1500)) {
+                if (0 == sideMoveByDistance(-0.5, -1500)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();

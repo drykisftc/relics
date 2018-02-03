@@ -93,12 +93,13 @@ public class AutoRelic extends OpMode {
     protected int offBalanceStoneDistance = 2500;
     protected int rightColumnDistance = 2550;
     protected int centerColumnDistance = 3200;
-    protected int leftColumnDistance = 3950;
+    protected int leftColumnDistance = 3850;
     protected int cryptoBoxDistance = 500;
     protected int backupDistance = -100;
     protected int pushDistance = 600;
     protected int glyph2CenterDistance = 3200;
     protected int center2GlyphDistance = 3080;
+    protected float glyphOffAngle = 0;
 
     float centerGlyphAngleOffset = 0;
 
@@ -143,10 +144,13 @@ public class AutoRelic extends OpMode {
         vuforia.identifyGlyphCrypto();
         if (vuforia.vumarkImage == "left") {
             columnDistance = leftColumnDistance;
+            glyphOffAngle = -10;
         } else if (vuforia.vumarkImage == "center") {
             columnDistance = centerColumnDistance;
+            glyphOffAngle = -5;;
         } else if (vuforia.vumarkImage == "right") {
             columnDistance = rightColumnDistance;
+            glyphOffAngle = 10;;
         } else {
             columnDistance = rightColumnDistance;
         }
