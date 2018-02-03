@@ -144,13 +144,13 @@ public class AutoRelic extends OpMode {
         vuforia.identifyGlyphCrypto();
         if (vuforia.vumarkImage == "left") {
             columnDistance = leftColumnDistance;
-            glyphOffAngle = -20;
+            glyphOffAngle = -23;
         } else if (vuforia.vumarkImage == "center") {
             columnDistance = centerColumnDistance;
             glyphOffAngle = -10;
         } else if (vuforia.vumarkImage == "right") {
             columnDistance = rightColumnDistance;
-            glyphOffAngle = 20;
+            glyphOffAngle = 23;
         } else {
             columnDistance = rightColumnDistance;
             glyphOffAngle = 20;

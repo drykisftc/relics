@@ -91,6 +91,8 @@ public class AutoRianPlanARed extends AutoRelic {
         jewelKicker = new JewelKicker(jewelSensor,jewelArm,jewelHitter,telemetry);
         jewelKicker.init();
         jewelKicker.jewelHitterRestPosition = 0.44;
+        jewelArmPos = jewelKicker.jewelArmActionPosition;
+        jewelHitterPos = jewelKicker.jewelHitterRestPosition;
 
         navigation = new Navigation(telemetry);
         navigation.pidControlHeading.setKp(0.004);
@@ -128,6 +130,10 @@ public class AutoRianPlanARed extends AutoRelic {
 
                 // jewel handling
                 state = jewelKicker.loop(0, 1, teamColor);
+
+                // hitter arm to avoid jewel holes
+                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.1*rand.nextDouble()-0.1;
+                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.03*rand.nextDouble()-0.03;
 
                 vuforia.identifyGlyphCrypto();
 
@@ -293,7 +299,7 @@ public class AutoRianPlanARed extends AutoRelic {
                 break;
             case 14:
                 // move forward back to the glyph box
-                if (0 == moveByDistance(0.8, glyph2CenterDistance+900)) {
+                if (0 == moveByDistance(0.8, glyph2CenterDistance+1100)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -358,7 +364,7 @@ public class AutoRianPlanARed extends AutoRelic {
             */
             case 15:
                 // backup
-                if (0 == moveByDistance(-0.3, 700)) {
+                if (0 == moveByDistance(-0.3, 200)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();

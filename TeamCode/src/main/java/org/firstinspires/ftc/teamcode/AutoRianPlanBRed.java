@@ -62,6 +62,10 @@ public class AutoRianPlanBRed extends AutoRianPlanARed {
                 // jewel handling
                 state = jewelKicker.loop(0, 1, teamColor);
 
+                // hitter arm to avoid jewel holes
+                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.1*rand.nextDouble()-0.1;
+                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.03*rand.nextDouble()-0.03;
+
                 vuforia.identifyGlyphCrypto();
                 getWheelLandmarks();
 
@@ -113,28 +117,58 @@ public class AutoRianPlanBRed extends AutoRianPlanARed {
                 } else {
 
                     timeStamp = System.currentTimeMillis();
+                    getWheelLandmarks();
                     state = 6;
 
                 }
 
                 break;
             case 6:
-                //back up
-                time = System.currentTimeMillis();
 
-                if (time - timeStamp < 2000) {
-
-                    moveAtPower(backupPower);
-
-                } else {
+                if (0 == moveByDistance(-0.80, backupDistance - 100)) {
 
                     moveAtPower(0.0);
+                    timeStamp = System.currentTimeMillis();
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    // lower glyph bars
+                    VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorHolderPower);
+
                     state = 7;
 
                 }
 
                 break;
             case 7:
+                if (0 == moveByDistance(0.4, pushDistance + 150)) {
+                    moveAtPower(0.0);
+                    timeStamp = System.currentTimeMillis();
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
+
+                    // lower glyph bars
+                    VortexUtils.moveMotorByEncoder(robot.liftMotor,0, liftMotorHolderPower);
+                    state = 8;
+                }
+
+                break;
+            case 8:
+
+                if (0 == moveByDistance(-0.80, backupDistance - 100)) {
+
+                    moveAtPower(0.0);
+                    timeStamp = System.currentTimeMillis();
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    // lower glyph bars
+                    VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorHolderPower);
+
+                    state = 9;
+
+                }
+
+                break;
+            case 9:
                 // stop
                 robot.stop();
                 break;

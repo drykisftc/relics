@@ -137,97 +137,121 @@ public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
 
                     timeStamp = System.currentTimeMillis();
                     state = 6;
-
                 }
-
                 break;
             case 6:
                 //back up
                 if (0 == moveByDistance(-glyphDeliverPower, backupDistance)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
-                    state = 20;
+                    state = 7;
                 }
 
                 break;
             case 7:
+                if (0 == moveByDistance(0.4, pushDistance + 150)) {
+                    moveAtPower(0.0);
+                    timeStamp = System.currentTimeMillis();
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
+
+                    // lower glyph bars
+                    VortexUtils.moveMotorByEncoder(robot.liftMotor,0, liftMotorHolderPower);
+                    state = 8;
+                }
+
+                break;
+            case 8:
+                if (0 == moveByDistance(-0.80, backupDistance - 150)) {
+
+                    moveAtPower(0.0);
+                    timeStamp = System.currentTimeMillis();
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    // lower glyph bars
+                    VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorHolderPower);
+                    state = 20;
+                }
+
+                break;
+            case 9:
                 // move side way
                 if ( 0 == sideMoveByDistance(sideMovePower, sideWayDistance-columnDistance) ){
                     wheelDistanceLandMark = getWheelOdometer();
                     getWheelLandmarks();
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorHolderPower);
                     collectGlyph();
-                    state = 8;
+                    state = 10;
                 }
 
                 break;
-            case 8:
+            case 10:
                 // move to center
                 if (0 == moveByDistance(move2CenterPower, glyph2CenterDistance)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
-                    state = 9;
+                    state = 11;
                 }
                 break;
 
-            case 9:
+            case 11:
                 // collect glyph
                 if ( System.currentTimeMillis() - timeStamp < 2000) {
-                    state = 10;
+                    state = 12;
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
                 break;
-            case 10:
+            case 13:
                 // correct angle just increase it got knocked out the cource
                 if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle,leftMotors,rightMotors)) {
-                    state = 11;
+                    state = 14;
                     getWheelLandmarks();
                     // lift glyph bar
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition*3, liftMotorHolderPower);
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
                 break;
-            case 11:
+            case 14:
                 // move away from center
                 if (0 == moveByDistance(-move2CenterPower, glyph2CenterDistance)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
-                    state = 12;
+                    state = 15;
                 }
                 break;
-            case 12:
+            case 15:
                 // move side way
                 if ( 0 == sideMoveByDistance(-sideMovePower, sideWayDistance-columnDistance) ){
                     wheelDistanceLandMark = getWheelOdometer();
                     getWheelLandmarks();
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorHolderPower);
                     collectGlyph();
-                    state = 13;
+                    state = 16;
                 }
                 break;
-            case 13:
+            case 16:
                 // move to glyph
                 if (0 == moveByDistance(glyphDeliverPower, -backupDistance)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
-                    state = 14;
+                    state = 17;
                 }
                 break;
-            case 14:
+            case 17:
                 // release glyph
                 releaseGlyph();
                 if (System.currentTimeMillis() - timeStamp > 1000) {
                     getWheelLandmarks();
-                    state = 15;
+                    state = 18;
                 }
                 break;
-            case 15:
+            case 18:
                 // back up
                 if (0 == moveByDistance(-glyphDeliverPower, backupDistance)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
-                    state = 16;
+                    state = 19;
                 }
                 break;
             case 16:
