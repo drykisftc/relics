@@ -53,7 +53,7 @@ public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
         teamColor = "red";
         fGlyphTurnAngle = 0.0f;
 
-        vuforiaDetectingPower = 0.4;
+        vuforiaDetectingPower = -0.4;
 
         leftColumnDistance = 3800;
         centerColumnDistance = 2350;
@@ -76,8 +76,8 @@ public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
                 state = jewelKicker.loop(0, 1, teamColor);
 
                 // hitter arm to avoid jewel holes
-                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.2*rand.nextDouble()-0.1;
-                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.06*rand.nextDouble()-0.03;
+                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.1*rand.nextDouble()-0.1;
+                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.03*rand.nextDouble()-0.03;
 
                 vuforia.identifyGlyphCrypto();
                 getWheelLandmarks();
@@ -149,7 +149,7 @@ public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
 
                 break;
             case 7:
-                if (0 == moveByDistance(0.4, pushDistance + 150)) {
+                if (0 == moveByDistance(glyphDeliverPower * 2, pushDistance + 150)) {
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
@@ -162,7 +162,7 @@ public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
 
                 break;
             case 8:
-                if (0 == moveByDistance(-0.80, backupDistance - 150)) {
+                if (0 == moveByDistance(-glyphDeliverPower, backupDistance - 150)) {
 
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
@@ -170,11 +170,11 @@ public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
                     navigation.resetTurn(leftMotors, rightMotors);
                     // lower glyph bars
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorHolderPower);
-                    state = 20;
+                    state = 24;
                 }
 
                 break;
-            case 9:
+            /*case 9:
                 // move side way
                 if ( 0 == sideMoveByDistance(sideMovePower, sideWayDistance-columnDistance) ){
                     wheelDistanceLandMark = getWheelOdometer();
@@ -329,7 +329,7 @@ public class AutoVLSBPlanBRed extends AutoVLSBPlanARed {
                     moveAtPower(0.0);
                     state = 24;
                 }
-                break;
+                break;*/
             default:
                 // stop
                 vuforia.relicTrackables.deactivate();
