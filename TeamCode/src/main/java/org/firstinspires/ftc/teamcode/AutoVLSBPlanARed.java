@@ -142,7 +142,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 // jewel handling
                 state = jewelKicker.loop(0, 1, teamColor);
 
-                // hitter arm to avoid jewel holes
+                // move jewel arm to avoid jewel holes
                 jewelKicker.jewelArmActionPosition = jewelArmPos + 0.1*rand.nextDouble()-0.1;
                 jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.03*rand.nextDouble()-0.03;
 
@@ -249,7 +249,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 break;
             case 9:
                 // move to center
-                if (0 == moveByDistance(move2CenterPower, glyph2CenterDistance/2 + backupDistance)) {
+                if (0 == moveByDistance(move2CenterPower, glyph2CenterDistance/2 + backupDistance + 500)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -318,7 +318,7 @@ public class AutoVLSBPlanARed extends AutoRelic {
                 break;
             case 15:
                 // go forward
-                if (0 == moveByDistance(-center2GlyphBoxPower, center2GlyphDistance/2)) {
+                if (0 == moveByDistance(-center2GlyphBoxPower, center2GlyphDistance/2 + 500)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
