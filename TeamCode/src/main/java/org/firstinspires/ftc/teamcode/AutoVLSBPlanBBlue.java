@@ -55,7 +55,7 @@ public class AutoVLSBPlanBBlue extends AutoVLSBPlanBRed {
         leftColumnDistance = 1000;
 
         sideMovePower = -0.2;
-        vuforiaDetectingPower = 0.2;
+        vuforiaDetectingPower = 0.4;
     }
 
 }

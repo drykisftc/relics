@@ -46,7 +46,7 @@ public class AutoVLSBPlanABlue extends AutoVLSBPlanARed {
     public AutoVLSBPlanABlue() {
         super();
         teamColor = "blue";
-        vuforiaDetectingPower = 0.2;
+        vuforiaDetectingPower = 0.4;
 
         leftColumnDistance = -2400;
         centerColumnDistance = -2950;
