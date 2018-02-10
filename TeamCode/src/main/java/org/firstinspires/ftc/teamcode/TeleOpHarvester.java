@@ -58,7 +58,7 @@ public class TeleOpHarvester extends OpMode{
     /* Declare OpMode members. */
     protected HardwareHarvester robot = new HardwareHarvester();
 
-    protected int liftHeightLimit = 3000;
+    protected int liftHeightLimit = 3200;
     protected int liftMotorPosition = 0;
     protected double liftMotorHolderPower = 0.3;
 
@@ -199,6 +199,8 @@ public class TeleOpHarvester extends OpMode{
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 robot.liftMotor.setPower(0);
             }
+            robot.leftFlipper.setPosition(robot.leftFlipperLevelPosition);
+            robot.rightFlipper.setPosition(robot.rightFlipperLevelPosition);
         } else if (gamepad1.dpad_down || gamepad2.dpad_down ) {
             if (liftMotorPosition > 0) {
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
