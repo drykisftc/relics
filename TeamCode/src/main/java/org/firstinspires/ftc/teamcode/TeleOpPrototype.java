@@ -54,6 +54,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name="TeleOp: A Pro Prototype", group="TeleOp")
+@Disabled
 public class TeleOpPrototype extends OpMode{
 
     /* Declare OpMode members. */

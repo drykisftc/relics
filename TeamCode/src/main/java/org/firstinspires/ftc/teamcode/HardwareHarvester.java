@@ -5,6 +5,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -34,27 +35,25 @@ public class HardwareHarvester extends HardwareBase
     //servos
     public Servo jewelArm = null;
     public Servo jewelHitter = null;
-    public Servo smolL = null;
-    public Servo glyphPusher = null;
 
-    public CRServo lowerBeltServo1 = null;
-    public CRServo lowerBeltServo2 = null;
-
-    //sensors
-    public ColorSensor jewelSensor = null;
-    public DistanceSensor jewelSensorDistance = null;
+    public Servo leftFlipper = null;
+    public Servo rightFlipper = null;
 
     // Orientation sensor
     BNO055IMU imu = null;
     Orientation angles = null;
 
+    //sensors
+    public ColorSensor jewelSensor = null;
+    public DistanceSensor jewelSensorDistance = null;
+
     protected float axleDistance = 2200; //80.79 * 14;
 
-    double pusherLoadPosition = 0.0;
-    double pusherActPosition = 0.6;
+    double leftFlipperLoadPosition = 0.0;
+    double leftFlipperDumpPosition = 0.7;
 
-    double blockerUnloadPosition = 0.00;
-    double blockerLoadPosition = 0.40;
+    double rightFlipperLoadPosition = 1.0;
+    double rightFlipperDumpPosition = 0.3;
 
     double defaultGlyphWheelPower = 0.3;
     double defaultGlyphLiftPower = 0.9;
@@ -89,14 +88,12 @@ public class HardwareHarvester extends HardwareBase
         motorRightFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         liftMotor = hwMap.dcMotor.get("liftMotor");
-        liftMotor.setDirection(DcMotor.Direction.FORWARD);
+        liftMotor.setDirection(DcMotor.Direction.REVERSE);
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         jewelHitter = hwMap.servo.get("jewelHitter");
         jewelArm = hwMap.servo.get("jewelArm");
-        smolL = hwMap.servo.get("smolL");
-        glyphPusher = hwMap.servo.get("glyphPusher");
 
         jewelSensor = hwMap.get(ColorSensor.class, "jewelSensor");
         jewelSensorDistance = hwMap.get(DistanceSensor.class, "jewelSensor");
@@ -111,8 +108,8 @@ public class HardwareHarvester extends HardwareBase
         rightLiftWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightLiftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        lowerBeltServo1 = hwMap.crservo.get("lowerBeltServo1");
-        lowerBeltServo2 = hwMap.crservo.get("lowerBeltServo2");
+        leftFlipper = hwMap.servo.get("leftFlipper");
+        rightFlipper = hwMap.servo.get("rightFlipper");
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
@@ -192,21 +189,20 @@ public class HardwareHarvester extends HardwareBase
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
 
-    void beltDepositGlyph() {
-        lowerBeltServo1.setPower(1.0);
-        lowerBeltServo2.setPower(1.0);
+    void initAllDevices() {
+        jewelArm.setPosition(0.9 );
+        jewelHitter.setPosition(0.0);
     }
 
-    void beltSpitOutGlyph() {
-        lowerBeltServo1.setPower(-1.0);
-        lowerBeltServo2.setPower(-1.0);
+    void loadGlyph() {
+        leftFlipper.setPosition(leftFlipperLoadPosition);
+        rightFlipper.setPosition(rightFlipperLoadPosition);
     }
 
-    void beltStop() {
-        lowerBeltServo1.setPower(0);
-        lowerBeltServo2.setPower(0);
+    void dumpGlyph() {
+        leftFlipper.setPosition(leftFlipperDumpPosition);
+        rightFlipper.setPosition(rightFlipperDumpPosition);
     }
-
     void glyphWheelLoad(){
         leftLiftWheel.setPower(-defaultGlyphWheelPower);
         rightLiftWheel.setPower(defaultGlyphWheelPower);
@@ -215,14 +211,6 @@ public class HardwareHarvester extends HardwareBase
     void glyphWheelUnload() {
         leftLiftWheel.setPower(defaultGlyphWheelPower);
         rightLiftWheel.setPower(-defaultGlyphWheelPower);
-        glyphPusher.setPosition(pusherLoadPosition);
-    }
-
-    void initAllDevices() {
-        jewelArm.setPosition(0.55 );
-        jewelHitter.setPosition(1.0);
-        glyphPusher.setPosition( 0.05);
-        smolL.setPosition(blockerLoadPosition);
     }
 
 }

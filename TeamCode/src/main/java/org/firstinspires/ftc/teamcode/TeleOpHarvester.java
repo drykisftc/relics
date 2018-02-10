@@ -32,7 +32,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -53,17 +52,14 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="TeleOp: A Pro Rian", group="TeleOp")
-@Disabled
-public class TeleOpRian extends OpMode{
+@TeleOp(name="TeleOp: A Pro Harvester", group="TeleOp")
+public class TeleOpHarvester extends OpMode{
 
     /* Declare OpMode members. */
-    protected HardwareRian robot = new HardwareRian();
+    protected HardwareHarvester robot = new HardwareHarvester();
 
-    protected int liftHeightLimit = 4000;
+    protected int liftHeightLimit = 3000;
     protected int liftMotorPosition = 0;
-    protected int liftMoveMotorPosition = 400;
-    protected double liftMotorMovePower = 0.5;
     protected double liftMotorHolderPower = 0.3;
 
     double [] wheelPowerLUT = {0.0f, 0.05f, 0.15f, 0.18f, 0.20f,
@@ -87,6 +83,7 @@ public class TeleOpRian extends OpMode{
         // Send telemetry message to signify robot waiting;
         telemetry.addData("TeleOp", "Hello Vortex");    //
         updateTelemetry(telemetry);
+
     }
 
     /*
@@ -105,7 +102,7 @@ public class TeleOpRian extends OpMode{
     @Override
     public void start() {
         robot.start();
-        jewelArmUp();
+        robot.initAllDevices();
         telemetry.update();
     }
 
@@ -117,7 +114,9 @@ public class TeleOpRian extends OpMode{
 
         joystickWheelControl();
         glyphWheelControl();
+        glyphDepositControl();
         glyphLiftControl();
+        jewelArmControl();
         telemetry.update();
     }
 
@@ -138,10 +137,10 @@ public class TeleOpRian extends OpMode{
             //parallel and diagonal movement
             diagonal1 = Range.clip(diagonal1, -1, 1);
             diagonal2 = Range.clip(diagonal2, -1, 1);
-            robot.motorLeftBackWheel.setPower(-diagonal2);
-            robot.motorLeftFrontWheel.setPower(-diagonal1);
-            robot.motorRightBackWheel.setPower(-diagonal1);
-            robot.motorRightFrontWheel.setPower(-diagonal2);
+            robot.motorLeftBackWheel.setPower(-diagonal2*Math.abs(diagonal2));
+            robot.motorLeftFrontWheel.setPower(-diagonal1*Math.abs(diagonal1));
+            robot.motorRightBackWheel.setPower(-diagonal1*Math.abs(diagonal1));
+            robot.motorRightFrontWheel.setPower(-diagonal2*Math.abs(diagonal2));
 
         } else {
 
@@ -155,142 +154,78 @@ public class TeleOpRian extends OpMode{
 
         }
 
-        if (robot.motorLeftFrontWheel.getPower() > 0.05 &&
-                robot.motorLeftBackWheel.getPower() > 0.05 &&
-                robot.motorRightFrontWheel.getPower() > 0.05 &&
-                robot.motorRightBackWheel.getPower() > 0.05 &&
-                Math.abs(robot.liftMotor.getCurrentPosition()) < liftMoveMotorPosition){
-
-            VortexUtils.moveMotorByEncoder(robot.liftMotor, liftMoveMotorPosition, liftMotorMovePower);
-
-        }
-
-        if (gamepad1.y || gamepad2.y) {
-            jewelArmUp();
-        }
-
         // Send telemetry message to signify robot running;
         telemetry.addData("left",  "%.2f", left);
         telemetry.addData("right", "%.2f", right);
-        telemetry.addData("LBPower", "%.2f", robot.motorLeftBackWheel.getPower());
-        telemetry.addData("LFPower", "%.2f", robot.motorLeftFrontWheel.getPower());
-        telemetry.addData("RBPower", "%.2f", robot.motorRightBackWheel.getPower());
-        telemetry.addData("RFPower", "%.2f", robot.motorRightBackWheel.getPower());
     }
 
     public void glyphWheelControl() {
 
-        if (gamepad2.dpad_up) {
-            // up
-            robot.leftLiftWheel1.setPower(1.0);
-            robot.leftLiftWheel2.setPower(1.0);
-            robot.leftLiftWheel3.setPower(1.0);
-            robot.rightLiftWheel1.setPower(-1.0);
-            robot.rightLiftWheel2.setPower(-1.0);
-            robot.rightLiftWheel3.setPower(-1.0);
-            robot.beltServo.setPower(0.0);
+        double lw = gamepad2.left_stick_y;
+        double rw = gamepad2.right_stick_y;
 
-        } else if (gamepad2.dpad_down) {
-            //down
-            robot.leftLiftWheel1.setPower(-1.0);
-            robot.leftLiftWheel2.setPower(-1.0);
-            robot.leftLiftWheel3.setPower(-1.0);
-            robot.rightLiftWheel1.setPower(1.0);
-            robot.rightLiftWheel2.setPower(1.0);
-            robot.rightLiftWheel3.setPower(1.0);
-            robot.beltServo.setPower(-1.0);
-
-        } else if (gamepad1.right_bumper) {
-
-            robot.leftLiftWheel1.setPower(1.0);
-            robot.leftLiftWheel2.setPower(1.0);
-            robot.leftLiftWheel3.setPower(1.0);
-            robot.rightLiftWheel1.setPower(-1.0);
-            robot.rightLiftWheel2.setPower(-1.0);
-            robot.rightLiftWheel3.setPower(-1.0);
-            robot.beltServo.setPower(0.0);
-
-        } else if (gamepad1.left_bumper) {
-
-            robot.leftLiftWheel1.setPower(-1.0);
-            robot.leftLiftWheel2.setPower(-1.0);
-            robot.leftLiftWheel3.setPower(-1.0);
-            robot.rightLiftWheel1.setPower(1.0);
-            robot.rightLiftWheel2.setPower(1.0);
-            robot.rightLiftWheel3.setPower(1.0);
-            robot.beltServo.setPower(-1.0);
-
-        } else if (gamepad1.left_trigger > 0.5|| gamepad2.dpad_left) {
-
-            robot.leftLiftWheel1.setPower(1.0);
-            robot.leftLiftWheel2.setPower(1.0);
-            robot.leftLiftWheel3.setPower(1.0);
-            robot.rightLiftWheel1.setPower(1.0);
-            robot.rightLiftWheel2.setPower(1.0);
-            robot.rightLiftWheel3.setPower(1.0);
-
-        } else if (gamepad1.right_trigger > 0.5||gamepad2.dpad_right) {
-
-            robot.leftLiftWheel1.setPower(-1.0);
-            robot.leftLiftWheel2.setPower(-1.0);
-            robot.leftLiftWheel3.setPower(-1.0);
-            robot.rightLiftWheel1.setPower(-1.0);
-            robot.rightLiftWheel2.setPower(-1.0);
-            robot.rightLiftWheel3.setPower(-1.0);
-
+        if (gamepad2.right_bumper || gamepad1.right_bumper) {
+            robot.glyphWheelLoad();
+        } else if (gamepad2.left_bumper || gamepad1.left_bumper) {
+            robot.glyphWheelUnload();
+        } else if (Math.abs(lw) > 0.05 || Math.abs(rw) > 0.05) {
+            robot.leftLiftWheel.setPower(lw * -0.25);
+            robot.rightLiftWheel.setPower(rw * 0.25);
         } else {
-            robot.leftLiftWheel1.setPower(0.0);
-            robot.leftLiftWheel2.setPower(0.0);
-            robot.leftLiftWheel3.setPower(0.0);
-            robot.rightLiftWheel1.setPower(0.0);
-            robot.rightLiftWheel2.setPower(0.0);
-            robot.rightLiftWheel3.setPower(0.0);
-            robot.beltServo.setPower(0.0);
+            robot.leftLiftWheel.setPower(0.0);
+            robot.rightLiftWheel.setPower(0.0);
         }
     }
 
+    public void glyphDepositControl() {
+
+        if (gamepad1.a || gamepad2.a) {
+            robot.loadGlyph();
+        }
+
+        if ( gamepad1.b || gamepad2.b ) {
+            robot.dumpGlyph();
+        }
+    }
 
     public void glyphLiftControl () {
-        if ((robot.liftMotor.getCurrentPosition() > -liftHeightLimit && gamepad2.right_stick_y < 0) || (robot.liftMotor.getCurrentPosition() < liftHeightLimit && gamepad2.right_stick_y > 0)) {
 
-            liftMotorPosition = robot.liftMotor.getCurrentPosition();
-
-            robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.liftMotor.setPower(gamepad2.right_stick_y);
-
-        } else if (gamepad1.dpad_up) {
-
-            liftMotorPosition = robot.liftMotor.getCurrentPosition();
-
+        liftMotorPosition = robot.liftMotor.getCurrentPosition();
+        if (gamepad1.dpad_up || gamepad2.dpad_up) {
             if (liftMotorPosition < liftHeightLimit) {
-
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                robot.liftMotor.setPower(0.6);
-
-            }
-
-        } else if (gamepad1.dpad_down) {
-
-            liftMotorPosition = robot.liftMotor.getCurrentPosition();
-
-            if (liftMotorPosition > -liftHeightLimit) {
-
+                robot.liftMotor.setPower(robot.defaultGlyphLiftPower);
+            } else {
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                robot.liftMotor.setPower(-0.6);
-
+                robot.liftMotor.setPower(0);
             }
-
+        } else if (gamepad1.dpad_down || gamepad2.dpad_down ) {
+            if (liftMotorPosition > 0) {
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.liftMotor.setPower(-robot.defaultGlyphLiftPower);
+            } else {
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.liftMotor.setPower(0);
+            }
         } else {
-                // hold position
-                VortexUtils.moveMotorByEncoder(robot.liftMotor, liftMotorPosition, liftMotorHolderPower);
+            // hold position
+            VortexUtils.moveMotorByEncoder(robot.liftMotor, liftMotorPosition, liftMotorHolderPower);
         }
 
         telemetry.addData("right arm pos ", "%6d", liftMotorPosition);
     }
 
-    void jewelArmUp () {
-        robot.jewelArm.setPosition(0.65);
-        robot.jewelHitter.setPosition(0.0);
+    public void jewelArmControl() {
+
+        if (gamepad1.dpad_left || gamepad2.dpad_left) {
+
+            robot.jewelArm.setPosition(robot.jewelArm.getPosition() + 0.001);
+
+        } else if (gamepad1.dpad_right || gamepad2.dpad_right) {
+
+            robot.jewelArm.setPosition(robot.jewelArm.getPosition() - 0.001);
+
+        }
     }
 
     /*
