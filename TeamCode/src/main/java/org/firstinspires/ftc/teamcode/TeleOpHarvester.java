@@ -204,12 +204,19 @@ public class TeleOpHarvester extends OpMode{
             }
             robot.levelGlyph();
         } else if (gamepad1.dpad_down || gamepad2.dpad_down ) {
-            if (liftMotorPosition > 0) {
+            if (liftMotorPosition > 0 ) {
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 robot.liftMotor.setPower(-robot.defaultGlyphLiftPower);
             } else {
-                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                robot.liftMotor.setPower(0);
+                if (gamepad1.x) {
+                    robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    robot.liftMotor.setPower(-robot.defaultGlyphLiftPower);
+                    robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                    robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                } else {
+                    robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    robot.liftMotor.setPower(0);
+                }
             }
         } else {
             // hold position
