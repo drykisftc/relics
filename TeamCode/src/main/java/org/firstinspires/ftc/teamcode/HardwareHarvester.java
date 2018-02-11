@@ -205,6 +205,12 @@ public class HardwareHarvester extends HardwareBase
         leftFlipper.setPosition(leftFlipperDumpPosition);
         rightFlipper.setPosition(rightFlipperDumpPosition);
     }
+
+    void levelGlyph() {
+        leftFlipper.setPosition(leftFlipperLevelPosition);
+        rightFlipper.setPosition(rightFlipperLevelPosition);
+    }
+
     void glyphWheelLoad(){
         leftLiftWheel.setPower(-defaultGlyphWheelPower);
         rightLiftWheel.setPower(defaultGlyphWheelPower);
@@ -213,6 +219,11 @@ public class HardwareHarvester extends HardwareBase
     void glyphWheelUnload() {
         leftLiftWheel.setPower(defaultGlyphWheelPower);
         rightLiftWheel.setPower(-defaultGlyphWheelPower);
+    }
+
+    public void stopGlyphWheels(){
+        leftLiftWheel.setPower(0.0);
+        rightLiftWheel.setPower(0.0);
     }
 
 }

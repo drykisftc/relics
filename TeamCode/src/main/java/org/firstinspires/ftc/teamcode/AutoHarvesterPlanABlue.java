@@ -30,7 +30,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 /*
  * This is an example LinearOpMode that shows how to use
@@ -41,19 +40,17 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@Autonomous(name = "GWN_PlanA_Blue", group = "A_GWN")
-@Disabled
+@Autonomous(name = "Harvester_PlanA_Blue", group = "A_Harvester")
+public class AutoHarvesterPlanABlue extends AutoHarvesterPlanARed {
 
-public class AutoGWNPlanABlue extends AutoVLSBPlanARed {
-
-    public AutoGWNPlanABlue() {
+    public AutoHarvesterPlanABlue() {
         super();
         teamColor = "blue";
-        vuforiaDetectingPower = 0.2;
+        vuforiaDetectingPower = 0.4;
 
-        leftColumnDistance = -2400;
-        centerColumnDistance = -2950;
-        rightColumnDistance = -3600;
+        leftColumnDistance = -2100;
+        centerColumnDistance = -2800;
+        rightColumnDistance = -3500;
     }
 
 }

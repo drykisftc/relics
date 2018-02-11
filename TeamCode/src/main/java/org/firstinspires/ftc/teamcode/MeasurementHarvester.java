@@ -52,8 +52,8 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="TeleOp: A Pro Harvester", group="TeleOp")
-public class TeleOpHarvester extends OpMode{
+@TeleOp(name="TeleOp: Measurement Harvester", group="Measurement")
+public class MeasurementHarvester extends OpMode{
 
     /* Declare OpMode members. */
     protected HardwareHarvester robot = new HardwareHarvester();
@@ -117,6 +117,8 @@ public class TeleOpHarvester extends OpMode{
         glyphDepositControl();
         glyphLiftControl();
         jewelArmControl();
+        jewelSensorReadValue();
+        imuReadings();
         telemetry.update();
     }
 
@@ -233,6 +235,22 @@ public class TeleOpHarvester extends OpMode{
 
         telemetry.addData("jewel arm position ", robot.jewelArm.getPosition());
         telemetry.addData("jewel hitter position ", robot.jewelHitter.getPosition());
+    }
+
+    public void jewelSensorReadValue() {
+
+        telemetry.addData("jewel sensor red", robot.jewelSensor.red());
+        telemetry.addData("jewel sensor blue", robot.jewelSensor.blue());
+        telemetry.addData("jewel sensor green", robot.jewelSensor.green());
+
+    }
+
+    public void imuReadings() {
+
+        telemetry.addData("First angle", robot.imu.getAngularOrientation().firstAngle);
+        telemetry.addData("Second angle", robot.imu.getAngularOrientation().secondAngle);
+        telemetry.addData("Third angle", robot.imu.getAngularOrientation().thirdAngle);
+
     }
 
     /*
