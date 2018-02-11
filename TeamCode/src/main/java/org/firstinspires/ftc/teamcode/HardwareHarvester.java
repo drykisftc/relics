@@ -27,7 +27,10 @@ public class HardwareHarvester extends HardwareBase
     public DcMotor motorRightBackWheel =null;
     public DcMotor motorLeftFrontWheel = null;
     public DcMotor motorRightFrontWheel =null;
+
     public DcMotor liftMotor = null;
+
+    public DcMotor relicMotor = null;
 
     public DcMotor leftLiftWheel = null;
     public DcMotor rightLiftWheel = null;
@@ -38,6 +41,9 @@ public class HardwareHarvester extends HardwareBase
 
     public Servo leftFlipper = null;
     public Servo rightFlipper = null;
+
+    public Servo relicClaw = null;
+    public CRServo relicFlipper = null;
 
     // Orientation sensor
     BNO055IMU imu = null;
@@ -59,6 +65,9 @@ public class HardwareHarvester extends HardwareBase
 
     double defaultGlyphWheelPower = 0.3;
     double defaultGlyphLiftPower = 0.9;
+
+    double relicClawOpenPosition = 0.0;
+    double relicClawClosePosition = 1.0;
 
     /* Constructor */
     public HardwareHarvester(){
@@ -94,8 +103,16 @@ public class HardwareHarvester extends HardwareBase
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        relicMotor = hwMap.dcMotor.get("relicMotor");
+        relicMotor.setDirection(DcMotor.Direction.FORWARD);
+        relicMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        relicMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         jewelHitter = hwMap.servo.get("jewelHitter");
         jewelArm = hwMap.servo.get("jewelArm");
+
+        relicFlipper = hwMap.crservo.get("relicFlipper");
+        relicClaw = hwMap.servo.get("relicClaw");
 
         jewelSensor = hwMap.get(ColorSensor.class, "jewelSensor");
         jewelSensorDistance = hwMap.get(DistanceSensor.class, "jewelSensor");
@@ -149,6 +166,10 @@ public class HardwareHarvester extends HardwareBase
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         liftMotor.setPower(0.0);
 
+        relicMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        relicMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        relicMotor.setPower(0.0);
+
         leftLiftWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftLiftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftLiftWheel.setPower(0.0);
@@ -169,6 +190,8 @@ public class HardwareHarvester extends HardwareBase
 
         liftMotor.setPower(0.0);
 
+        relicMotor.setPower(0.0);
+
         leftLiftWheel.setPower(0.0);
         rightLiftWheel.setPower(0.0);
 
@@ -178,6 +201,8 @@ public class HardwareHarvester extends HardwareBase
         motorRightFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        relicMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         leftLiftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightLiftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -192,7 +217,7 @@ public class HardwareHarvester extends HardwareBase
     }
 
     void initAllDevices() {
-        jewelArm.setPosition(0.9 );
+        jewelArm.setPosition(0.9);
         jewelHitter.setPosition(0.0);
     }
 

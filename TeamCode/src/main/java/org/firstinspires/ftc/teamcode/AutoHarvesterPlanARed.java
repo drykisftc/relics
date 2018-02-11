@@ -285,7 +285,6 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                 if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle,leftMotors,rightMotors)) {
                     state = 12;
                     getWheelLandmarks();
-                    robot.stopGlyphWheels();
                     robot.levelGlyph();
 
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, 2000, liftMotorMovePower);

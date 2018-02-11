@@ -117,6 +117,7 @@ public class TeleOpHarvester extends OpMode{
         glyphDepositControl();
         glyphLiftControl();
         jewelArmControl();
+        relicArmControl();
         telemetry.update();
     }
 
@@ -193,34 +194,86 @@ public class TeleOpHarvester extends OpMode{
 
     public void glyphLiftControl () {
 
+        double secondControllerValue = gamepad2.left_stick_y;
+
         liftMotorPosition = robot.liftMotor.getCurrentPosition();
-        if (gamepad1.dpad_up || gamepad2.dpad_up) {
+
+        if (secondControllerValue > 0.05) {
+
             if (liftMotorPosition < liftHeightLimit) {
+
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                robot.liftMotor.setPower(robot.defaultGlyphLiftPower);
+                robot.liftMotor.setPower(secondControllerValue);
+
             } else {
+
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 robot.liftMotor.setPower(0);
+
             }
+
             robot.levelGlyph();
-        } else if (gamepad1.dpad_down || gamepad2.dpad_down ) {
-            if (liftMotorPosition > 0 ) {
+
+        } else if (gamepad1.dpad_up) {
+
+            if (liftMotorPosition < liftHeightLimit) {
+
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                robot.liftMotor.setPower(-robot.defaultGlyphLiftPower);
+                robot.liftMotor.setPower(robot.defaultGlyphLiftPower);
+
             } else {
-                if (gamepad1.x) {
+
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.liftMotor.setPower(0);
+
+            }
+
+            robot.levelGlyph();
+
+        } else if (secondControllerValue < -0.05) {
+
+            if (liftMotorPosition > 0 ) {
+
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.liftMotor.setPower(secondControllerValue);
+
+            } else {
+
+                if (gamepad2.x) {
+
                     robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    robot.liftMotor.setPower(-robot.defaultGlyphLiftPower);
+                    robot.liftMotor.setPower(secondControllerValue);
                     robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                     robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
                 } else {
+
                     robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     robot.liftMotor.setPower(0);
+
                 }
+
             }
+
+        } else if (gamepad1.dpad_down ) {
+
+            if (liftMotorPosition > 0 ) {
+
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.liftMotor.setPower(-robot.defaultGlyphLiftPower);
+
+            } else {
+
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.liftMotor.setPower(0);
+
+            }
+
         } else {
+
             // hold position
             VortexUtils.moveMotorByEncoder(robot.liftMotor, liftMotorPosition, liftMotorHolderPower);
+
         }
 
         telemetry.addData("lift arm pos ", "%6d", liftMotorPosition);
@@ -240,6 +293,44 @@ public class TeleOpHarvester extends OpMode{
 
         telemetry.addData("jewel arm position ", robot.jewelArm.getPosition());
         telemetry.addData("jewel hitter position ", robot.jewelHitter.getPosition());
+    }
+
+    public void relicArmControl() {
+
+        if (Math.abs(gamepad2.right_stick_y) > 0.05) {
+
+            robot.relicMotor.setPower(gamepad2.right_stick_y);
+
+        } else {
+
+            robot.relicMotor.setPower(0.0);
+
+        }
+
+        if (gamepad2.dpad_up) {
+
+            robot.relicClaw.setPosition(robot.relicClawClosePosition);
+
+        } else if (gamepad2.dpad_down) {
+
+            robot.relicClaw.setPosition(robot.relicClawOpenPosition);
+
+        }
+
+        if (gamepad2.left_trigger > 0.05) {
+
+            robot.relicFlipper.setPower(gamepad2.left_trigger);
+
+        } else if (gamepad2.right_trigger > 0.05) {
+
+            robot.relicFlipper.setPower(-gamepad2.right_trigger);
+
+        } else {
+
+            robot.relicFlipper.setPower(0.0);
+
+        }
+
     }
 
     /*
