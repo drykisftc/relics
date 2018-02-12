@@ -319,15 +319,11 @@ public class TeleOpHarvester extends OpMode{
 
         if (gamepad2.left_trigger > 0.05) {
 
-            robot.relicFlipper.setPower(gamepad2.left_trigger);
-
-        } else if (gamepad2.right_trigger > 0.05) {
-
-            robot.relicFlipper.setPower(-gamepad2.right_trigger);
+            robot.relicFlipper.setPosition(gamepad2.left_trigger);
 
         } else {
 
-            robot.relicFlipper.setPower(0.0);
+            robot.relicFlipper.setPosition(0.0);
 
         }
 

@@ -343,6 +343,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                 // backup
                 if (0 == moveByDistance(-move2GlyphBoxPower * 2, 400)) {
                     moveAtPower(0.0);
+                    stopGlyphWheels();
                     state = 15;
                 }
                 break;
