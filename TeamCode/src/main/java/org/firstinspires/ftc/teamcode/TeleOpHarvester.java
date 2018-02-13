@@ -62,12 +62,11 @@ public class TeleOpHarvester extends OpMode{
     protected int liftMotorPosition = 0;
     protected double liftMotorHolderPower = 0.3;
 
-    double [] wheelPowerLUT = {0.0f, 0.05f, 0.15f, 0.18f, 0.20f,
-            0.22f, 0.24f, 0.26f, 0.28f, 0.30f, 0.32f, 0.34f, 0.36f,
-            0.38f, 0.42f, 0.46f, 0.50f, 0.54f, 0.58f, 0.62f, 0.66f,
+    double [] wheelPowerLUT = {0.0f, 0.05f, 0.08f, 0.1f, 0,12f, 0.15f, 0.18f, 0.20f, 0.21f,
+            0.22f, 0.23f, 0.24f, 0.25f, 0.26f, 0.28f, 0.30f, 0.32f, 0.34f, 0.36f,
+            0.38f, 0.40f, 0.42f, 0.44f, 0.46f, 0.50f, 0.54f, 0.58f, 0.62f, 0.66f,
             0.70f, 0.74f, 0.78f, 0.82f, 0.86f, 0.90f, 0.94f, 0.98f,
-            1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f,
-            1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f, 1.00f};
+            1.00f, 1.00f};
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -128,16 +127,16 @@ public class TeleOpHarvester extends OpMode{
         float direction = gamepad1.right_stick_x;
         float parallel = -gamepad1.left_stick_x;
         double diagonal = gamepad1.left_stick_y;
-        float right = throttle - direction;
-        float left = throttle + direction;
+        double right = throttle - direction;
+        double left = throttle + direction;
         double diagonal1 = parallel + diagonal;
         double diagonal2 = -parallel + diagonal;
 
         if (Math.abs(parallel) > 0.05 || Math.abs(diagonal) > 0.05) {
 
             //parallel and diagonal movement
-            diagonal1 = Range.clip(diagonal1, -1, 1);
-            diagonal2 = Range.clip(diagonal2, -1, 1);
+            diagonal1 = Range.clip(VortexUtils.lookUpTableFunc(diagonal1,wheelPowerLUT), -1, 1);
+            diagonal2 = Range.clip(VortexUtils.lookUpTableFunc(diagonal2,wheelPowerLUT), -1, 1);
             robot.motorLeftBackWheel.setPower(-diagonal2*Math.abs(diagonal2));
             robot.motorLeftFrontWheel.setPower(-diagonal1*Math.abs(diagonal1));
             robot.motorRightBackWheel.setPower(-diagonal1*Math.abs(diagonal1));
@@ -146,8 +145,8 @@ public class TeleOpHarvester extends OpMode{
         } else {
 
             // clip the right/left values so that the values never exceed +/- 1
-            right = Range.clip(right, -1, 1);
-            left = Range.clip(left, -1, 1);
+            right = Range.clip(VortexUtils.lookUpTableFunc(right,wheelPowerLUT), -1, 1);
+            left = Range.clip(VortexUtils.lookUpTableFunc(left,wheelPowerLUT), -1, 1);
             robot.motorLeftBackWheel.setPower(left);
             robot.motorLeftFrontWheel.setPower(left);
             robot.motorRightBackWheel.setPower(right);
