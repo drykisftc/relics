@@ -307,29 +307,6 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                 }
 
                 break;
-            /*case 14:
-                //turn 180 degrees
-                if(0 == navigation.turnByEncoderOpenLoop(glyTurnPower,fCenterTurnAngle+glyphOffAngle, robot.axleDistance, leftMotors, rightMotors)) {
-                    state = 15;
-                    getWheelLandmarks();
-                    moveAtPower(0.2);
-                    reverseBelt();
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    timeStamp = System.currentTimeMillis();
-                }
-
-                break;
-            case 15:
-                // go forward
-                if (0 == moveByDistance(-center2GlyphBoxPower, center2GlyphDistance/2 + 500)) {
-                    moveAtPower(0.0);
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    getWheelLandmarks();
-                    timeStamp = System.currentTimeMillis();
-                    state = 16;
-                }
-
-                break;*/
             case 13:
                 // release glyph
                 robot.dumpGlyph();

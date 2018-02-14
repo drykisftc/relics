@@ -32,6 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -53,6 +54,7 @@ import com.qualcomm.robotcore.util.Range;
  */
 
 @TeleOp(name="TeleOp: A Pro GWN", group="TeleOp")
+@Disabled
 public class TeleOpGWN extends OpMode{
 
     /* Declare OpMode members. */

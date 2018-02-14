@@ -155,6 +155,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
 
                 break;
             case 7:
+                // push
                 if (0 == moveByDistance(glyphDeliverPower * 2, pushDistance + 150)) {
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
@@ -168,6 +169,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
 
                 break;
             case 8:
+                // backup
                 if (0 == moveByDistance(-glyphDeliverPower, 300)) {
 
                     moveAtPower(0.0);
