@@ -43,7 +43,7 @@ public class HardwareHarvester extends HardwareBase
     public Servo rightFlipper = null;
 
     public Servo relicClaw = null;
-    public Servo relicFlipper = null;
+    public CRServo relicFlipper = null;
 
     // Orientation sensor
     BNO055IMU imu = null;
@@ -57,11 +57,11 @@ public class HardwareHarvester extends HardwareBase
 
     double leftFlipperLoadPosition = 0.14;
     double leftFlipperDumpPosition = 0.70;
-    double leftFlipperLevelPosition = 0.26;
+    double leftFlipperLevelPosition = 0.23;
 
     double rightFlipperLoadPosition = 0.96;
     double rightFlipperDumpPosition = 0.39;
-    double rightFlipperLevelPosition = 0.84;
+    double rightFlipperLevelPosition = 0.87;
 
     double defaultGlyphWheelPower = 0.7;
     double defaultGlyphLiftPower = 0.9;
@@ -111,7 +111,7 @@ public class HardwareHarvester extends HardwareBase
         jewelHitter = hwMap.servo.get("jewelHitter");
         jewelArm = hwMap.servo.get("jewelArm");
 
-        relicFlipper = hwMap.servo.get("relicFlipper");
+        relicFlipper = hwMap.crservo.get("relicFlipper");
         relicClaw = hwMap.servo.get("relicClaw");
 
         jewelSensor = hwMap.get(ColorSensor.class, "jewelSensor");
