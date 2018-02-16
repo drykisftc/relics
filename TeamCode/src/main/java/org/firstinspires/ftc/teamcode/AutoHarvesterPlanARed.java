@@ -106,7 +106,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
 
         jewelKicker = new JewelKicker(jewelSensor,jewelArm,jewelHitter,telemetry);
         //jewelKicker.init();
-        jewelKicker.jewelArmActionPosition = 0.20;
+        jewelKicker.jewelArmActionPosition = 0.30;
         jewelKicker.jewelArmRestPosition = 0.55;
         jewelKicker.jewelHitterRestPosition= 0.5;
         jewelArmPos = jewelKicker.jewelArmActionPosition;
@@ -233,26 +233,39 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                 break;
             case 6:
                 // push glyph into place
-                if (0 == moveByDistance(move2GlyphBoxPower*2, 1200)) {
+                if (0 == moveByDistance(move2GlyphBoxPower*1.5, 1200)) {
 
                     moveAtSpeed(0.0);
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
-
                     navigation.resetTurn(leftMotors, rightMotors);
                     state = 7;
 
                 }
                 break;
             case 7:
+                // back up from the crypto box
+                if (0 == moveByDistance(0.8, 200)) {
+
+                    moveAtPower(0.0);
+                    robot.loadGlyph();
+                    timeStamp = System.currentTimeMillis();
+
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    getWheelLandmarks();
+                    state = 8;
+
+                }
+                break;
+            case 8:
                 // correct angle just in case it got knocked out the cource
                 if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle,leftMotors,rightMotors)) {
-                    state = 8;
+                    state = 9;
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
                 break;
-            case 8:
+            case 9:
                 // move to center fast
                 if (0 == moveByDistance(move2CenterPower, (int)(glyph2CenterDistance*0.75) + backupDistance + 500)) {
                     moveAtPower(0.0);
@@ -261,33 +274,33 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                     timeStamp = System.currentTimeMillis();
                     robot.loadGlyph();
                     robot.glyphWheelLoad();
-                    state = 9;
+                    state = 10;
                 }
 
                 break;
-            case 9:
+            case 10:
                 // move to center slower to collect glyph
                 if (0 == moveByDistance(collectingGlyphPower, (int)(glyph2CenterDistance*0.25))) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
-                    state = 10;
+                    state = 11;
                 }
 
                 break;
-            case 10:
+            case 11:
                 // wait 0.5 second for robot to collect
                 if (System.currentTimeMillis() - timeStamp > 500) {
-                    state = 11;
+                    state = 12;
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
                 break;
-            case 11:
+            case 12:
                 // correct angle just increase it got knocked out of course
                 if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle,leftMotors,rightMotors)) {
-                    state = 12;
+                    state = 13;
                     getWheelLandmarks();
                     robot.levelGlyph();
 
@@ -300,32 +313,32 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
                 break;
-            case 12:
+            case 13:
                 // back up
                 if (0 == moveByDistance(center2GlyphBoxPower, center2GlyphDistance)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
-                    state = 13;
+                    state = 14;
                 }
 
                 break;
-            case 13:
+            case 14:
                 // release glyph
                 robot.dumpGlyph();
 
                 if (System.currentTimeMillis() - timeStamp > 1000) {
                     getWheelLandmarks();
-                    state = 14;
+                    state = 15;
                 }
                 break;
-            case 14:
+            case 15:
                 // backup
-                if (0 == moveByDistance(-move2GlyphBoxPower * 2, 400)) {
+                if (0 == moveByDistance(-move2GlyphBoxPower , 400)) {
                     moveAtPower(0.0);
                     stopGlyphWheels();
-                    state = 15;
+                    state = 16;
                 }
                 break;
             default:
