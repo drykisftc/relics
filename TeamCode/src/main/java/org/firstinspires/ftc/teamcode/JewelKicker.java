@@ -106,7 +106,9 @@ class JewelKicker {
         int returnState = callerStartState;
         switch (state) {
             case 0:
+                telemetry.addData("Jewel arm pos ", jewelArmActionPosition);
                 jewelArm.setPosition(jewelArmActionPosition);
+                telemetry.addData("Jewel hitter pos ", jewelHitterRestPosition);
                 jewelHitter.setPosition(jewelHitterRestPosition);
                 if(System.currentTimeMillis() - timeStamp > jewelWaitTime) {
                     if (jewelSensor.blue() > jewelSensor.red()) {

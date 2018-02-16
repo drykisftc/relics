@@ -75,9 +75,13 @@ public class AutoHarvesterPlanARed extends AutoRelic {
         cryptoBoxDistance = 800;
         center2GlyphDistance = 3500;
 
-        leftColumnDistance = 3860;
-        centerColumnDistance = 3150;
-        rightColumnDistance = 2500;
+//        leftColumnDistance = 3860;
+//        centerColumnDistance = 3150;
+//        rightColumnDistance = 2500;
+        leftColumnDistance = 3600;
+        centerColumnDistance = 2950;
+        rightColumnDistance = 2300;
+
     }
 
     @Override
@@ -104,7 +108,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
         //jewelKicker.init();
         jewelKicker.jewelArmActionPosition = 0.20;
         jewelKicker.jewelArmRestPosition = 0.55;
-
+        jewelKicker.jewelHitterRestPosition= 0.5;
         jewelArmPos = jewelKicker.jewelArmActionPosition;
         jewelHitterPos = jewelKicker.jewelHitterRestPosition;
 
@@ -217,12 +221,12 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                     moveAtPower(0.0);
                     robot.loadGlyph();
                     timeStamp = System.currentTimeMillis();
-                    getWheelLandmarks();
 
                     // lower glyph bars
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorHolderPower);
 
                     navigation.resetTurn(leftMotors, rightMotors);
+                    getWheelLandmarks();
                     state = 6;
 
                 }
@@ -250,7 +254,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                 break;
             case 8:
                 // move to center fast
-                if (0 == moveByDistance(move2CenterPower, glyph2CenterDistance/2 + backupDistance + 500)) {
+                if (0 == moveByDistance(move2CenterPower, (int)(glyph2CenterDistance*0.75) + backupDistance + 500)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -263,7 +267,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                 break;
             case 9:
                 // move to center slower to collect glyph
-                if (0 == moveByDistance(collectingGlyphPower, glyph2CenterDistance/3)) {
+                if (0 == moveByDistance(collectingGlyphPower, (int)(glyph2CenterDistance*0.25))) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -287,7 +291,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                     getWheelLandmarks();
                     robot.levelGlyph();
 
-                    VortexUtils.moveMotorByEncoder(robot.liftMotor, 2000, liftMotorMovePower);
+                    VortexUtils.moveMotorByEncoder(robot.liftMotor, 1500, liftMotorMovePower);
 
                     // spit out jammed glyphs
                     //robot.defaultGlyphWheelPower = 0.3;
@@ -298,7 +302,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                 break;
             case 12:
                 // back up
-                if (0 == moveByDistance(center2GlyphBoxPower, center2GlyphDistance + 500)) {
+                if (0 == moveByDistance(center2GlyphBoxPower, center2GlyphDistance)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
