@@ -266,9 +266,9 @@ public class TeleOpHarvester extends OpMode{
 
     public void relicArmControl() {
 
-        if (Math.abs(gamepad2.right_stick_x) > 0.05) {
+        if (Math.abs(gamepad2.right_stick_x) > 0.1) {
 
-            robot.relicMotor.setPower(gamepad2.right_stick_x);
+            robot.relicMotor.setPower(gamepad2.right_stick_x/5.0);
 
         } else {
 
