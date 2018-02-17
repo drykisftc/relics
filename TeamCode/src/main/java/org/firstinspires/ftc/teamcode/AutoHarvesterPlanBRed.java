@@ -63,6 +63,8 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
         centerColumnDistance = 1850;
         rightColumnDistance = 400;
 
+        cryptoBoxDistance = 420;
+
         glyph2CenterDistance = 3000;
 
         backupDistance = 500;

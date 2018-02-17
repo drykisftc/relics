@@ -64,7 +64,6 @@ public class AutoHarvesterPlanARed extends AutoRelic {
 
         glyphLiftPosition = 500;
         centerGlyphAngleOffset = 0;
-        cryptoBoxDistance = -200;
         vuforiaDetectingPower = -0.4;
         move2GlyphBoxPower = -0.4;
         move2CenterPower = 0.8;
@@ -72,7 +71,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
         center2GlyphBoxPower = -0.8;
         glyTurnPower = -0.4;
 
-        cryptoBoxDistance = 800;
+        cryptoBoxDistance = 720;
         center2GlyphDistance = 3500;
 
 //        leftColumnDistance = 3860;
@@ -216,7 +215,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
 
             case 5:
                 // back up from the crypto box
-                if (0 == moveByDistance(0.8, backupDistance)) {
+                if (0 == moveByDistance(0.3, backupDistance)) {
 
                     moveAtPower(0.0);
                     robot.loadGlyph();
