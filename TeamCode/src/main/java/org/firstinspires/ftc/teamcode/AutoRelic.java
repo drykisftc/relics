@@ -79,7 +79,7 @@ public class AutoRelic extends OpMode {
     protected double jewelArmPos = 0;
     protected double jewelHitterPos = 0;
     protected double glyphMovePower = 0.5;
-    protected double sideMovePower = 0.2;
+    protected double sideMovePower = 0.4;
     protected double vuforiaDetectingPower = 0.4;
     protected double move2GlyphBoxPower = 0.2;
     protected double glyphBackupPower = 0.2;
