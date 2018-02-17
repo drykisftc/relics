@@ -328,7 +328,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                 // release glyph
                 robot.dumpGlyph();
 
-                if (System.currentTimeMillis() - timeStamp > 1000) {
+                if (System.currentTimeMillis() - timeStamp > 2000) {
                     getWheelLandmarks();
                     state = 15;
                 }
