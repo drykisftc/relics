@@ -220,7 +220,7 @@ public class TeleOpHarvester extends OpMode{
 
             } else {
 
-                if (gamepad1.x) {
+                if (gamepad1.x || gamepad2.x) {
                     robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     robot.liftMotor.setPower(-robot.defaultGlyphLiftPower);
                     robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -268,7 +268,7 @@ public class TeleOpHarvester extends OpMode{
 
         if (Math.abs(gamepad2.right_stick_y) > 0.1) {
 
-            robot.relicMotor.setPower(gamepad2.right_stick_y/10.0);
+            robot.relicMotor.setPower(-gamepad2.right_stick_y/50.0);
 
         } else {
 
@@ -287,7 +287,7 @@ public class TeleOpHarvester extends OpMode{
         }
 
         if (Math.abs(gamepad2.left_stick_y) > 0.1) {
-            robot.relicFlipper.setPower(gamepad2.left_stick_y * Math.abs(gamepad2.left_stick_y));
+            robot.relicFlipper.setPower(-gamepad2.left_stick_y * Math.abs(gamepad2.left_stick_y));
             //robot.relicFlipper.setPosition(robot.relicFlipper.getPosition()+gamepad2.left_stick_x/10.0);
         } else {
             robot.relicFlipper.setPower(-0.05); // prevent it popped up
