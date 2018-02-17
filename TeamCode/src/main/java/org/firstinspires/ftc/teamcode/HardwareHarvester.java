@@ -67,7 +67,7 @@ public class HardwareHarvester extends HardwareBase
     double defaultGlyphLiftPower = 0.9;
 
     double relicClawOpenPosition = 0.0;
-    double relicClawClosePosition = 0.6;
+    double relicClawClosePosition = 0.85;
 
     /* Constructor */
     public HardwareHarvester(){

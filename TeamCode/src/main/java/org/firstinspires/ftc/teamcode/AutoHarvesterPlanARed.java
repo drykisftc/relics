@@ -106,7 +106,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
 
         jewelKicker = new JewelKicker(jewelSensor,jewelArm,jewelHitter,telemetry);
         //jewelKicker.init();
-        jewelKicker.jewelArmActionPosition = 0.30;
+        jewelKicker.jewelArmActionPosition = 0.35;
         jewelKicker.jewelArmRestPosition = 0.55;
         jewelKicker.jewelHitterRestPosition= 0.5;
         jewelArmPos = jewelKicker.jewelArmActionPosition;
@@ -160,7 +160,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                 computeGlyphColumnDistance();
 
                 // lift glyph bar
-                VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, liftMotorHolderPower);
+                VortexUtils.moveMotorByEncoder(robot.liftMotor, 10, liftMotorHolderPower);
 
                 //set jewel hitter position
                 robot.jewelHitter.setPosition(0.00);
@@ -382,8 +382,8 @@ public class AutoHarvesterPlanARed extends AutoRelic {
         if (power == 0) {
             return 0; // zero power do nothing
         }
-        if (Math.abs(robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp) < distance
-                && Math.abs(robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp) < distance) {
+        if (Math.abs(robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp) + Math.abs(robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp) < distance
+                && Math.abs(robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp) + Math.abs(robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp) < distance) {
             sideMoveAtPower(sideMovePower);
         } else {
             sideMoveAtPower(0.0);

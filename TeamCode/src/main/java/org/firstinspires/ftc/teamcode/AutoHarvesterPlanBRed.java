@@ -55,9 +55,13 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
 
         vuforiaDetectingPower = -0.4;
 
-        leftColumnDistance = 3800;
-        centerColumnDistance = 2350;
-        rightColumnDistance = 900;
+//        leftColumnDistance = 3800;
+//        centerColumnDistance = 2350;
+//        rightColumnDistance = 900;
+
+        leftColumnDistance = 3300;
+        centerColumnDistance = 1850;
+        rightColumnDistance = 400;
 
         glyph2CenterDistance = 3000;
 
