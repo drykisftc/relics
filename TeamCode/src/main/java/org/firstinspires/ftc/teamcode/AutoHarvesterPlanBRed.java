@@ -182,6 +182,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                     navigation.resetTurn(leftMotors, rightMotors);
                     // lower glyph bars
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorHolderPower);
+                    robot.loadGlyph();
                     state = 9;
                 }
 
@@ -191,8 +192,6 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                 if ( 0 == sideMoveByDistance(sideMovePower, sideWayDistance-columnDistance) ){
                     wheelDistanceLandMark = getWheelOdometer();
                     getWheelLandmarks();
-                    VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorHolderPower);
-                    robot.loadGlyph();
                     robot.glyphWheelLoad();
                     state = 10;
                 }
@@ -220,8 +219,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                 if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle,leftMotors,rightMotors)) {
                     state = 14;
                     getWheelLandmarks();
-                    // lift glyph bar
-                    VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition*3, liftMotorHolderPower);
+
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
                 break;
@@ -233,7 +231,6 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                     robot.levelGlyph();
                     // lift
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, 1500, liftMotorMovePower);
-
                     state = 15;
                 }
                 break;
