@@ -261,6 +261,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                 if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle,leftMotors,rightMotors)) {
                     state = 9;
                     getWheelLandmarks();
+                    robot.glyphWheelLoad();
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
                 break;
