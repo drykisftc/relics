@@ -105,7 +105,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
 
         jewelKicker = new JewelKicker(jewelSensor,jewelArm,jewelHitter,telemetry);
         //jewelKicker.init();
-        jewelKicker.jewelArmActionPosition = 0.28;
+        jewelKicker.jewelArmActionPosition = 0.27;
         jewelKicker.jewelArmRestPosition = 0.55;
         jewelKicker.jewelHitterRestPosition= 0.5;
         jewelArmPos = jewelKicker.jewelArmActionPosition;
