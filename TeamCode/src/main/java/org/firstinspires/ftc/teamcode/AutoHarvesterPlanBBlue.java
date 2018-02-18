@@ -50,11 +50,11 @@ public class AutoHarvesterPlanBBlue extends AutoHarvesterPlanBRed {
         teamColor = "blue";
         fGlyphTurnAngle = 180;
 
-        rightColumnDistance = 3800;
-        centerColumnDistance = 2400;
-        leftColumnDistance = 1000;
+        rightColumnDistance = 3900;
+        centerColumnDistance = 2500;
+        leftColumnDistance = 1200;
 
-        offBalanceStoneDistance = 2400;
+        offBalanceStoneDistance = 2300;
         cryptoBoxDistance = 420;
 
         sideMovePower = -0.4;

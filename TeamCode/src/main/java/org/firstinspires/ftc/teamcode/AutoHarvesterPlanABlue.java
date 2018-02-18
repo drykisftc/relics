@@ -48,9 +48,9 @@ public class AutoHarvesterPlanABlue extends AutoHarvesterPlanARed {
         teamColor = "blue";
         vuforiaDetectingPower = 0.4;
 
-        leftColumnDistance = -2100;
-        centerColumnDistance = -2750;
-        rightColumnDistance = -3500;
+        leftColumnDistance = -2200;
+        centerColumnDistance = -2850;
+        rightColumnDistance = -3600;
 
     }
 

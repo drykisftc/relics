@@ -71,7 +71,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
         center2GlyphBoxPower = -0.8;
         glyTurnPower = -0.4;
 
-        cryptoBoxDistance = 720;
+        cryptoBoxDistance = 680;
         center2GlyphDistance = 3500;
 
 //        leftColumnDistance = 3860;
@@ -105,7 +105,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
 
         jewelKicker = new JewelKicker(jewelSensor,jewelArm,jewelHitter,telemetry);
         //jewelKicker.init();
-        jewelKicker.jewelArmActionPosition = 0.35;
+        jewelKicker.jewelArmActionPosition = 0.28;
         jewelKicker.jewelArmRestPosition = 0.55;
         jewelKicker.jewelHitterRestPosition= 0.5;
         jewelArmPos = jewelKicker.jewelArmActionPosition;
@@ -143,8 +143,8 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                 state = jewelKicker.loop(0, 1, teamColor);
 
                 // move jewel arm to avoid jewel holes
-                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.1*rand.nextDouble()-0.1;
-                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.03*rand.nextDouble()-0.03;
+                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.08*rand.nextDouble()-0.04;
+                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.02*rand.nextDouble()-0.01;
 
                 robot.levelGlyph();
 

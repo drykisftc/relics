@@ -55,13 +55,9 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
 
         vuforiaDetectingPower = -0.4;
 
-//        leftColumnDistance = 3800;
-//        centerColumnDistance = 2350;
-//        rightColumnDistance = 900;
-
-        leftColumnDistance = 3300;
-        centerColumnDistance = 1850;
-        rightColumnDistance = 400;
+        leftColumnDistance = 3700;
+        centerColumnDistance = 2200;
+        rightColumnDistance = 700;
 
         offBalanceStoneDistance = 2400;
         cryptoBoxDistance = 380;
@@ -83,8 +79,8 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                 state = jewelKicker.loop(0, 1, teamColor);
 
                 // hitter arm to avoid jewel holes
-                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.1*rand.nextDouble()-0.1;
-                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.03*rand.nextDouble()-0.03;
+                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.08*rand.nextDouble()-0.04;
+                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.02*rand.nextDouble()-0.01;
 
                 robot.levelGlyph();
 
