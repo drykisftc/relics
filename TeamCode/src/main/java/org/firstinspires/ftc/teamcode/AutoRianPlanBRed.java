@@ -51,9 +51,9 @@ public class AutoRianPlanBRed extends AutoRianPlanARed {
 
         teamColor = "red";
         fGlyphTurnAngle = 0.0f;
-        leftColumnDistance = 3800;
-        centerColumnDistance = 2350;
-        rightColumnDistance = 900;
+        leftColumnDistance = 3900;
+        centerColumnDistance = 2450;
+        rightColumnDistance = 1000;
     }
 
     @Override
