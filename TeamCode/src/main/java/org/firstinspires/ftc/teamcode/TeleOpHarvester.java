@@ -182,7 +182,7 @@ public class TeleOpHarvester extends OpMode{
             robot.loadGlyph();
         }
 
-        if (gamepad1.b || gamepad2.b ) {
+        if (gamepad2.b ) {
             robot.levelGlyph();
         }
 
