@@ -44,95 +44,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@Autonomous(name = "Harvester_PlanA_Red", group = "A_Harvester")
+@Autonomous(name = "Harvester_PlanA_Red_VF", group = "A_Harvester")
 
-public class AutoHarvesterPlanARed extends AutoRelic {
-
-
-    protected BNO055IMU imuSensor = null;
-
-    protected HardwareHarvester robot= null;
-
-    protected int leftBackStamp;
-    protected int leftFrontStamp;
-    protected int rightBackStamp;
-    protected int rightFrontStamp;
+public class AutoHarvesterPlanARedVF extends AutoHarvesterPlanARed {
 
 
-    public AutoHarvesterPlanARed() {
-        teamColor = "red";
-
-        glyphLiftPosition = 500;
-        centerGlyphAngleOffset = 0;
-        vuforiaDetectingPower = -0.2;
-        move2GlyphBoxPower = -0.6;
-        move2CenterPower = 0.8;
-        fGlyphTurnAngle = -90;
-        center2GlyphBoxPower = -0.8;
-        glyTurnPower = -0.4;
-
-        cryptoBoxDistance = 680;
-        center2GlyphDistance = 3500;
-
-//        leftColumnDistance = 3860;
-//        centerColumnDistance = 3150;
-//        rightColumnDistance = 2500;
-        leftColumnDistance = 3600;
-        centerColumnDistance = 2950;
-        rightColumnDistance = 2300;
-
-    }
-
-    @Override
-    public void init() {
-        robot = new HardwareHarvester();
-        robot.init(hardwareMap);
-
-        leftMotors = new DcMotor[2];
-        leftMotors[0] = robot.motorLeftFrontWheel;
-        leftMotors[1] = robot.motorLeftBackWheel;
-        rightMotors = new DcMotor[2];
-        rightMotors[0] = robot.motorRightFrontWheel;
-        rightMotors[1] = robot.motorRightBackWheel;
-        robot.defaultGlyphWheelPower = 0.15;
-
-        jewelArm = robot.jewelArm;
-        jewelHitter = robot.jewelHitter;
-
-        jewelSensor = robot.jewelSensor;
-        jewelSensorDistance = robot.jewelSensorDistance;
-        imuSensor = robot.imu;
-
-        jewelKicker = new JewelKicker(jewelSensor,jewelArm,jewelHitter,telemetry);
-        //jewelKicker.init();
-        jewelKicker.jewelArmActionPosition = 0.27;
-        jewelKicker.jewelArmRestPosition = 0.55;
-        jewelKicker.jewelHitterRestPosition= 0.5;
-        jewelArmPos = jewelKicker.jewelArmActionPosition;
-        jewelHitterPos = jewelKicker.jewelHitterRestPosition;
-
-        navigation = new Navigation(telemetry);
-
-        vuforia = new HardwareVuforia(VuforiaLocalizer.CameraDirection.BACK);
-        vuforia.init(hardwareMap);
-
-        telemetry.addData("jewelArm", jewelArm.getPosition());
-        telemetry.addData("jewelHitter", jewelHitter.getPosition());
-        telemetry.update();
-    }
-
-
-    @Override
-    public void start() {
-        robot.start();
-        vuforia.start();
-        state = 0;
-        timeStamp = System.currentTimeMillis();
-        vuforia.vumarkImage = "Unknown";
-        jewelKicker.start();
-        robot.initAllDevices();
-
-    }
 
     @Override
     public void loop() {
@@ -171,7 +87,6 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                 }
 
                 if (0 == moveByDistance(movePower, columnDistance)) {
-                    vuforia.relicTrackables.deactivate();
                     moveAtPower(0.0);
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -363,51 +278,9 @@ public class AutoHarvesterPlanARed extends AutoRelic {
 
         telemetry.addData("state", state);
         telemetry.addData("vumark", vuforia.vumarkImage);
+        //telemetry.addData("vuLocation",vuforia.getGlyphCryptoPosition().getTranslation());
         telemetry.addData("teamColor", teamColor);
         telemetry.update();
-    }
-
-    public void getWheelLandmarks () {
-        leftBackStamp = robot.motorLeftBackWheel.getCurrentPosition();
-        leftFrontStamp = robot.motorLeftFrontWheel.getCurrentPosition();
-        rightBackStamp = robot.motorRightBackWheel.getCurrentPosition();
-        rightFrontStamp = robot.motorRightFrontWheel.getCurrentPosition();
-        wheelDistanceLandMark = (leftBackStamp+leftFrontStamp+rightBackStamp+rightFrontStamp)/4;
-    }
-
-    public void sideMoveAtPower(double p) {
-        robot.motorLeftFrontWheel.setPower(-p);
-        robot.motorRightBackWheel.setPower(-p);
-        robot.motorRightFrontWheel.setPower(p);
-        robot.motorLeftBackWheel.setPower(p);
-    }
-
-    public void moveAtSpeed(double p){
-        robot.motorLeftFrontWheel.setPower(p);
-        robot.motorRightBackWheel.setPower(p);
-        robot.motorRightFrontWheel.setPower(p);
-        robot.motorLeftBackWheel.setPower(p);
-    }
-
-    // positive power moves left
-    public int sideMoveByDistance (double power, int d) {
-        int distance = Math.abs(d);
-        if (power == 0) {
-            return 0; // zero power do nothing
-        }
-        if (Math.abs(robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp) + Math.abs(robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp) < distance
-                && Math.abs(robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp) + Math.abs(robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp) < distance) {
-            sideMoveAtPower(sideMovePower);
-        } else {
-            sideMoveAtPower(0.0);
-            return 0;
-        }
-        return 1;
-    }
-
-    public void stopGlyphWheels(){
-        robot.leftLiftWheel.setPower(0.0);
-        robot.rightLiftWheel.setPower(0.0);
     }
 
 }

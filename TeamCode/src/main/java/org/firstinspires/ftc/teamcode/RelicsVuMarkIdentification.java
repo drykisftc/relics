@@ -166,6 +166,14 @@ public class RelicsVuMarkIdentification extends LinearOpMode {
                     double rX = rot.firstAngle;
                     double rY = rot.secondAngle;
                     double rZ = rot.thirdAngle;
+
+                    telemetry.addData("VuMark x", tX);
+                    telemetry.addData("VuMark y", tY);
+                    telemetry.addData("VuMark z", tZ);
+
+                    telemetry.addData("VuMark rotation A", rX);
+                    telemetry.addData("VuMark rotation B", rY);
+                    telemetry.addData("VuMark rotation C", rZ);
                 }
             }
             else {

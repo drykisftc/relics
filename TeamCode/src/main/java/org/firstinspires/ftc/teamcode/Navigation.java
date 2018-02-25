@@ -53,8 +53,8 @@ public class Navigation {
 
         //heading control
         pidControlHeading = new PIDControl();
-        pidControlHeading.setKp(0.004f);
-        pidControlHeading.setKi(0.002f);
+        pidControlHeading.setKp(0.01f);//0.004
+        pidControlHeading.setKi(0.005f);
         pidControlHeading.setKd(0.00000001f);
         pidControlHeading.setMaxIntegralError(0.6f/pidControlHeading.fKi);
 

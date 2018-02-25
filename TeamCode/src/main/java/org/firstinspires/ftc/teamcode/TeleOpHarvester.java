@@ -161,17 +161,17 @@ public class TeleOpHarvester extends OpMode{
 
     public void glyphWheelControl() {
 
-//        double lw = gamepad2.left_stick_y;
-//        double rw = gamepad2.right_stick_y;
+        double lw = gamepad2.left_stick_y;
+        double rw = gamepad2.right_stick_y;
 
         if (gamepad2.right_bumper || gamepad1.right_bumper) {
             robot.glyphWheelLoad();
         } else if (gamepad2.left_bumper || gamepad1.left_bumper) {
             robot.glyphWheelUnload();
-        }/* else if (Math.abs(lw) > 0.05 || Math.abs(rw) > 0.05) {
+        } else if (Math.abs(lw) > 0.05 || Math.abs(rw) > 0.05) {
             robot.leftLiftWheel.setPower(lw * -0.25);
             robot.rightLiftWheel.setPower(rw * 0.25);
-        } */else {
+        } else {
             robot.stopGlyphWheels();
         }
     }
@@ -287,11 +287,12 @@ public class TeleOpHarvester extends OpMode{
         }
 
         if (Math.abs(gamepad2.left_stick_y) > 0.1) {
-            robot.relicFlipper.setPower(-gamepad2.left_stick_y * Math.abs(gamepad2.left_stick_y));
-            //robot.relicFlipper.setPosition(robot.relicFlipper.getPosition()+gamepad2.left_stick_x/10.0);
-        } else {
-            robot.relicFlipper.setPower(-0.05); // prevent it popped up
+            //robot.relicFlipper.setPower(-gamepad2.left_stick_y * Math.abs(gamepad2.left_stick_y));
+            robot.relicFlipper.setPosition(robot.relicFlipper.getPosition() + gamepad2.left_stick_y / 20.0);
         }
+//        } else {
+//            robot.relicFlipper.setPower(-0.05); // prevent it popped up
+//        }
 
     }
 

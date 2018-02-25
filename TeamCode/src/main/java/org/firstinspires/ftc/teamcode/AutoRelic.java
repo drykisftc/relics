@@ -83,9 +83,9 @@ public class AutoRelic extends OpMode {
     protected double vuforiaDetectingPower = 0.4;
     protected double move2GlyphBoxPower = 0.2;
     protected double glyphBackupPower = 0.2;
-    protected double center2GlyphBoxPower = -0.8;
-    protected double move2CenterPower = 0.8;
-    protected double collectingGlyphPower = 0.3;
+    protected double center2GlyphBoxPower = -0.9;
+    protected double move2CenterPower = 0.9;
+    protected double collectingGlyphPower = 0.5;
     protected double glyphDeliverPower = 0.2;
     protected double backupPower = -0.1;
 
@@ -140,24 +140,26 @@ public class AutoRelic extends OpMode {
     public void loop() {
     }
 
-    public void computeGlyphColumnDistance() {
+    public String computeGlyphColumnDistance() {
         vuforia.identifyGlyphCrypto();
         if (vuforia.vumarkImage == "left") {
             columnDistance = leftColumnDistance;
-            glyphOffAngle = -23;
+            glyphOffAngle = 20;
         } else if (vuforia.vumarkImage == "center") {
             columnDistance = centerColumnDistance;
             glyphOffAngle = -10;
         } else if (vuforia.vumarkImage == "right") {
             columnDistance = rightColumnDistance;
-            glyphOffAngle = 23;
+            glyphOffAngle = -20;
         } else {
             columnDistance = rightColumnDistance;
-            glyphOffAngle = 20;
+            glyphOffAngle = -20;
         }
 
         OpenGLMatrix pose = vuforia.getGlyphCryptoPosition();
         telemetry.addData("Pose", format(pose));
+
+        return vuforia.vumarkImage;
     }
 
     String format(OpenGLMatrix transformationMatrix) {
@@ -165,18 +167,18 @@ public class AutoRelic extends OpMode {
     }
 
     public void moveAtPower(double p) {
-        if (lastLeftPower != p) {
-            for (int i = 0; i < leftMotors.length; i++) {
-                leftMotors[i].setPower(p);
-            }
-            lastLeftPower = p;
+
+        for (int i = 0; i < leftMotors.length; i++) {
+            leftMotors[i].setPower(p);
         }
-        if (lastRightPower != p) {
-            for (int i = 0; i < rightMotors.length; i++) {
-                rightMotors[i].setPower(p);
-            }
-            lastRightPower = p;
+        lastLeftPower = p;
+
+
+        for (int i = 0; i < rightMotors.length; i++) {
+            rightMotors[i].setPower(p);
         }
+        lastRightPower = p;
+
     }
 
     public int moveByDistance(double power, int d) {
