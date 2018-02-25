@@ -337,21 +337,30 @@ public class AutoHarvesterPlanARed extends AutoRelic {
 
                 break;
             case 14:
+                // correct angle just in case it got knocked out the cource
+                if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle,leftMotors,rightMotors)) {
+                    state = 15;
+                    getWheelLandmarks();
+                    robot.glyphWheelLoad();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                }
+                break;
+            case 15:
                 // release glyph
                 robot.dumpGlyph();
 
                 if (System.currentTimeMillis() - timeStamp > 1000) {
                     getWheelLandmarks();
-                    state = 15;
+                    state = 16;
                 }
                 break;
-            case 15:
+            case 16:
                 // backup
                 if (0 == moveByDistance(-move2GlyphBoxPower , 400)) {
                     moveAtPower(0.0);
                     robot.loadGlyph();
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorMovePower);
-                    state = 16;
+                    state = 17;
                 }
                 break;
             default:
