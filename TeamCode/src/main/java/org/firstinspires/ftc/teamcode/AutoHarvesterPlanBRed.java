@@ -53,7 +53,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
         teamColor = "red";
         fGlyphTurnAngle = 0.0f;
 
-        vuforiaDetectingPower = -0.4;
+        vuforiaDetectingPower = -0.2;
 
         leftColumnDistance = 3700;
         centerColumnDistance = 2200;
@@ -84,14 +84,18 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
 
                 robot.levelGlyph();
 
-                vuforia.identifyGlyphCrypto();
-                getWheelLandmarks();
+                computeGlyphColumnDistance();
 
                 break;
             case 1:
 
                 //read vumark
-                computeGlyphColumnDistance();
+                double movePower = vuforiaDetectingPower;
+                if ("unknown" == vuforia.vumarkImage ) {
+                    computeGlyphColumnDistance();
+                } else {
+                    movePower = vuforiaDetectingPower*3.0;
+                }
 
                 // lift glyph bar
                 VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, liftMotorHolderPower);
@@ -100,7 +104,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                 robot.jewelHitter.setPosition(0.00);
                 robot.jewelArm.setPosition(0.90);
 
-                if (0 == moveByDistance(vuforiaDetectingPower, offBalanceStoneDistance)) {
+                if (0 == moveByDistance(movePower, offBalanceStoneDistance)) {
                     moveAtPower(0.0);
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
