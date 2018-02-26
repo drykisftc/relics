@@ -147,7 +147,7 @@ public class AutoRelic extends OpMode {
             glyphOffAngle = 20;
         } else if (vuforia.vumarkImage == "center") {
             columnDistance = centerColumnDistance;
-            glyphOffAngle = -10;
+            glyphOffAngle = -15;
         } else if (vuforia.vumarkImage == "right") {
             columnDistance = rightColumnDistance;
             glyphOffAngle = -20;

@@ -40,13 +40,13 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@Autonomous(name = "Harvester_PlanB_Red", group = "A_Harvester")
+@Autonomous(name = "Harvester_PlanB_Red_VF", group = "A_Harvester")
 
-public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
+public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanARed {
 
     int sideWayDistance = 6200;
 
-    public AutoHarvesterPlanBRed() {
+    public AutoHarvesterPlanBRedVF() {
 
         super();
 
@@ -86,6 +86,8 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
 
                 computeGlyphColumnDistance();
 
+                getWheelLandmarks();
+
                 break;
             case 1:
 
@@ -96,6 +98,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                 } else {
                     movePower = vuforiaDetectingPower*3.0;
                 }
+
 
                 // lift glyph bar
                 VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, liftMotorHolderPower);
