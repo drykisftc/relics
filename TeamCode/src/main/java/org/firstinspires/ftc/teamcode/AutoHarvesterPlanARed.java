@@ -62,7 +62,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
     public AutoHarvesterPlanARed() {
         teamColor = "red";
 
-        glyphLiftPosition = 500;
+        glyphLiftPosition = 1500;
         centerGlyphAngleOffset = 0;
         vuforiaDetectingPower = -0.2;
         move2GlyphBoxPower = -0.6;
@@ -307,8 +307,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                     state = 13;
                     getWheelLandmarks();
                     robot.levelGlyph();
-                    stopGlyphWheels();
-                    VortexUtils.moveMotorByEncoder(robot.liftMotor, 1500, liftMotorMovePower);
+                    VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, liftMotorMovePower);
 
                     // spit out jammed glyphs
                     //robot.defaultGlyphWheelPower = 0.3;
@@ -321,7 +320,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
             case 13:
 
                 // unload
-                if (System.currentTimeMillis() - timeStamp > 800) {
+                if (System.currentTimeMillis() - timeStamp > 1000) {
                     robot.glyphWheelUnload();
                 }
 
@@ -337,33 +336,43 @@ public class AutoHarvesterPlanARed extends AutoRelic {
 
                 break;
             case 14:
-                // correct angle just in case it got knocked out the cource
+                // correct angle just in case it got knocked out the course
                 if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle,leftMotors,rightMotors)) {
                     state = 15;
                     getWheelLandmarks();
-                    robot.glyphWheelLoad();
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
                 break;
             case 15:
+                // move to center slower to collect glyph
+                if (0 == moveByDistance(-collectingGlyphPower, 300)) {
+                    moveAtPower(0.0);
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    getWheelLandmarks();
+                    timeStamp = System.currentTimeMillis();
+                    state = 16;
+                }
+
+                break;
+            case 16:
                 // release glyph
                 robot.dumpGlyph();
 
                 if (System.currentTimeMillis() - timeStamp > 1000) {
                     getWheelLandmarks();
-                    state = 16;
-                }
-                break;
-            case 16:
-                // backup
-                if (0 == moveByDistance(-move2GlyphBoxPower , 400)) {
-                    moveAtPower(0.0);
-                    robot.loadGlyph();
-                    VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorMovePower);
                     state = 17;
                 }
                 break;
+            case 17:
+                // backup
+                if (0 == moveByDistance(-move2GlyphBoxPower , 400)) {
+                    moveAtPower(0.0);
+                    state = 18;
+                }
+                break;
             default:
+                robot.loadGlyph();
+                VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorMovePower);
                 // stop
                 vuforia.relicTrackables.deactivate();
                 robot.stop();
@@ -406,7 +415,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
         }
         if (Math.abs(robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp) + Math.abs(robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp) < distance
                 && Math.abs(robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp) + Math.abs(robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp) < distance) {
-            sideMoveAtPower(sideMovePower);
+            sideMoveAtPower(power);
         } else {
             sideMoveAtPower(0.0);
             return 0;

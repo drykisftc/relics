@@ -144,7 +144,7 @@ class JewelKicker {
                 telemetry.addData("State", state);
                 break;
             case 1:
-                if(System.currentTimeMillis() - timeStamp > 1500) {
+                if(System.currentTimeMillis() - timeStamp > 1000) {
                     state = 2;
                     timeStamp = System.currentTimeMillis();
                 }

@@ -55,10 +55,10 @@ public class AutoHarvesterPlanBBlue extends AutoHarvesterPlanBRed {
         leftColumnDistance = 1200;
 
         offBalanceStoneDistance = 2300;
-        cryptoBoxDistance = 420;
+        cryptoBoxDistance = 150;
 
-        sideMovePower = -0.4;
-        vuforiaDetectingPower = 0.4;
+        sideMovePower = -0.95;
+        vuforiaDetectingPower = 0.2;
     }
 
 }

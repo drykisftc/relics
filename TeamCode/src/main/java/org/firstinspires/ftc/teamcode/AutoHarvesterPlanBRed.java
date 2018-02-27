@@ -44,7 +44,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
 
-    int sideWayDistance = 6200;
+    int sideWayDistance = 6600;
 
     public AutoHarvesterPlanBRed() {
 
@@ -60,15 +60,17 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
         rightColumnDistance = 700;
 
         offBalanceStoneDistance = 2400;
-        cryptoBoxDistance = 380;
+        cryptoBoxDistance = 150;
 
-        glyph2CenterDistance = 3000;
+        glyph2CenterDistance = 4000;
 
         backupDistance = 500;
 
-        sideMovePower = -0.2;
+        sideMovePower = -0.95;
 
         glyphDeliverPower = -0.2;
+
+        glyphLiftPosition = 1500;
     }
 
     @Override
@@ -79,8 +81,8 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                 state = jewelKicker.loop(0, 1, teamColor);
 
                 // hitter arm to avoid jewel holes
-                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.08*rand.nextDouble()-0.04;
-                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.02*rand.nextDouble()-0.01;
+                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.08 * rand.nextDouble() - 0.04;
+                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.02 * rand.nextDouble() - 0.01;
 
                 robot.levelGlyph();
 
@@ -91,14 +93,14 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
 
                 //read vumark
                 double movePower = vuforiaDetectingPower;
-                if ("unknown" == vuforia.vumarkImage ) {
+                if ("unknown" == vuforia.vumarkImage) {
                     computeGlyphColumnDistance();
                 } else {
-                    movePower = vuforiaDetectingPower*3.0;
+                    movePower = vuforiaDetectingPower * 3.0;
                 }
 
                 // lift glyph bar
-                VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, liftMotorHolderPower);
+                VortexUtils.moveMotorByEncoder(robot.liftMotor, 10, liftMotorHolderPower);
 
                 //set jewel hitter position
                 robot.jewelHitter.setPosition(0.00);
@@ -114,7 +116,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                 break;
             case 2:
                 // move left
-                if ( 0 == sideMoveByDistance(sideMovePower, columnDistance) ){
+                if (0 == sideMoveByDistance(sideMovePower, columnDistance)) {
                     wheelDistanceLandMark = getWheelOdometer();
                     state = 3;
                 }
@@ -122,7 +124,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                 break;
             case 3:
                 // turn if necessary
-                if (fGlyphTurnAngle == 0.0f || 0 == navigation.turnByEncoderOpenLoop(glyTurnPower,fGlyphTurnAngle,
+                if (fGlyphTurnAngle == 0.0f || 0 == navigation.turnByEncoderOpenLoop(glyTurnPower, fGlyphTurnAngle,
                         robot.axleDistance, leftMotors, rightMotors)) {
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -169,15 +171,13 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
 
-                    // lower glyph bars
-                    VortexUtils.moveMotorByEncoder(robot.liftMotor,0, liftMotorHolderPower);
                     state = 8;
                 }
 
                 break;
             case 8:
                 // backup
-                if (0 == moveByDistance(-glyphDeliverPower, 300)) {
+                if (0 == moveByDistance(-glyphDeliverPower, 500)) {
 
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
@@ -186,13 +186,13 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                     // lower glyph bars
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorHolderPower);
                     robot.loadGlyph();
-                    state = 90;
+                    state = 9;
                 }
 
                 break;
             case 9:
                 // move side way
-                if ( 0 == sideMoveByDistance(sideMovePower, sideWayDistance-columnDistance) ){
+                if (0 == sideMoveByDistance(sideMovePower, sideWayDistance - columnDistance)) {
                     wheelDistanceLandMark = getWheelOdometer();
                     getWheelLandmarks();
                     robot.glyphWheelLoad();
@@ -202,76 +202,91 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                 break;
             case 10:
                 // move to center
-                if (0 == moveByDistance(move2CenterPower, glyph2CenterDistance)) {
+                if (0 == moveByDistance(move2CenterPower, (int)(glyph2CenterDistance*0.75))) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 11;
                 }
                 break;
-
             case 11:
-                // collect glyph
-                if ( System.currentTimeMillis() - timeStamp < 2000) {
-                    state = 12;
-                    getWheelLandmarks();
+                // move to center slower to collect glyph
+                if (0 == moveByDistance(collectingGlyphPower, (int) (glyph2CenterDistance * 0.25))) {
+                    moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
+                    getWheelLandmarks();
+                    timeStamp = System.currentTimeMillis();
+                    state = 12;
                 }
                 break;
             case 12:
-                // correct angle just increase it got knocked out the cource
-                if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle,leftMotors,rightMotors)) {
+                // collect glyph
+                if (System.currentTimeMillis() - timeStamp < 2000) {
                     state = 13;
                     getWheelLandmarks();
-
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
                 break;
             case 13:
+                // correct angle just increase it got knocked out the cource
+                if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle, fGlyphTurnAngle, leftMotors, rightMotors)) {
+                    state = 14;
+                    getWheelLandmarks();
+                    robot.levelGlyph();
+                    // lift
+                    VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, liftMotorMovePower);
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    timeStamp = System.currentTimeMillis();
+                }
+                break;
+            case 14:
+                // unload
+                if (System.currentTimeMillis() - timeStamp > 1000) {
+                    robot.glyphWheelUnload();
+                }
+
                 // move away from center
                 if (0 == moveByDistance(-move2CenterPower, glyph2CenterDistance)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
-                    robot.levelGlyph();
-                    // lift
-                    VortexUtils.moveMotorByEncoder(robot.liftMotor, 1500, liftMotorMovePower);
-                    state = 14;
-                }
-                break;
-            case 14:
-                // move side way
-                if ( 0 == sideMoveByDistance(-sideMovePower, sideWayDistance-columnDistance) ){
-                    wheelDistanceLandMark = getWheelOdometer();
-                    getWheelLandmarks();
-                    VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorHolderPower);
-
                     state = 15;
                 }
                 break;
             case 15:
-                // move to glyph
-                if (0 == moveByDistance(glyphDeliverPower, -backupDistance)) {
-                    timeStamp = System.currentTimeMillis();
+                // move side way
+                if (0 == sideMoveByDistance(-sideMovePower, sideWayDistance - columnDistance)) {
+                    wheelDistanceLandMark = getWheelOdometer();
                     getWheelLandmarks();
+
                     state = 16;
                 }
                 break;
             case 16:
-                // release glyph
-                robot.dumpGlyph();
-                if (System.currentTimeMillis() - timeStamp > 2000) {
+                // move to glyph
+                if (0 == moveByDistance(glyphDeliverPower, -backupDistance)) {
+                    timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 17;
                 }
                 break;
             case 17:
-                // back up
-                if (0 == moveByDistance(-glyphDeliverPower, backupDistance)) {
-                    timeStamp = System.currentTimeMillis();
+                // release glyph
+                robot.dumpGlyph();
+                if (System.currentTimeMillis() - timeStamp > 2000) {
                     getWheelLandmarks();
                     state = 18;
                 }
                 break;
+            case 18:
+                // back up
+                if (0 == moveByDistance(-glyphDeliverPower, backupDistance*2)) {
+                    timeStamp = System.currentTimeMillis();
+                    getWheelLandmarks();
+                    state = 19;
+                }
+                break;
             default:
+                robot.loadGlyph();
+                VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorMovePower);
                 // stop
                 vuforia.relicTrackables.deactivate();
                 robot.stop();
