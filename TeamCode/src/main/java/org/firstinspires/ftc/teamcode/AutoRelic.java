@@ -54,8 +54,6 @@ import java.util.Random;
 @Disabled
 public class AutoRelic extends OpMode {
 
-    protected HardwareRian robot= null;
-
     protected String teamColor = "red";
 
 
@@ -264,34 +262,6 @@ public class AutoRelic extends OpMode {
 
     public void getWheelLandmarks () {
         wheelDistanceLandMark = getWheelOdometer();
-    }
-
-    public void releaseGlyph () {
-        robot.leftLiftWheel1.setPower(1.0);
-        robot.leftLiftWheel2.setPower(1.0);
-        robot.leftLiftWheel3.setPower(1.0);
-        robot.rightLiftWheel1.setPower(-1.0);
-        robot.rightLiftWheel2.setPower(-1.0);
-        robot.rightLiftWheel3.setPower(-1.0);
-    }
-
-    public void collectGlyph () {
-        robot.leftLiftWheel1.setPower(-1.0);
-        robot.leftLiftWheel2.setPower(-1.0);
-        robot.leftLiftWheel3.setPower(-1.0);
-        robot.rightLiftWheel1.setPower(1.0);
-        robot.rightLiftWheel2.setPower(1.0);
-        robot.rightLiftWheel3.setPower(1.0);
-        robot.beltServo.setPower(-1.0);
-    }
-
-    public void stopGlyphWheels(){
-        robot.leftLiftWheel1.setPower(0.0);
-        robot.leftLiftWheel2.setPower(0.0);
-        robot.leftLiftWheel3.setPower(0.0);
-        robot.rightLiftWheel1.setPower(0.0);
-        robot.rightLiftWheel2.setPower(0.0);
-        robot.rightLiftWheel3.setPower(0.0);
     }
 
 }
