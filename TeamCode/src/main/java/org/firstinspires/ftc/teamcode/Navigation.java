@@ -39,9 +39,9 @@ public class Navigation {
 
         // distance control
         pidControlDistance = new PIDControl();
-        pidControlDistance.setKp(0.001f);
-        pidControlDistance.setKi(0.001f);
-        pidControlDistance.setKd(0.001f);
+        pidControlDistance.setKp(0.01f);
+        pidControlDistance.setKi(0.005f);
+        pidControlDistance.setKd(0.0000001f);
         pidControlDistance.setMaxIntegralError(2.0f/pidControlDistance.fKi);
 
         // speed control
@@ -70,10 +70,10 @@ public class Navigation {
     /**
      return power
      */
-    public double getMaintainDistancePower(double targetDistance) {
+    public double getMaintainDistancePower(double targetDistance, double currentDistance) {
         long lastT = lastDistanceTimestamp;
         lastDistanceTimestamp = System.currentTimeMillis();
-        return pidControlDistance.update(targetDistance-distance, lastDistanceTimestamp-lastT);
+        return pidControlDistance.update(targetDistance-currentDistance, lastDistanceTimestamp-lastT);
     }
 
     /**

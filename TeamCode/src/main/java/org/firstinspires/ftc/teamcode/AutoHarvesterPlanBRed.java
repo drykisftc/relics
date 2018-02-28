@@ -60,7 +60,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
         rightColumnDistance = 700;
 
         offBalanceStoneDistance = 2400;
-        cryptoBoxDistance = 150;
+        cryptoBoxDistance = 100;
 
         glyph2CenterDistance = 4000;
 
@@ -253,7 +253,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                 break;
             case 15:
                 // move side way
-                if (0 == sideMoveByDistance(-sideMovePower, sideWayDistance - columnDistance)) {
+                if (0 == sideMoveByDistance(-sideMovePower, sideWayDistance - columnDistance-300)) {
                     wheelDistanceLandMark = getWheelOdometer();
                     getWheelLandmarks();
 
