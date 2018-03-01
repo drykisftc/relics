@@ -210,7 +210,10 @@ public class AutoRelic extends OpMode {
         int turnState = 0;
         int moveState = 0;
         double angleToTurn = 0;
+        double distanceToMoveY = 0;
+        double distanceToMoveZ = 0;
 
+        turn:
         switch (turnState) {
             case 0:
                 // check if angle is correct
@@ -240,7 +243,7 @@ public class AutoRelic extends OpMode {
                 }
                 break;
             default:
-                //reset everything
+                // reset everything
                 for ( int i =0; i < leftMotorsMTV.length; i++ ) {
                     leftMotorsMTV[i].setPower(0);
                 }
@@ -249,98 +252,78 @@ public class AutoRelic extends OpMode {
                 }
                 getWheelLandmarks();
                 navigation.resetTurn(leftMotorsMTV, rightMotorsMTV);
-                break;
+                break turn;
         }
 
+        move:
         switch (moveState) {
             case 0:
+                // check if robot needs to move forward or backward(y)
+                if (y < vuforiaLocation.getTranslation().get(1) + 3 ||
+                        y > vuforiaLocation.getTranslation().get(1) - 3) {
 
+                    moveState = 2;
+
+                } else {
+
+                    distanceToMoveY = y - vuforiaLocation.getTranslation().get(1);
+                    navigation.resetTurn(leftMotorsMTV, rightMotorsMTV);
+                    getWheelLandmarks();
+                    state = 1;
+
+                }
+                break;
+            case 1:
+                // move to correct position(y)
+                if (0 == moveByDistance(0.2, (int) Math.round(distanceToMoveY))) {
+
+                    moveAtPower(0.0);
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotorsMTV, rightMotorsMTV);
+                    state = 2;
+
+                }
+                break;
+            case 2:
+                // check if robot needs to move left or right(z)
+                if (z < vuforiaLocation.getTranslation().get(2) + 3 ||
+                        z > vuforiaLocation.getTranslation().get(2) - 3) {
+
+                    moveState = 100;
+
+                } else {
+
+                    distanceToMoveZ = z - vuforiaLocation.getTranslation().get(2);
+                    navigation.resetTurn(leftMotorsMTV, rightMotorsMTV);
+                    getWheelLandmarks();
+                    state = 3;
+
+                }
+                break;
+            case 3:
+                // move to correct position(z)
+                if(0 == moveByDistance(0.2, (int) Math.round(distanceToMoveZ))) {
+
+                    moveAtPower(0.0);
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotorsMTV, rightMotorsMTV);
+                    state = 4;
+
+                }
+            default:
+                // reset everything
+                for ( int i =0; i < leftMotorsMTV.length; i++ ) {
+                    leftMotorsMTV[i].setPower(0);
+                }
+                for ( int i =0; i < rightMotorsMTV.length; i++ ) {
+                    rightMotorsMTV[i].setPower(0);
+                }
+                getWheelLandmarks();
+                navigation.resetTurn(leftMotorsMTV, rightMotorsMTV);
+                break move;
         }
 
         return 0;
-
-//        double power = Math.abs(p);
-//        switch (turnState) {
-//            case 0:
-//                // compute encoder distance
-//                turnDistanceRightWheel = (int)getTurnDistanceRightWheel (angle,axleLength);
-//                turnState = 1;
-//                break;
-//            case 1:
-//                // wait until encoders reach the distance
-//                int lD =0;
-//                for ( int i =0; i < leftMs.length; i++ ){
-//                    lD += leftMs[i].getCurrentPosition();
-//                }
-//                lD = lD/leftMs.length - leftWheelLandMark;
-//                boolean leftDone= false;
-//                if (-turnDistanceRightWheel > 0) {
-//                    if (lD > -turnDistanceRightWheel) {
-//                        for ( int i =0; i < leftMs.length; i++ ) {
-//                            leftMs[i].setPower(0.0);
-//                        }
-//                        leftDone = true;
-//                    } else {
-//                        for ( int i =0; i < leftMs.length; i++ ) {
-//                            leftMs[i].setPower(power);
-//                        }
-//                    }
-//                } else {
-//                    if (lD < -turnDistanceRightWheel) {
-//                        for ( int i =0; i < leftMs.length; i++ ) {
-//                            leftMs[i].setPower(0.0);
-//                        }
-//                        leftDone = true;
-//                    } else {
-//                        for ( int i =0; i < leftMs.length; i++ ) {
-//                            leftMs[i].setPower(-power);
-//                        }
-//                    }
-//                }
-//                int rD = 0;
-//                for ( int i =0; i < rightMs.length; i++ ) {
-//                    rD += rightMs[i].getCurrentPosition();
-//                }
-//                rD = rD/rightMs.length - rightWheelLandMark;
-//                boolean rightDone= false;
-//                if (turnDistanceRightWheel > 0) {
-//                    if (rD > turnDistanceRightWheel) {
-//                        for ( int i =0; i < rightMs.length; i++ ) {
-//                            rightMs[i].setPower(0.0);
-//                        }
-//                        rightDone = true;
-//                    } else {
-//                        for ( int i =0; i < rightMs.length; i++ ) {
-//                            rightMs[i].setPower(power);
-//                        }
-//                    }
-//                } else {
-//                    if (rD < turnDistanceRightWheel) {
-//                        for ( int i =0; i < leftMs.length; i++ ) {
-//                            rightMs[i].setPower(0.0);
-//                        }
-//                        rightDone = true;
-//                    } else {
-//                        for ( int i =0; i < rightMs.length; i++ ) {
-//                            rightMs[i].setPower(-power);
-//                        }
-//                    }
-//                }
-//                if ( leftDone && rightDone) {
-//                    turnState = 2;
-//                }
-//                break;
-//            default:
-//                for ( int i =0; i < leftMs.length; i++ ) {
-//                    leftMs[i].setPower(0);
-//                }
-//                for ( int i =0; i < rightMs.length; i++ ) {
-//                    rightMs[i].setPower(0);
-//                }
-//                return 0;
-//        }
-//        return 1;
-
     }
 
     public int waitByDistance(double power, int d) {
