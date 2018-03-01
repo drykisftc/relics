@@ -221,7 +221,7 @@ public class HardwareHarvester extends HardwareBase
     }
 
     void retractJewelArm() {
-        jewelArm.setPosition(0.9);
+        jewelArm.setPosition(0.85);
         jewelHitter.setPosition(0.0);
     }
 

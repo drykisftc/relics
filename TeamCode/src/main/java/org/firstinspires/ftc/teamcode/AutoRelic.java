@@ -58,8 +58,6 @@ import java.util.Random;
 @Disabled
 public class AutoRelic extends OpMode {
 
-    protected HardwareRian robot= null;
-
     protected String teamColor = "red";
 
 
@@ -73,7 +71,7 @@ public class AutoRelic extends OpMode {
     protected int leftBackStamp;
     protected int rightBackStamp;
 
-    protected float fGlyphTurnAngle = -85; // positive turns left, negative turns right
+    protected float fGlyphTurnAngle = -90; // positive turns left, negative turns right
     protected float fGlyphTurnAngle2 = 0;
     protected double glyTurnPower = -0.8;
     protected double glyTurnPowerLow = -0.5;
@@ -83,7 +81,7 @@ public class AutoRelic extends OpMode {
     protected double jewelArmPos = 0;
     protected double jewelHitterPos = 0;
     protected double glyphMovePower = 0.5;
-    protected double sideMovePower = 0.4;
+    protected double sideMovePower = 0.95;
     protected double vuforiaDetectingPower = 0.4;
     protected double move2GlyphBoxPower = 0.2;
     protected double glyphBackupPower = 0.2;
@@ -151,13 +149,13 @@ public class AutoRelic extends OpMode {
             glyphOffAngle = 20;
         } else if (vuforia.vumarkImage == "center") {
             columnDistance = centerColumnDistance;
-            glyphOffAngle = -15;
+            glyphOffAngle = 13;
         } else if (vuforia.vumarkImage == "right") {
             columnDistance = rightColumnDistance;
-            glyphOffAngle = -20;
+            glyphOffAngle = -18;
         } else {
             columnDistance = rightColumnDistance;
-            glyphOffAngle = -20;
+            glyphOffAngle = -18;
         }
 
         OpenGLMatrix pose = vuforia.getGlyphCryptoPosition();
@@ -406,34 +404,6 @@ public class AutoRelic extends OpMode {
 
     public void getWheelLandmarks () {
         wheelDistanceLandMark = getWheelOdometer();
-    }
-
-    public void releaseGlyph () {
-        robot.leftLiftWheel1.setPower(1.0);
-        robot.leftLiftWheel2.setPower(1.0);
-        robot.leftLiftWheel3.setPower(1.0);
-        robot.rightLiftWheel1.setPower(-1.0);
-        robot.rightLiftWheel2.setPower(-1.0);
-        robot.rightLiftWheel3.setPower(-1.0);
-    }
-
-    public void collectGlyph () {
-        robot.leftLiftWheel1.setPower(-1.0);
-        robot.leftLiftWheel2.setPower(-1.0);
-        robot.leftLiftWheel3.setPower(-1.0);
-        robot.rightLiftWheel1.setPower(1.0);
-        robot.rightLiftWheel2.setPower(1.0);
-        robot.rightLiftWheel3.setPower(1.0);
-        robot.beltServo.setPower(-1.0);
-    }
-
-    public void stopGlyphWheels(){
-        robot.leftLiftWheel1.setPower(0.0);
-        robot.leftLiftWheel2.setPower(0.0);
-        robot.leftLiftWheel3.setPower(0.0);
-        robot.rightLiftWheel1.setPower(0.0);
-        robot.rightLiftWheel2.setPower(0.0);
-        robot.rightLiftWheel3.setPower(0.0);
     }
 
 }
