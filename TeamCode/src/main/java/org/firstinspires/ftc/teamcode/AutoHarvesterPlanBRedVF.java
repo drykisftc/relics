@@ -52,11 +52,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
 
-    final double leftVuDis = -948;
-    final double centerVuDis = -760;
-    final double rightVuDis = -544;
+    final double leftVuDis = -968;  //42.5 inches
+    final double centerVuDis = -760; // 35 inches
+    final double rightVuDis = -574; // 27.5 inches
     double targetVuDis = rightVuDis;
-    int center2GlyphDistance = 3600;
+    int center2GlyphDistance = 3400;
     int vuforiaMissCount = 0;
     int vuforiaHitCount = 0;
 
@@ -144,7 +144,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 break;
             case 6:
                 //back up
-                if (0 == moveByDistance(-glyphDeliverPower, backupDistance)) {
+                if (0 == moveByDistance(-glyphDeliverPower*2, backupDistance)) {
                     timeStamp = System.currentTimeMillis();
                     robot.levelGlyph();
                     getWheelLandmarks();
@@ -166,7 +166,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 break;
             case 8:
                 // backup
-                if (0 == moveByDistance(-glyphDeliverPower, 500)) {
+                if (0 == moveByDistance(-glyphDeliverPower*3, 500)) {
 
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
@@ -209,6 +209,11 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 }
                 break;
             case 12:
+                //wiggle
+                navigation.turnByGyroCloseLoop(0.0,
+                        (double) robot.imu.getAngularOrientation().firstAngle,
+                        fGlyphTurnAngle+rand.nextInt(20)-10,
+                        leftMotors, rightMotors);
                 // move to center slower to collect glyph
                 if (0 == moveByDistance(collectingGlyphPower, (int) (glyph2CenterDistance * 0.15)+300)) {
                     moveAtPower(0.0);
@@ -219,8 +224,15 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 }
                 break;
             case 13:
-                // collect glyph
-                if (System.currentTimeMillis() - timeStamp < 2000) {
+
+                // wiggle to improve intake
+                navigation.turnByGyroCloseLoop(0.0,
+                        (double) robot.imu.getAngularOrientation().firstAngle,
+                        fGlyphTurnAngle+rand.nextInt(30)-15,
+                        leftMotors, rightMotors);
+
+                    // collect glyph
+                if (System.currentTimeMillis() - timeStamp > 1000) {
                     state = 14;
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -241,7 +253,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 break;
             case 15:
                 // unload
-                if (System.currentTimeMillis() - timeStamp > 500) {
+                if (System.currentTimeMillis() - timeStamp > 300) {
                     robot.glyphWheelUnload();
                 }
 
@@ -249,6 +261,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 if (0 == moveByDistance(-move2CenterPower, center2GlyphDistance)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
+                    wheelDistanceLandMark = getWheelOdometer();
                     state = 16;
                 }
                 break;
@@ -265,14 +278,30 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 }
 
                 break;
-            case 17: {
+            case 17:
+                // wait vuforia to catchup
+                if (System.currentTimeMillis() - timeStamp > 1000) {
+                    state = 18;
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                }
+
+                if ("unknown" == vuforia.vumarkImage.toLowerCase()) {
+                    vuforia.identifyGlyphCrypto();
+                }
+                break;
+            case 18: {
+
+                if ("unknown" == vuforia.vumarkImage.toLowerCase()) {
+                    vuforia.identifyGlyphCrypto();
+                }
                 OpenGLMatrix pose = vuforia.getGlyphCryptoPosition();
 
                 // if too many errors, move on
                 if (vuforiaMissCount > 6) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
-                    state = 18;
+                    state = 19;
                 }
 
                 if (null == pose) {
@@ -294,6 +323,8 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                         targetVuDis = centerVuDis;
                     } else if (vuforia.vumarkImage == "right") {
                         targetVuDis = rightVuDis;
+                    } else {
+                        targetVuDis = rightVuDis;
                     }
 
                     // adjust distance by vuforia values
@@ -302,14 +333,14 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                         vuforiaMissCount++;
                     } else {
                         telemetry.addData("vuforia distance error", errorZ);
-                        if (Math.abs(errorZ) < 20) {
+                        if (Math.abs(errorZ) < 10) {
                             vuforiaHitCount ++;
                         } else {
                             vuforiaHitCount = 0;
                         }
 
                         if ( vuforiaHitCount > 5) {
-                            state = 18;
+                            state = 19;
                             getWheelLandmarks();
                             timeStamp = System.currentTimeMillis();
                             sideMoveAtPower(0);
@@ -322,10 +353,11 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 }
             }
                 break;
-            case 18:
+            case 19:
+                vuforia.relicTrackables.deactivate();
                 // correct angle just increase it got knocked out the cource
                 if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle, fGlyphTurnAngle, leftMotors, rightMotors)) {
-                    state = 19;
+                    state = 20;
                     getWheelLandmarks();
                     robot.levelGlyph();
                     // lift
@@ -334,28 +366,28 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     timeStamp = System.currentTimeMillis();
                 }
                 break;
-            case 19:
-                // move to glyph
-                if (0 == moveByDistance(glyphDeliverPower, cryptoBoxDistance+500)) {
-                    timeStamp = System.currentTimeMillis();
-                    getWheelLandmarks();
-                    state = 20;
-                }
-                break;
             case 20:
-                // release glyph
-                robot.dumpGlyph();
-                if (System.currentTimeMillis() - timeStamp > 1000) {
+                // move to glyph
+                if (0 == moveByDistance(glyphDeliverPower*2, cryptoBoxDistance+800)) {
+                    timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 21;
                 }
                 break;
             case 21:
-                // back up
-                if (0 == moveByDistance(-glyphDeliverPower, backupDistance)) {
-                    timeStamp = System.currentTimeMillis();
+                // release glyph
+                robot.dumpGlyph();
+                if (System.currentTimeMillis() - timeStamp > 1000) {
                     getWheelLandmarks();
                     state = 22;
+                }
+                break;
+            case 22:
+                // back up
+                if (0 == moveByDistance(-glyphDeliverPower, backupDistance+300)) {
+                    timeStamp = System.currentTimeMillis();
+                    getWheelLandmarks();
+                    state = 23;
                 }
                 break;
             default:
@@ -370,6 +402,5 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
         telemetry.addData("Crypto", vuforia.vumarkImage);
         telemetry.addData("state", state);
         telemetry.update();
-
     }
 }

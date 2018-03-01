@@ -44,7 +44,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
 
-    int sideWayDistance = 6600;
+    int sideWayDistance = 6700;
 
     public AutoHarvesterPlanBRed() {
 
@@ -55,7 +55,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
 
         vuforiaDetectingPower = -0.2;
 
-        leftColumnDistance = 3700;
+        leftColumnDistance = 3500;
         centerColumnDistance = 2200;
         rightColumnDistance = 700;
 
@@ -220,7 +220,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                 break;
             case 12:
                 // collect glyph
-                if (System.currentTimeMillis() - timeStamp < 2000) {
+                if (System.currentTimeMillis() - timeStamp > 1000) {
                     state = 13;
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);

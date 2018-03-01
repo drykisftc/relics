@@ -389,4 +389,12 @@ public class AutoRelic extends OpMode {
         wheelDistanceLandMark = getWheelOdometer();
     }
 
+    @Override
+    public void stop() {
+        super.stop();
+        if (null != vuforia) {
+            vuforia.relicTrackables.deactivate();
+        }
+    }
+
 }
