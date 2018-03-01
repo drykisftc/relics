@@ -62,7 +62,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
         offBalanceStoneDistance = 2400;
         cryptoBoxDistance = 100;
 
-        glyph2CenterDistance = 4000;
+        glyph2CenterDistance = 4100;
 
         backupDistance = 500;
 
@@ -93,7 +93,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
 
                 //read vumark
                 double movePower = vuforiaDetectingPower;
-                if ("unknown" == vuforia.vumarkImage) {
+                if ("unknown" == vuforia.vumarkImage.toLowerCase()) {
                     computeGlyphColumnDistance();
                 } else {
                     movePower = vuforiaDetectingPower * 3.0;

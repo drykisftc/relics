@@ -128,7 +128,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
         vuforia.start();
         state = 0;
         timeStamp = System.currentTimeMillis();
-        vuforia.vumarkImage = "Unknown";
+        vuforia.vumarkImage = "unknown";
         jewelKicker.start();
         robot.initAllDevices();
 
@@ -164,7 +164,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                 //move forward with encoder
                 //read vumark
                 double movePower = vuforiaDetectingPower;
-                if ("unknown" == vuforia.vumarkImage ) {
+                if ("unknown" == vuforia.vumarkImage.toLowerCase() ) {
                     computeGlyphColumnDistance();
                 } else {
                     movePower = vuforiaDetectingPower*3.0;
