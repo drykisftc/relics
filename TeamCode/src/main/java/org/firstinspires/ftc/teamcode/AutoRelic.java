@@ -38,6 +38,10 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.Random;
 
@@ -199,6 +203,127 @@ public class AutoRelic extends OpMode {
             }
         }
         return 1;
+    }
+
+    public int moveToVuforia(OpenGLMatrix vuforiaLocation, double x, double y, double z, double rotA, double rotB, double rotC, double axleLength, DcMotor[] leftMotorsMTV, DcMotor[] rightMotorsMTV) {
+
+        int turnState = 0;
+        int moveState = 0;
+        double angleToTurn = 0;
+        double distanceToMoveY = 0;
+        double distanceToMoveZ = 0;
+
+        turn:
+        switch (turnState) {
+            case 0:
+                // check if angle is correct
+                if(rotA < Orientation.getOrientation(vuforiaLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle + 0.5 ||
+                        rotA > Orientation.getOrientation(vuforiaLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle - 0.5) {
+
+                    turnState = 100;
+
+                } else {
+
+                    angleToTurn = rotA - Orientation.getOrientation(vuforiaLocation, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES).firstAngle;
+                    navigation.resetTurn(leftMotorsMTV, rightMotorsMTV);
+                    getWheelLandmarks();
+                    state = 1;
+
+                }
+                break;
+            case 1:
+                // move to correct angle
+                if (0 == navigation.turnByEncoderOpenLoop(0.2, angleToTurn, axleLength, leftMotorsMTV, rightMotorsMTV)) {
+
+                    turnAtPower(0.0);
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotorsMTV, rightMotorsMTV);
+                    state = 2;
+
+                }
+                break;
+            default:
+                // reset everything
+                for ( int i =0; i < leftMotorsMTV.length; i++ ) {
+                    leftMotorsMTV[i].setPower(0);
+                }
+                for ( int i =0; i < rightMotorsMTV.length; i++ ) {
+                    rightMotorsMTV[i].setPower(0);
+                }
+                getWheelLandmarks();
+                navigation.resetTurn(leftMotorsMTV, rightMotorsMTV);
+                break turn;
+        }
+
+        move:
+        switch (moveState) {
+            case 0:
+                // check if robot needs to move forward or backward(y)
+                if (y < vuforiaLocation.getTranslation().get(1) + 3 ||
+                        y > vuforiaLocation.getTranslation().get(1) - 3) {
+
+                    moveState = 2;
+
+                } else {
+
+                    distanceToMoveY = y - vuforiaLocation.getTranslation().get(1);
+                    navigation.resetTurn(leftMotorsMTV, rightMotorsMTV);
+                    getWheelLandmarks();
+                    state = 1;
+
+                }
+                break;
+            case 1:
+                // move to correct position(y)
+                if (0 == moveByDistance(0.2, (int) Math.round(distanceToMoveY))) {
+
+                    moveAtPower(0.0);
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotorsMTV, rightMotorsMTV);
+                    state = 2;
+
+                }
+                break;
+            case 2:
+                // check if robot needs to move left or right(z)
+                if (z < vuforiaLocation.getTranslation().get(2) + 3 ||
+                        z > vuforiaLocation.getTranslation().get(2) - 3) {
+
+                    moveState = 100;
+
+                } else {
+
+                    distanceToMoveZ = z - vuforiaLocation.getTranslation().get(2);
+                    navigation.resetTurn(leftMotorsMTV, rightMotorsMTV);
+                    getWheelLandmarks();
+                    state = 3;
+
+                }
+                break;
+            case 3:
+                // move to correct position(z)
+                if(0 == moveByDistance(0.2, (int) Math.round(distanceToMoveZ))) {
+
+                    moveAtPower(0.0);
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotorsMTV, rightMotorsMTV);
+                    state = 4;
+
+                }
+            default:
+                // reset everything
+                for ( int i =0; i < leftMotorsMTV.length; i++ ) {
+                    leftMotorsMTV[i].setPower(0);
+                }
+                for ( int i =0; i < rightMotorsMTV.length; i++ ) {
+                    rightMotorsMTV[i].setPower(0);
+                }
+                getWheelLandmarks();
+                navigation.resetTurn(leftMotorsMTV, rightMotorsMTV);
+                break move;
+        }
+
+        return 0;
     }
 
     public int waitByDistance(double power, int d) {

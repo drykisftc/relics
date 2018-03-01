@@ -210,7 +210,7 @@ public class TeleOpHarvester extends OpMode{
             }
 
             robot.levelGlyph();
-
+            
         } else if (gamepad1.dpad_down || gamepad2.dpad_down) {
 
             if (liftMotorPosition > 0 ) {

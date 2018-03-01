@@ -33,7 +33,13 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 
 /*
  * This is an example LinearOpMode that shows how to use
@@ -48,11 +54,48 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 public class AutoHarvesterPlanARedVF extends AutoHarvesterPlanARed {
 
+    public AutoHarvesterPlanARedVF() {
+        teamColor = "red";
 
+        glyphLiftPosition = 500;
+        centerGlyphAngleOffset = 0;
+        vuforiaDetectingPower = -0.2;
+        move2GlyphBoxPower = -0.6;
+        move2CenterPower = 0.8;
+        fGlyphTurnAngle = -90;
+        center2GlyphBoxPower = -0.8;
+        glyTurnPower = -0.4;
+
+        cryptoBoxDistance = 680;
+        center2GlyphDistance = 3500;
+
+//        leftColumnDistance = 3860;
+//        centerColumnDistance = 3150;
+//        rightColumnDistance = 2500;
+        leftColumnDistance = 3600;
+        centerColumnDistance = 2950;
+        rightColumnDistance = 2300;
+
+        state = -1;
+
+    }
 
     @Override
     public void loop() {
         switch (state) {
+            case -1:
+
+                if (vuforia.vumarkImage != null) {
+
+                    vuforiaMatrix = vuforia.getGlyphCryptoPosition();
+                    trans = vuforiaMatrix.getTranslation();
+                    rot = Orientation.getOrientation(vuforiaMatrix, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+
+                    telemetry.addData("translations", trans);
+                    telemetry.addData("orientation", rot);
+
+                }
+
             case 0:
                 // jewel handling
                 state = jewelKicker.loop(0, 1, teamColor);
