@@ -56,7 +56,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
     final int centerVuDis = -760; // 35 inches
     final int rightVuDis = -574; // 27.5 inches
 
-    int center2GlyphDistance = 3600;
+    int center2GlyphDistance = 3500;
     int vuforiaMissCount = 0;
     int vuforiaHitCount = 0;
     int vuforiaCheckDistance = 0;
@@ -299,11 +299,18 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
 
                 break;
             case 18:
-                // wait vuforia to catchup
-                if (System.currentTimeMillis() - timeStamp > 1000) {
+
+                // make sure the angle is right and wait for vuforia to catch up
+                if (0 == navigation.turnByGyroCloseLoop(0.0,
+                        (double) robot.imu.getAngularOrientation().firstAngle,
+                        fGlyphTurnAngle, leftMotors, rightMotors)
+                        && System.currentTimeMillis() - timeStamp > 1000) {
                     state = 19;
                     getWheelLandmarks();
+                    robot.levelGlyph();
                     navigation.resetTurn(leftMotors, rightMotors);
+                    robot.retractJewelArm();
+                    timeStamp = System.currentTimeMillis();
                 }
 
                 if ("unknown" == vuforia.vumarkImage.toLowerCase()) {
@@ -321,7 +328,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 if (vuforiaMissCount > 18) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
-                    state = 19  ;
+                    state = 20  ;
                 }
 
                 if (null == pose) {
@@ -330,21 +337,28 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     telemetry.addData("Pose", format(pose));
 
                     VectorF trans = pose.getTranslation();
-                    //Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+                    Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
 
                     // Extract the X, Y, and Z components of the offset of the target relative to the robot
                     //double tX = trans.get(0);
-                    //double tY = trans.get(1);
+                    double tY = trans.get(1);
                     double tZ = trans.get(2);
-                    telemetry.addData("vuforia distance", tZ);
-
+                    double tD = robot.getVuforiaFrontBackDistance(pose);
+                    double tG = robot.getVuforiaLeftRightDistance(pose);
+                    telemetry.addData("vuforia distance Y=", tY);
+                    telemetry.addData("vuforia distance Z=", tZ);
+                    telemetry.addData("vuforia degree 1=", rot.firstAngle);
+                    telemetry.addData("vuforia degree 2=", rot.secondAngle);
+                    telemetry.addData("vuforia degree 3=", rot.thirdAngle);
+                    telemetry.addData("Wall distance   =", tD);
+                    telemetry.addData("Image distance   =", tG);
 
                     // adjust distance by vuforia values
-                    double errorZ = vuforiaTargetDistance - tZ;
-                    if ( Math.abs(errorZ) > 200) {
+                    double errorZ = vuforiaTargetDistance - tD;
+                    telemetry.addData("vuforia distance error", errorZ);
+                    if ( Math.abs(errorZ) > 200 || Math.abs(rot.secondAngle) > 30) {
                         vuforiaMissCount++;
                     } else {
-                        telemetry.addData("vuforia distance error", errorZ);
                         if (Math.abs(errorZ) < 15) {
                             vuforiaHitCount ++;
                         } else {
@@ -352,14 +366,16 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                         }
 
                         if ( vuforiaHitCount > 10) {
-                            state = 19;
+                            state = 20;
                             getWheelLandmarks();
                             timeStamp = System.currentTimeMillis();
                             wheelDistanceLandMark = getWheelOdometer();
                             sideMoveAtPower(0);
+                            // set glyph box distance. image to glyph box distance is 34.5 inch , camera to flipper distance is 4
+                            cryptoBoxDistance = robot.imageDistance2GlyphBoxBDistance(tG);
                         } else {
                             //leftDiagonalMoveAtPower(Range.clip(errorZ * -0.0015, -0.35, 0.35));
-                            sideMoveAtPower(Range.clip(errorZ * 0.015, -0.35, 0.35));
+                            sideMoveAtPower(Range.clip(errorZ * 0.015, -0.2, 0.2));
                             //sideMoveAtPower(Range.clip(navigation.getMaintainDistancePower(targetVuDis,tZ), -0.65, 0.65));
                         }
                         vuforiaMissCount = 0;
@@ -409,7 +425,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 break;
             case 22:
                 // move to glyph
-                if (0 == moveByDistance(glyphDeliverPower*2, cryptoBoxDistance+700)) {
+                if (0 == moveByDistance(glyphDeliverPower*2, cryptoBoxDistance)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 23;
@@ -444,4 +460,6 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
         telemetry.addData("state", state);
         telemetry.update();
     }
+
+
 }

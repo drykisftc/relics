@@ -10,7 +10,11 @@ import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.Locale;
@@ -255,4 +259,34 @@ public class HardwareHarvester extends HardwareBase
         rightLiftWheel.setPower(0.0);
     }
 
+
+    public static double getVuforiaLeftRightDistance ( OpenGLMatrix pose ) {
+        VectorF trans = pose.getTranslation();
+        Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS);
+
+        // Extract the X, Y, and Z components of the offset of the target relative to the robot
+        //double tX = trans.get(0);
+        double tY = trans.get(1);
+        double tZ = trans.get(2);
+        double rDegree = rot.secondAngle;
+
+        return tZ*Math.sin(rDegree) + tY*Math.cos(rDegree);
+    }
+
+    public static double getVuforiaFrontBackDistance ( OpenGLMatrix pose ) {
+        VectorF trans = pose.getTranslation();
+        Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS);
+
+        // Extract the X, Y, and Z components of the offset of the target relative to the robot
+        //double tX = trans.get(0);
+        double tY = trans.get(1);
+        double tZ = trans.get(2);
+        double rDegree = rot.secondAngle;
+
+        return tZ * Math.cos(rDegree) - tY * Math.sin(rDegree);
+    }
+
+    public static int imageDistance2GlyphBoxBDistance (double tG) {
+        return (int)(((34.5/0.0393701 - Math.abs(tG)) * 0.0393701-4.0) * 89);
+    }
 }
