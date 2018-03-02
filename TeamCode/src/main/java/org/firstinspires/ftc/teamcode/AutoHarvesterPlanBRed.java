@@ -44,7 +44,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
 
-    int sideWayDistance = 6700;
+    int sideWayDistance = 5400;
 
     public AutoHarvesterPlanBRed() {
 
