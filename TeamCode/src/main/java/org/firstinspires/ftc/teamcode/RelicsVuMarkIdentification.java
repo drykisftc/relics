@@ -174,6 +174,12 @@ public class RelicsVuMarkIdentification extends LinearOpMode {
                     telemetry.addData("VuMark rotation A", rX);
                     telemetry.addData("VuMark rotation B", rY);
                     telemetry.addData("VuMark rotation C", rZ);
+
+                    double tD =  HardwareHarvester.getVuforiaFrontBackDistance(pose);
+                    double tG = HardwareHarvester.getVuforiaLeftRightDistance(pose);
+                    telemetry.addData("Wall distance   =", tD);
+                    telemetry.addData("Image distance   =", tG);
+
                 }
             }
             else {

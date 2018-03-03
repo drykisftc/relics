@@ -87,7 +87,7 @@ public class AutoRelic extends OpMode {
     protected double glyphBackupPower = 0.2;
     protected double center2GlyphBoxPower = -0.9;
     protected double move2CenterPower = 0.9;
-    protected double collectingGlyphPower = 0.5;
+    protected double collectingGlyphPower = 0.7;
     protected double glyphDeliverPower = 0.2;
     protected double backupPower = -0.1;
 
@@ -387,6 +387,14 @@ public class AutoRelic extends OpMode {
 
     public void getWheelLandmarks () {
         wheelDistanceLandMark = getWheelOdometer();
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
+        if (null != vuforia) {
+            vuforia.relicTrackables.deactivate();
+        }
     }
 
 }

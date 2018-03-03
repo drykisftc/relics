@@ -137,7 +137,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
         vuforia.start();
         state = 0;
         timeStamp = System.currentTimeMillis();
-        vuforia.vumarkImage = "Unknown";
+        vuforia.vumarkImage = "unknown";
         jewelKicker.start();
         robot.initAllDevices();
 
@@ -173,7 +173,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                 //move forward with encoder
                 //read vumark
                 double movePower = vuforiaDetectingPower;
-                if ("unknown" == vuforia.vumarkImage ) {
+                if ("unknown" == vuforia.vumarkImage.toLowerCase() ) {
                     computeGlyphColumnDistance();
                 } else {
                     movePower = vuforiaDetectingPower*3.0;
@@ -409,6 +409,16 @@ public class AutoHarvesterPlanARed extends AutoRelic {
         robot.motorLeftBackWheel.setPower(p);
     }
 
+    public void rightDiagonalMoveAtPower(double p) {
+        robot.motorRightFrontWheel.setPower(p);
+        robot.motorLeftBackWheel.setPower(p);
+    }
+
+    public void leftDiagonalMoveAtPower(double p) {
+        robot.motorLeftFrontWheel.setPower(p);
+        robot.motorRightBackWheel.setPower(p);
+    }
+
     public void moveAtSpeed(double p){
         robot.motorLeftFrontWheel.setPower(p);
         robot.motorRightBackWheel.setPower(p);
@@ -418,15 +428,46 @@ public class AutoHarvesterPlanARed extends AutoRelic {
 
     // positive power moves left
     public int sideMoveByDistance (double power, int d) {
+        int distance = Math.abs(d)*2;
+        if (power == 0) {
+            return 0; // zero power do nothing
+        }
+        if (Math.abs(robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp) + Math.abs(robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp) +
+                 Math.abs(robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp) + Math.abs(robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp) < distance) {
+            sideMoveAtPower(power);
+        } else {
+            sideMoveAtPower(0.0);
+            return 0;
+        }
+        return 1;
+    }
+
+
+    public int leftDiagonalMoveByDistance(double power, int d) {
         int distance = Math.abs(d);
         if (power == 0) {
             return 0; // zero power do nothing
         }
-        if (Math.abs(robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp) + Math.abs(robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp) < distance
-                && Math.abs(robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp) + Math.abs(robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp) < distance) {
-            sideMoveAtPower(power);
+        if (Math.abs(robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp) +
+                Math.abs(robot.motorLeftFrontWheel.getCurrentPosition() - leftFrontStamp) < distance) {
+            leftDiagonalMoveAtPower(power);
         } else {
-            sideMoveAtPower(0.0);
+            leftDiagonalMoveAtPower(0.0);
+            return 0;
+        }
+        return 1;
+    }
+
+    public int rightDiagonalMoveByDistance(double power, int d) {
+        int distance = Math.abs(d);
+        if (power == 0) {
+            return 0; // zero power do nothing
+        }
+        if (Math.abs(robot.motorLeftBackWheel.getCurrentPosition() - leftBackStamp) +
+                Math.abs(robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp) < distance*2) {
+            rightDiagonalMoveAtPower(power);
+        } else {
+            rightDiagonalMoveAtPower(0.0);
             return 0;
         }
         return 1;

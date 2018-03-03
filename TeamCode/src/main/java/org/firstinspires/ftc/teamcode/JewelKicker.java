@@ -151,7 +151,7 @@ class JewelKicker {
                 break;
             case 2:
                 jewelArm.setPosition(jewelArmRestPosition);
-                if(System.currentTimeMillis() - timeStamp > 300) {
+                if(System.currentTimeMillis() - timeStamp > 500) {
                     jewelHitter.setPosition(0.50);
                     state = 3;
                 }

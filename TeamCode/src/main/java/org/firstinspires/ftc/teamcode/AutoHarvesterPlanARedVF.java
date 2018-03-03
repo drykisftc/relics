@@ -154,7 +154,7 @@ public class AutoHarvesterPlanARedVF extends AutoHarvesterPlanARed {
                 //move forward with encoder
                 //read vumark
                 double movePower = vuforiaDetectingPower;
-                if ("unknown" == vuforia.vumarkImage ) {
+                if ("unknown" == vuforia.vumarkImage.toLowerCase() ) {
                     computeGlyphColumnDistance();
                 } else {
                     movePower = vuforiaDetectingPower*3.0;

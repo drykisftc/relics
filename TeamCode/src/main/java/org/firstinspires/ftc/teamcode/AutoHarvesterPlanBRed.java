@@ -44,7 +44,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
 
-    int sideWayDistance = 6600;
+    int sideWayDistance = 5400;
 
     public AutoHarvesterPlanBRed() {
 
@@ -55,14 +55,14 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
 
         vuforiaDetectingPower = -0.2;
 
-        leftColumnDistance = 3700;
-        centerColumnDistance = 2200;
-        rightColumnDistance = 700;
+        leftColumnDistance = 3200;
+        centerColumnDistance = 2000;
+        rightColumnDistance = 500;
 
         offBalanceStoneDistance = 2400;
         cryptoBoxDistance = 100;
 
-        glyph2CenterDistance = 4000;
+        glyph2CenterDistance = 4500;
 
         backupDistance = 500;
 
@@ -71,12 +71,14 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
         glyphDeliverPower = -0.2;
 
         glyphLiftPosition = 1500;
+
     }
 
     @Override
     public void loop() {
         switch (state) {
             case 0:
+                robot.defaultGlyphWheelPower = 0.5;
                 // jewel handling
                 state = jewelKicker.loop(0, 1, teamColor);
 
@@ -93,7 +95,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
 
                 //read vumark
                 double movePower = vuforiaDetectingPower;
-                if ("unknown" == vuforia.vumarkImage) {
+                if ("unknown" == vuforia.vumarkImage.toLowerCase()) {
                     computeGlyphColumnDistance();
                 } else {
                     movePower = vuforiaDetectingPower * 3.0;
@@ -220,7 +222,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                 break;
             case 12:
                 // collect glyph
-                if (System.currentTimeMillis() - timeStamp < 2000) {
+                if (System.currentTimeMillis() - timeStamp > 1000) {
                     state = 13;
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
