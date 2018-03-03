@@ -55,14 +55,14 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
 
         vuforiaDetectingPower = -0.2;
 
-        leftColumnDistance = 3500;
-        centerColumnDistance = 2200;
-        rightColumnDistance = 700;
+        leftColumnDistance = 3200;
+        centerColumnDistance = 2000;
+        rightColumnDistance = 500;
 
         offBalanceStoneDistance = 2400;
         cryptoBoxDistance = 100;
 
-        glyph2CenterDistance = 4100;
+        glyph2CenterDistance = 4500;
 
         backupDistance = 500;
 
@@ -71,12 +71,14 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
         glyphDeliverPower = -0.2;
 
         glyphLiftPosition = 1500;
+
     }
 
     @Override
     public void loop() {
         switch (state) {
             case 0:
+                robot.defaultGlyphWheelPower = 0.5;
                 // jewel handling
                 state = jewelKicker.loop(0, 1, teamColor);
 

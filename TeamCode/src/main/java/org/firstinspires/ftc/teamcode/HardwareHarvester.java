@@ -60,11 +60,11 @@ public class HardwareHarvester extends HardwareBase
     protected float axleDistance = 2200; //80.79 * 14;
 
     double leftFlipperLoadPosition = 0.14;
-    double leftFlipperDumpPosition = 0.70;
+    double leftFlipperDumpPosition = 0.75;
     double leftFlipperLevelPosition = 0.23;
 
     double rightFlipperLoadPosition = 0.96;
-    double rightFlipperDumpPosition = 0.39;
+    double rightFlipperDumpPosition = 0.34;
     double rightFlipperLevelPosition = 0.87;
 
     double defaultGlyphWheelPower = 0.7;
@@ -287,6 +287,6 @@ public class HardwareHarvester extends HardwareBase
     }
 
     public static int imageDistance2GlyphBoxBDistance (double tG) {
-        return (int)(((34.5/0.0393701 - Math.abs(tG)) * 0.0393701-4.0) * 89);
+        return (int)(((34.5/0.0393701 - Math.abs(tG)) * 0.0393701-8) * 89);
     }
 }
