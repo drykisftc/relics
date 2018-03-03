@@ -191,6 +191,15 @@ public class TeleOpHarvester extends OpMode{
         }
     }
 
+    public void glyphBlockerControl() {
+        if (gamepad1.left_trigger > 0.5 || gamepad2.left_trigger > 0.5 ) {
+            robot.retractGlyphBlocker();
+        }
+        if (gamepad1.right_trigger > 0.5 || gamepad2.right_trigger > 0.5) {
+            robot.extendGlyphBlocker();
+        }
+    }
+
     public void glyphLiftControl () {
 
         liftMotorPosition = robot.liftMotor.getCurrentPosition();
@@ -210,6 +219,7 @@ public class TeleOpHarvester extends OpMode{
             }
 
             robot.levelGlyph();
+            robot.retractGlyphBlocker();
             
         } else if (gamepad1.dpad_down || gamepad2.dpad_down) {
 
