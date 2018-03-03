@@ -84,19 +84,50 @@ public class AutoHarvesterPlanARedVF extends AutoHarvesterPlanARed {
     public void loop() {
         switch (state) {
             case -1:
-
-                if (vuforia.vumarkImage != null) {
+                vuforia.identifyGlyphCrypto();
+                if (vuforia.vumarkImage != "Unknown") {
 
                     vuforiaMatrix = vuforia.getGlyphCryptoPosition();
                     trans = vuforiaMatrix.getTranslation();
                     rot = Orientation.getOrientation(vuforiaMatrix, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
 
+                    if (0 == moveToVuforia(vuforia.getGlyphCryptoPosition(), 0, 0, 200, 0, 0, -90, robot.axleDistance, leftMotors, rightMotors)) {
+                        //state = 0;
+                    }
+
                     telemetry.addData("translations", trans);
                     telemetry.addData("orientation", rot);
 
                 }
-
+                break;
             case 0:
+                vuforia.identifyGlyphCrypto();
+                if (vuforia.vumarkImage != "Unknown") {
+
+                    vuforiaMatrix = vuforia.getGlyphCryptoPosition();
+                    trans = vuforiaMatrix.getTranslation();
+                    rot = Orientation.getOrientation(vuforiaMatrix, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+
+                    if (0 == moveToVuforia(vuforia.getGlyphCryptoPosition(), 0, 0, 200, 0, 0, -90, robot.axleDistance, leftMotors, rightMotors)) {
+                        //state = 0;
+                    }
+
+                    telemetry.addData("translations", trans);
+                    telemetry.addData("orientation", rot);
+
+                }
+                break;
+
+                // follow vuforia
+                /*if (vuforia.vumarkImage == "left" ||
+                        vuforia.vumarkImage == "center" ||
+                        vuforia.vumarkImage == "right") {
+                    if (0 == moveToVuforia(vuforia.getGlyphCryptoPosition(), 0, 0, 200, 0, 0, -90, robot.axleDistance, leftMotors, rightMotors)) {
+                        //state = 0;
+                    }
+                }*/
+
+            /*case 0:
                 // jewel handling
                 state = jewelKicker.loop(0, 1, teamColor);
 
@@ -311,7 +342,7 @@ public class AutoHarvesterPlanARedVF extends AutoHarvesterPlanARed {
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorMovePower);
                     state = 16;
                 }
-                break;
+                break;*/
             default:
                 // stop
                 vuforia.relicTrackables.deactivate();
