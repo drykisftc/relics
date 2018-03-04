@@ -293,7 +293,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
                     vuforiaMissCount = 0;
-                    vuforiaHitCount =0;
+                    vuforiaHitCount = 0;
                     robot.retractJewelArm();
                     state = 18;
                 }
@@ -329,7 +329,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 if (vuforiaMissCount > 18) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
-                    state = 20  ;
+                    state = 20;
                 }
 
                 if (null == pose) {

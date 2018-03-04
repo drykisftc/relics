@@ -145,6 +145,7 @@ public class AutoHarvesterVuforiaTracking extends AutoRelic {
         switch (state) {
             case 0:
                 // look for vuforia picture
+                vuforia.identifyGlyphCrypto();
                 if (vuforia.vumarkImage != "Unknown") {
 
                     state = 1;
@@ -157,10 +158,10 @@ public class AutoHarvesterVuforiaTracking extends AutoRelic {
                         vuforia.vumarkImage == "center" ||
                         vuforia.vumarkImage == "right") {
                     if (0 == moveToVuforia(vuforia.getGlyphCryptoPosition(), 0, 0, 200, 0, 0, -90, robot.axleDistance, leftMotors, rightMotors)) {
-                        //state = 0;
+                        state = 0;
                     }
                 } else {
-                    //state = 0;
+                    state = 0;
                 }
                 break;
             default:
