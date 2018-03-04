@@ -265,6 +265,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     state = 16;
                     getWheelLandmarks();
                     robot.levelGlyph();
+                    robot.retractGlyphBlocker();
                     // lift
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, liftMotorMovePower);
                     navigation.resetTurn(leftMotors, rightMotors);

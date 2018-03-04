@@ -235,7 +235,7 @@ public class HardwareHarvester extends HardwareBase
     }
 
     void retractGlyphBlocker () {
-        glyphBlocker.setPosition(0.0);
+        glyphBlocker.setPosition(1.0);
     }
 
     void extendGlyphBlocker() {
