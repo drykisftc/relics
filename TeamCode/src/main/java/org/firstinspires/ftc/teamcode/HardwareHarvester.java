@@ -49,6 +49,8 @@ public class HardwareHarvester extends HardwareBase
     public Servo relicClaw = null;
     public Servo relicFlipper = null;
 
+    public Servo glyphBlocker = null;
+
     // Orientation sensor
     BNO055IMU imu = null;
     Orientation angles = null;
@@ -133,6 +135,8 @@ public class HardwareHarvester extends HardwareBase
 
         leftFlipper = hwMap.servo.get("leftFlipper");
         rightFlipper = hwMap.servo.get("rightFlipper");
+
+        glyphBlocker = hwMap.servo.get("glyphBlocker");
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
@@ -222,11 +226,20 @@ public class HardwareHarvester extends HardwareBase
 
     void initAllDevices() {
         retractJewelArm();
+        retractGlyphBlocker();
     }
 
     void retractJewelArm() {
         jewelArm.setPosition(0.85);
         jewelHitter.setPosition(0.0);
+    }
+
+    void retractGlyphBlocker () {
+        glyphBlocker.setPosition(0.0);
+    }
+
+    void extendGlyphBlocker() {
+        glyphBlocker.setPosition(0.5);
     }
 
     void loadGlyph() {

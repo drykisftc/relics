@@ -205,6 +205,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     wheelDistanceLandMark = getWheelOdometer();
                     getWheelLandmarks();
                     robot.glyphWheelLoad();
+                    robot.extendGlyphBlocker();
                     state = 11;
                 }
 
@@ -406,6 +407,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     vuforiaMissCount = 0;
                     vuforiaHitCount =0;
                     robot.retractJewelArm();
+                    robot.retractGlyphBlocker();
                     state = 21;
                 }
 
@@ -458,6 +460,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 break;
             default:
                 robot.loadGlyph();
+                robot.retractGlyphBlocker();
                 VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorMovePower);
                 // stop
                 vuforia.relicTrackables.deactivate();

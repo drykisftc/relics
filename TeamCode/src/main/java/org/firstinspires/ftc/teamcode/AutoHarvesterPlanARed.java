@@ -128,6 +128,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
         telemetry.addData("jewelArm", jewelArm.getPosition());
         telemetry.addData("jewelHitter", jewelHitter.getPosition());
         telemetry.update();
+
     }
 
 
