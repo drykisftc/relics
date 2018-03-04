@@ -222,6 +222,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
+                    robot.retractGlyphBlocker();
                     state = 4;
                 }
 
@@ -602,6 +603,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
+                    robot.retractGlyphBlocker();
                     state = 19;
                 }
             case 19:
