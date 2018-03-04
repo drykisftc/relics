@@ -273,33 +273,49 @@ public class HardwareHarvester extends HardwareBase
     }
 
 
-    public static double getVuforiaLeftRightDistance ( OpenGLMatrix pose ) {
-        VectorF trans = pose.getTranslation();
-        Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS);
+    public static double getVuforiaLeftRightDistance(OpenGLMatrix pose ) {
+        if (pose != null) {
+            VectorF trans = pose.getTranslation();
+            Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS);
 
-        // Extract the X, Y, and Z components of the offset of the target relative to the robot
-        //double tX = trans.get(0);
-        double tY = trans.get(1);
-        double tZ = trans.get(2);
-        double rDegree = rot.secondAngle;
+            // Extract the X, Y, and Z components of the offset of the target relative to the robot
+            //double tX = trans.get(0);
+            double tY = trans.get(1);
+            double tZ = trans.get(2);
+            double rDegree = rot.secondAngle;
 
-        return tZ*Math.sin(rDegree) + tY*Math.cos(rDegree);
+            return tZ * Math.sin(rDegree) + tY * Math.cos(rDegree);
+        } else {
+            return 0.0;
+        }
     }
 
     public static double getVuforiaFrontBackDistance ( OpenGLMatrix pose ) {
-        VectorF trans = pose.getTranslation();
-        Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS);
+        if (pose != null) {
+            VectorF trans = pose.getTranslation();
+            Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.RADIANS);
 
-        // Extract the X, Y, and Z components of the offset of the target relative to the robot
-        //double tX = trans.get(0);
-        double tY = trans.get(1);
-        double tZ = trans.get(2);
-        double rDegree = rot.secondAngle;
+            // Extract the X, Y, and Z components of the offset of the target relative to the robot
+            // double tX = trans.get(0);
+            double tY = trans.get(1);
+            double tZ = trans.get(2);
+            double rDegree = rot.secondAngle;
 
-        return tZ * Math.cos(rDegree) - tY * Math.sin(rDegree);
+            return tZ * Math.cos(rDegree) - tY * Math.sin(rDegree);
+        } else {
+            return 0.0;
+        }
     }
 
     public static int imageDistance2GlyphBoxBDistance (double tG) {
         return (int)(((34.5/0.0393701 - Math.abs(tG)) * 0.0393701-8) * 89);
+    }
+
+    public static int imageDistance2GlyphBoxADistance (double tG, int columnDistance) {
+        return (int)((((columnDistance/89)/0.0393701 - Math.abs(tG)) * 0.0393701 - 4.25) * 89);
+    }
+
+    public static int robotToCryptoBoxADistance (double tD) {
+        return (int)(((Math.abs(tD) - 7/0.0393701) * 0.0393701-8) * 89);
     }
 }

@@ -206,7 +206,7 @@ public class AutoRelic extends OpMode {
     }
 
     public int moveToVuforia(OpenGLMatrix vuforiaLocation, double x, double y, double z, double rotA, double rotB, double rotC, double axleLength, DcMotor[] leftMotorsMTV, DcMotor[] rightMotorsMTV) {
-
+        // not safe if vuforiaLocation is null
         int turnState = 0;
         int moveState = 0;
         double angleToTurn = 0;
