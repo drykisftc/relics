@@ -45,6 +45,8 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
 
     int sideWayDistance = 5400;
+    int sideWayCompensation = 900;
+    double sideMovePower2 = 0;
 
     public AutoHarvesterPlanBRed() {
 
@@ -67,6 +69,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
         backupDistance = 500;
 
         sideMovePower = -0.95;
+        sideMovePower2 = sideMovePower;
 
         glyphDeliverPower = -0.2;
 
@@ -120,6 +123,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                 // move left
                 if (0 == sideMoveByDistance(sideMovePower, columnDistance)) {
                     wheelDistanceLandMark = getWheelOdometer();
+                    robot.retractJewelArm();
                     state = 3;
                 }
 
@@ -157,7 +161,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                 break;
             case 6:
                 //back up
-                if (0 == moveByDistance(-glyphDeliverPower, backupDistance)) {
+                if (0 == moveByDistance(-glyphDeliverPower*2, backupDistance)) {
                     timeStamp = System.currentTimeMillis();
                     robot.levelGlyph();
                     getWheelLandmarks();
@@ -173,13 +177,13 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
 
-                    state = 8;
+                    state = 21; // jump to 21 back up
                 }
 
                 break;
             case 8:
                 // backup
-                if (0 == moveByDistance(-glyphDeliverPower, 500)) {
+                if (0 == moveByDistance(-glyphDeliverPower*3, 500)) {
 
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
@@ -194,15 +198,18 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                 break;
             case 9:
                 // move side way
-                if (0 == sideMoveByDistance(sideMovePower, sideWayDistance - columnDistance)) {
+                if (0 == sideMoveByDistance(sideMovePower2, sideWayDistance - columnDistance)) {
                     wheelDistanceLandMark = getWheelOdometer();
                     getWheelLandmarks();
                     robot.glyphWheelLoad();
+                    robot.extendGlyphBlocker();
+                    robot.retractJewelArm();
                     state = 10;
                 }
 
                 break;
             case 10:
+                robot.retractJewelArm();
                 // move to center
                 if (0 == moveByDistance(move2CenterPower, (int)(glyph2CenterDistance*0.75))) {
                     timeStamp = System.currentTimeMillis();
@@ -211,27 +218,50 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                 }
                 break;
             case 11:
-                // move to center slower to collect glyph
-                if (0 == moveByDistance(collectingGlyphPower, (int) (glyph2CenterDistance * 0.25))) {
+                // back up
+                if (0 == moveByDistance(-move2CenterPower, 300)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
+                    navigation.resetTurn(leftMotors, rightMotors);
                     state = 12;
                 }
                 break;
             case 12:
+                robot.retractJewelArm();
+                navigation.turnByGyroCloseLoop(0.0,
+                        (double) robot.imu.getAngularOrientation().firstAngle,
+                        fGlyphTurnAngle+rand.nextInt(30)-15,
+                        leftMotors, rightMotors);
+                // move to center slower to collect glyph
+                if (0 == moveByDistance(collectingGlyphPower, (int) (glyph2CenterDistance * 0.25)+300)) {
+                    moveAtPower(0.0);
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    getWheelLandmarks();
+                    timeStamp = System.currentTimeMillis();
+                    state = 13;
+                }
+                break;
+            case 13:
+                navigation.turnByGyroCloseLoop(0.0,
+                        (double) robot.imu.getAngularOrientation().firstAngle,
+                        fGlyphTurnAngle+rand.nextInt(30)-15,
+                        leftMotors, rightMotors);
                 // collect glyph
                 if (System.currentTimeMillis() - timeStamp > 1000) {
-                    state = 13;
+                    state = 14;
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
                 break;
-            case 13:
+            case 14:
                 // correct angle just increase it got knocked out the cource
-                if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle, fGlyphTurnAngle, leftMotors, rightMotors)) {
-                    state = 14;
+                if (0 == navigation.turnByGyroCloseLoop(0.0,
+                        (double) robot.imu.getAngularOrientation().firstAngle,
+                        fGlyphTurnAngle, leftMotors, rightMotors)) {
+                    state = 15;
+                    robot.retractGlyphBlocker();
                     getWheelLandmarks();
                     robot.levelGlyph();
                     // lift
@@ -239,8 +269,9 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                     navigation.resetTurn(leftMotors, rightMotors);
                     timeStamp = System.currentTimeMillis();
                 }
+                robot.retractJewelArm();
                 break;
-            case 14:
+            case 15:
                 // unload
                 if (System.currentTimeMillis() - timeStamp > 1000) {
                     robot.glyphWheelUnload();
@@ -250,40 +281,58 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                 if (0 == moveByDistance(-move2CenterPower, glyph2CenterDistance)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
-                    state = 15;
-                }
-                break;
-            case 15:
-                // move side way
-                if (0 == sideMoveByDistance(-sideMovePower, sideWayDistance - columnDistance-300)) {
-                    wheelDistanceLandMark = getWheelOdometer();
-                    getWheelLandmarks();
-
                     state = 16;
                 }
                 break;
             case 16:
-                // move to glyph
-                if (0 == moveByDistance(glyphDeliverPower, -backupDistance)) {
-                    timeStamp = System.currentTimeMillis();
+                // move side way
+                robot.retractJewelArm();
+                if (0 == sideMoveByDistance(-sideMovePower2, sideWayDistance - columnDistance-sideWayCompensation)) {
+                    wheelDistanceLandMark = getWheelOdometer();
                     getWheelLandmarks();
+
                     state = 17;
                 }
                 break;
             case 17:
-                // release glyph
-                robot.dumpGlyph();
-                if (System.currentTimeMillis() - timeStamp > 2000) {
+                // move to glyph
+                robot.retractJewelArm();
+                if (0 == moveByDistance(glyphDeliverPower, backupDistance-200)) {
+                    timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 18;
                 }
                 break;
             case 18:
-                // back up
-                if (0 == moveByDistance(-glyphDeliverPower, backupDistance*2)) {
-                    timeStamp = System.currentTimeMillis();
+                // release glyph
+                robot.dumpGlyph();
+                if (System.currentTimeMillis() - timeStamp > 2000) {
                     getWheelLandmarks();
                     state = 19;
+                }
+                break;
+            case 19:
+                // back up
+                if (0 == moveByDistance(-glyphDeliverPower*2, 500)) {
+                    timeStamp = System.currentTimeMillis();
+                    getWheelLandmarks();
+                    state = 20;
+                }
+                break;
+            case 20:
+                // push
+                if (0 == moveByDistance(glyphDeliverPower*2, 700)) {
+                    timeStamp = System.currentTimeMillis();
+                    getWheelLandmarks();
+                    state = 21;
+                }
+                break;
+            case 21:
+                // back up
+                if (0 == moveByDistance(-glyphDeliverPower*2, 300)) {
+                    timeStamp = System.currentTimeMillis();
+                    getWheelLandmarks();
+                    state = 22;
                 }
                 break;
             default:

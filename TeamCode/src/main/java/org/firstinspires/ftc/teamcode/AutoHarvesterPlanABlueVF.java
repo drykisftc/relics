@@ -40,28 +40,18 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@Autonomous(name = "Harvester_PlanB_Blue", group = "A_Harvester")
+@Autonomous(name = "Harvester_PlanA_Blue_VF", group = "A_Harvester")
+public class AutoHarvesterPlanABlueVF extends AutoHarvesterPlanARed {
 
-public class AutoHarvesterPlanBBlue extends AutoHarvesterPlanBRed {
-
-    public AutoHarvesterPlanBBlue() {
+    public AutoHarvesterPlanABlueVF() {
         super();
-
         teamColor = "blue";
-        fGlyphTurnAngle = 180;
+        vuforiaDetectingPower = 0.4;
 
-        rightColumnDistance = 3900;
-        centerColumnDistance = 2500;
-        leftColumnDistance = 1200;
+        leftColumnDistance = -2200;
+        centerColumnDistance = -2850;
+        rightColumnDistance = -3600;
 
-        offBalanceStoneDistance = 2300;
-        cryptoBoxDistance = 150;
-
-        sideMovePower = -0.95;
-        vuforiaDetectingPower = 0.2;
-
-        sideMovePower2 = -sideMovePower;
-        sideWayCompensation = -1800;
     }
 
 }

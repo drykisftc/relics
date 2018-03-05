@@ -252,7 +252,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
-                    state = 7;
+                    state = 17; // jump to 17 back up
                 }
                 break;
             case 7:
@@ -375,7 +375,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                 break;
             case 17:
                 // backup
-                if (0 == moveByDistance(-move2GlyphBoxPower , 400)) {
+                if (0 == moveByDistance(-move2GlyphBoxPower , 300)) {
                     moveAtPower(0.0);
                     state = 18;
                 }
