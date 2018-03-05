@@ -117,7 +117,6 @@ public class TeleOpHarvester extends OpMode{
         glyphLiftControl();
         jewelArmControl();
         relicArmControl();
-        stopperControl();
         glyphBlockerControl();
         telemetry.update();
     }
@@ -306,15 +305,6 @@ public class TeleOpHarvester extends OpMode{
 //            robot.relicFlipper.setPower(-0.05); // prevent it popped up
 //        }
 
-    }
-
-    public void stopperControl() {
-        // control stopper
-        if (Math.abs(gamepad1.left_trigger) > 0.1 || Math.abs(gamepad2.left_trigger) > 0.1) {
-            robot.retractGlyphBlocker();
-        } else if (Math.abs(gamepad1.right_trigger) > 0.1 || Math.abs(gamepad2.right_trigger) > 0.1) {
-            robot.extendGlyphBlocker();
-        }
     }
 
     /*
