@@ -327,7 +327,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 OpenGLMatrix pose = vuforia.getGlyphCryptoPosition();
 
                 // if too many errors, move on
-                if (vuforiaMissCount > 18) {
+                if (vuforiaMissCount > 180) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 20;
