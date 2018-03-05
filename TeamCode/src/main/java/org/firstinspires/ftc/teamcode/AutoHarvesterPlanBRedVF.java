@@ -226,6 +226,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
+                    navigation.resetTurn(leftMotors, rightMotors);
                     state = 13;
                 }
                 break;
@@ -297,6 +298,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     vuforiaMissCount = 0;
                     vuforiaHitCount = 0;
                     robot.retractJewelArm();
+                    navigation.resetTurn(leftMotors, rightMotors);
                     state = 18;
                 }
 
@@ -409,6 +411,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     vuforiaHitCount =0;
                     robot.retractJewelArm();
                     robot.retractGlyphBlocker();
+                    navigation.resetTurn(leftMotors, rightMotors);
                     state = 21;
                 }
 
