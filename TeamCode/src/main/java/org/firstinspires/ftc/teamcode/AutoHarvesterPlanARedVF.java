@@ -252,7 +252,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
 
             case 5:
                 // back up from the crypto box
-                if (0 == moveByDistance(-move2GlyphBoxPower*2, 400)) {
+                if (0 == moveByDistance(-move2GlyphBoxPower*2, cryptoBoxDistance)) {
 
                     moveAtPower(0.0);
                     robot.loadGlyph();
@@ -269,7 +269,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 break;
             case 6:
                 // push glyph into place
-                if (0 == moveByDistance(move2GlyphBoxPower*2.0, 400)) {
+                if (0 == moveByDistance(move2GlyphBoxPower*2.0, cryptoBoxDistance)) {
                     moveAtSpeed(0.0);
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
@@ -305,7 +305,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 robot.retractJewelArm();
 
                 // move to center diagonally
-                if (0 == leftDiagonalMoveByDistance(move2CenterPower, 4300)) {
+                if (0 == leftDiagonalMoveByDistance(move2CenterPower, 4400)) {
                     robot.extendGlyphBlocker();
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -344,7 +344,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                         leftMotors, rightMotors);
 
                 // collect glyph
-                if (System.currentTimeMillis() - timeStamp > 2500) {
+                if (System.currentTimeMillis() - timeStamp > 1500) {
                     state = 12;
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -371,7 +371,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 // turn 45 degrees
                 if (0 == navigation.turnByGyroCloseLoop(0.0,
                         (double) robot.imu.getAngularOrientation().firstAngle,
-                        - 45,leftMotors,rightMotors)) {
+                        -45,leftMotors,rightMotors)) {
                     moveAtPower(0.0);
                     robot.levelGlyph();
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, liftMotorMovePower);
@@ -460,27 +460,13 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                             // set glyph box distance. image to glyph box distance is 34.5 inch , camera to flipper distance is 4
                             cryptoBoxDistance = robot.imageDistance2GlyphBoxADistance(tG, columnDistance);
                             backupDistance = robot.robotToCryptoBoxADistance(tD);
-                        } else {
-                            //leftDiagonalMoveAtPower(Range.clip(errorZ * -0.0015, -0.35, 0.35));
-                            //sideMoveAtPower(Range.clip(errorZ * 0.015, -0.2, 0.2));
-                            //sideMoveAtPower(Range.clip(navigation.getMaintainDistancePower(targetVuDis,tZ), -0.65, 0.65));
-                        }
-                        int deltaDistance = 0;
-                        if (vuforia.vumarkImage == "left") {
-                            //state = 19;
-                            getWheelLandmarks();
-                            wheelDistanceLandMark = getWheelOdometer();
-                            navigation.resetTurn(leftMotors, rightMotors);
-                        } else if (vuforia.vumarkImage == "center") {
-                            deltaDistance = leftColumnDistance - centerColumnDistance;
-                        } else {
-                            deltaDistance = leftColumnDistance - rightColumnDistance;
                         }
                         vuforiaMissCount = 0;
                     }
                 }
                 break;
             case 16:
+                vuforia.relicTrackables.deactivate();
                 if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower,-45,
                     robot.axleDistance, leftMotors, rightMotors)) {
                     turnAtPower(0.0);
@@ -537,92 +523,6 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                     state = 20;
                 }
                 break;
-                // calculate location
-                /*// move to center fast
-                if (0 == moveByDistance(move2CenterPower, (int)(glyph2CenterDistance*0.75) + backupDistance + 500)) {
-                    moveAtPower(0.0);
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    getWheelLandmarks();
-                    timeStamp = System.currentTimeMillis();
-                    robot.loadGlyph();
-                    robot.glyphWheelLoad();
-                    state = 10;
-                }
-
-                break;
-            case 10:
-                // move to center slower to collect glyph
-                if (0 == moveByDistance(collectingGlyphPower, (int)(glyph2CenterDistance*0.25))) {
-                    moveAtPower(0.0);
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    getWheelLandmarks();
-                    timeStamp = System.currentTimeMillis();
-                    state = 11;
-                }
-
-                break;
-            case 11:
-                // wait 0.5 second for robot to collect
-                if (System.currentTimeMillis() - timeStamp > 500) {
-                    state = 12;
-                    getWheelLandmarks();
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    timeStamp = System.currentTimeMillis();
-                }
-                break;
-            case 12:
-                // correct angle just increase it got knocked out of course
-                if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle+glyphOffAngle,leftMotors,rightMotors)) {
-                    state = 13;
-                    getWheelLandmarks();
-                    robot.levelGlyph();
-                    VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, liftMotorMovePower);
-
-                    // spit out jammed glyphs
-                    //robot.defaultGlyphWheelPower = 0.3;
-                    //robot.glyphWheelUnload();
-
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    timeStamp = System.currentTimeMillis();
-                }
-                break;
-            case 13:
-
-                // unload
-                if (System.currentTimeMillis() - timeStamp > 1000) {
-                    robot.glyphWheelUnload();
-                }
-
-                // back up
-                if (0 == moveByDistance(center2GlyphBoxPower, center2GlyphDistance)) {
-                    moveAtPower(0.0);
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    getWheelLandmarks();
-                    timeStamp = System.currentTimeMillis();
-
-                    state = 14;
-                }
-
-                break;
-            case 14:
-                // correct angle just in case it got knocked out the course
-                if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle,leftMotors,rightMotors)) {
-                    state = 15;
-                    getWheelLandmarks();
-                    navigation.resetTurn(leftMotors, rightMotors);
-                }
-                break;
-            case 15:
-                // move to center slower to collect glyph
-                if (0 == moveByDistance(-collectingGlyphPower, 300)) {
-                    moveAtPower(0.0);
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    getWheelLandmarks();
-                    timeStamp = System.currentTimeMillis();
-                    state = 16;
-                }
-
-                break;*/
             case 20:
                 // release glyph
                 robot.dumpGlyph();

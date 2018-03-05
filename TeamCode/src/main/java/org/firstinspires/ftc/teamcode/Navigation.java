@@ -29,7 +29,7 @@ public class Navigation {
     double currentTurnAngle =0.0f;
     int convergeCount = 0;
     double angleErrorTolerance = 1.1f;
-    int convergeCountThreshold = 3;
+    int convergeCountThreshold = 4;
 
     double maxTurnDeltaPower = 0.5;
 

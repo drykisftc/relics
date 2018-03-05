@@ -53,7 +53,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
 
     final int leftVuDis = -968;  //42.5 inches
-    final int centerVuDis = -760; // 35 inches
+    final int centerVuDis = -745; // 35 inches
     final int rightVuDis = -574; // 27.5 inches
 
     int center2GlyphDistance = 3500;
@@ -301,9 +301,11 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     navigation.resetTurn(leftMotors, rightMotors);
                     state = 18;
                 }
+                vuforia.getGlyphCryptoPosition();
 
                 break;
             case 18:
+                vuforia.getGlyphCryptoPosition();
 
                 // make sure the angle is right and wait for vuforia to catch up
                 if (0 == navigation.turnByGyroCloseLoop(0.0,

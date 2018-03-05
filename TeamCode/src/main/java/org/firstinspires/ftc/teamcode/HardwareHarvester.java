@@ -238,7 +238,7 @@ public class HardwareHarvester extends HardwareBase
         glyphBlocker.setPosition(1.0);
     }
 
-    void extendGlyphBlocker() { glyphBlocker.setPosition(0.5); }
+    void extendGlyphBlocker() { glyphBlocker.setPosition(0.6); }
 
     void loadGlyph() {
         leftFlipper.setPosition(leftFlipperLoadPosition);
@@ -306,7 +306,7 @@ public class HardwareHarvester extends HardwareBase
     }
 
     public static int imageDistance2GlyphBoxBDistance (double tG) {
-        return (int)(((34.5/0.0393701 - Math.abs(tG)) * 0.0393701-8) * 89);
+        return (int)(((34.5/0.0393701 - Math.abs(tG)) * 0.0393701-11.5) * 89);
     }
 
     public static int imageDistance2GlyphBoxADistance (double tG, int columnDistance) {
