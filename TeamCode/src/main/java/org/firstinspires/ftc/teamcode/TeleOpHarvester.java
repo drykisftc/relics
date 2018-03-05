@@ -118,6 +118,7 @@ public class TeleOpHarvester extends OpMode{
         jewelArmControl();
         relicArmControl();
         stopperControl();
+        glyphBlockerControl();
         telemetry.update();
     }
 
