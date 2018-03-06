@@ -60,5 +60,6 @@ public class PIDControl {
     public void reset (){
         fError = 0.0f;;
         fIntegral = 0.0f;
+        fDerivative = 0.0f;
     }
 }

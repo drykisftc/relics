@@ -83,6 +83,8 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
 
                 computeGlyphColumnDistance();
 
+                robot.retractGlyphBlocker();
+
                 break;
             case 1:
 
@@ -330,6 +332,8 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     vuforia.identifyGlyphCrypto();
                 }
                 OpenGLMatrix pose = vuforia.getGlyphCryptoPosition();
+                telemetry.addData("vuforiaMissCount   =", vuforiaMissCount);
+                telemetry.addData("vuforiaHitCount", vuforiaHitCount);
 
                 // if too many errors, move on
                 if (vuforiaMissCount > 180) {

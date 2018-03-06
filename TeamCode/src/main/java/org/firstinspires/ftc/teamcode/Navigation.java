@@ -124,6 +124,7 @@ public class Navigation {
 
         convergeCount =0;
         turnState =0;
+        pidControlHeading.reset();
     }
 
     public int turnByEncoderOpenLoop (double p, double angle,
