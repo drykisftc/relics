@@ -255,6 +255,11 @@ public class HardwareHarvester extends HardwareBase
         rightFlipper.setPosition(rightFlipperLevelPosition);
     }
 
+    void levelGlyph2() {
+        leftFlipper.setPosition(leftFlipperLevelPosition);
+        rightFlipper.setPosition(rightFlipperLevelPosition);
+    }
+
     void glyphWheelLoad(){
         leftLiftWheel.setPower(-defaultGlyphWheelPower);
         rightLiftWheel.setPower(defaultGlyphWheelPower);
@@ -318,6 +323,6 @@ public class HardwareHarvester extends HardwareBase
 //    }
 
     public static int robotToCryptoBoxADistance (double tD) {
-        return (int)((Math.abs(tD) * 0.0393701 - 18) * 89);
+        return (int)((Math.abs(tD) * 0.0393701 - 15) * 89);
     }
 }
