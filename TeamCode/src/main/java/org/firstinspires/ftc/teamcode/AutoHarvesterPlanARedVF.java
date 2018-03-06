@@ -77,7 +77,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
     int vuforiaHitCount = 0;
     int vuforiaCheckDistance = 0;
     int vuforiaTargetDistance = -672;
-    int cryptoBoxTargetDistance = -484; // 40 inches?
+    int cryptoBoxTargetDistance = -494; // 40 inches?
 
 
     protected double distanceToVumark;
