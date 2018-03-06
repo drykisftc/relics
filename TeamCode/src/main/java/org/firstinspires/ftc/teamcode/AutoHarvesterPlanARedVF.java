@@ -77,7 +77,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
     int vuforiaHitCount = 0;
     int vuforiaCheckDistance = 0;
     int vuforiaTargetDistance = -672;
-    int cryptoBoxTargetDistance = -494; // 40 inches?
+    int cryptoBoxTargetDistance = -494; // 40 inches? change this landmark
 
 
     protected double distanceToVumark;
@@ -166,9 +166,11 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
     public void loop() {
         switch (state) {
             case 0:
+                cryptoBoxDistance = 250;
                 robot.defaultGlyphWheelPower = 0.5;
                 vuforiaMissCount = 0;
                 vuforiaHitCount = 0;
+                resetDeliverHistory(2);
 
                 robot.retractGlyphBlocker();
 
@@ -247,7 +249,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
 
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
-                    state = 5;
+                    state = 6;
 
                 }
 
@@ -255,7 +257,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
 
             case 5:
                 // back up from the crypto box
-                if (0 == moveByDistance(-move2GlyphBoxPower, cryptoBoxDistance)) {
+                if (0 == moveByDistance(-move2GlyphBoxPower, pushDistance)) {
 
                     moveAtPower(0.0);
                     robot.loadGlyph();
@@ -272,7 +274,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 break;
             case 6:
                 // push glyph into place
-                if (0 == moveByDistance(move2GlyphBoxPower, cryptoBoxDistance)) {
+                if (0 == moveByDistance(move2GlyphBoxPower, pushDistance)) {
                     moveAtSpeed(0.0);
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
@@ -529,23 +531,23 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 // side move to the correct column
                 vuforia.relicTrackables.deactivate();
 
-                int  deltaDistance = 0;
-                if (vuforia.vumarkImage == "right") {
-                    getWheelLandmarks();
-                    timeStamp = System.currentTimeMillis();
-                    vuforiaMissCount = 0;
-                    vuforiaHitCount = 0;
-                    robot.retractJewelArm();
-                    robot.retractGlyphBlocker();
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    state = 21;
-                } else if (vuforia.vumarkImage == "center") {
-                    deltaDistance = rightColumnDistance - centerColumnDistance;
-                } else {
-                    deltaDistance = rightColumnDistance - leftColumnDistance;
-                }
+                int  deltaDistance =  deliverDis[getNextDeliverIndex(-1)]*2;
+//                if (vuforia.vumarkImage == "right") {
+//                    getWheelLandmarks();
+//                    timeStamp = System.currentTimeMillis();
+//                    vuforiaMissCount = 0;
+//                    vuforiaHitCount = 0;
+//                    robot.retractJewelArm();
+//                    robot.retractGlyphBlocker();
+//                    navigation.resetTurn(leftMotors, rightMotors);
+//                    state = 21;
+//                } else if (vuforia.vumarkImage == "center") {
+//                    deltaDistance = rightColumnDistance - centerColumnDistance;
+//                } else {
+//                    deltaDistance = rightColumnDistance - leftColumnDistance;
+//                }
 
-                if (0 == sideMoveByDistance(-sideMovePower/2, deltaDistance*2)) {
+                if (0 == sideMoveByDistance(-sideMovePower/2, deltaDistance)) {
                     wheelDistanceLandMark = getWheelOdometer();
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
@@ -554,6 +556,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                     robot.retractJewelArm();
                     robot.retractGlyphBlocker();
                     navigation.resetTurn(leftMotors, rightMotors);
+                    deliverIndex = Math.abs((deliverIndex-1)%deliverDone.length); // move on to the next column
                     state = 21;
                 }
                 break;

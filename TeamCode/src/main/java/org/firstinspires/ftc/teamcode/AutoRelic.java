@@ -130,6 +130,10 @@ public class AutoRelic extends OpMode {
     DcMotor[] leftMotors;
     DcMotor[] rightMotors;
 
+    int [] deliverDis = new int[3];
+    boolean [] deliverDone = new boolean[3];
+    int deliverIndex = 0;
+
     @Override
     public void init() {
     }
@@ -142,19 +146,46 @@ public class AutoRelic extends OpMode {
     public void loop() {
     }
 
+    public int getNextDeliverIndex (int incrV) {
+        int next = deliverIndex;
+        for (int i = 0; i < deliverDone.length; i++) {
+            if (deliverDone[next]) {
+                next = (next+incrV)%deliverDone.length;
+            } else {
+                break;
+            }
+        }
+        return next;
+    }
+
+    public void resetDeliverHistory (int d) {
+        if (d < 0) d =0;
+        deliverIndex = Math.min(d, deliverDone.length-1);
+        deliverDis[0] =0;
+        deliverDis[1] = leftColumnDistance - centerColumnDistance;
+        deliverDis[2] = leftColumnDistance - rightColumnDistance;
+        for ( int i =0 ; i < deliverDone.length; i++) {
+            deliverDone[i] = false;
+        }
+    }
+
     public String computeGlyphColumnDistance() {
         vuforia.identifyGlyphCrypto();
         if (vuforia.vumarkImage == "left") {
             columnDistance = leftColumnDistance;
             glyphOffAngle = 20;
+            deliverDone[0] = true;
         } else if (vuforia.vumarkImage == "center") {
             columnDistance = centerColumnDistance;
             glyphOffAngle = 13;
+            deliverDone[1] = true;
         } else if (vuforia.vumarkImage == "right") {
             columnDistance = rightColumnDistance;
             glyphOffAngle = -18;
+            deliverDone[2] = true;
         } else {
             columnDistance = rightColumnDistance;
+            deliverDone[2] = true;
             glyphOffAngle = -18;
         }
 

@@ -52,7 +52,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
 
-    final int leftVuDis = -968;  //42.5 inches
+    final int leftVuDis = -968;  //42.5 inches  change this a landmark
     final int centerVuDis = -745; // 35 inches
     final int rightVuDis = -574; // 27.5 inches
 
@@ -66,11 +66,14 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
     public void loop() {
         switch (state) {
             case 0:
+                cryptoBoxDistance = 100;
+                pushDistance = 400;
                 robot.defaultGlyphWheelPower = 0.5;
                 vuforiaMissCount = 0;
                 vuforiaHitCount = 0;
                 vuforiaCheckDistance = leftColumnDistance;
                 vuforiaTargetDistance = leftVuDis;
+                resetDeliverHistory(0);
 
                 // jewel handling
                 state = jewelKicker.loop(0, 1, teamColor);
@@ -95,6 +98,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 } else {
                     movePower = vuforiaDetectingPower * 3.0;
                 }
+
 
                 // lift glyph bar
                 VortexUtils.moveMotorByEncoder(robot.liftMotor, 10, liftMotorHolderPower);
@@ -121,7 +125,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 break;
             case 3:
                 // turn if necessary
-                if (fGlyphTurnAngle == 0.0f || 0 == navigation.turnByEncoderOpenLoop(glyTurnPower, fGlyphTurnAngle,
+                if (fGlyphTurnAngle == 0.0f || 0 == navigation.turnByEncoderOpenLoop(0.95, fGlyphTurnAngle,
                         robot.axleDistance, leftMotors, rightMotors)) {
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -147,7 +151,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 } else {
 
                     timeStamp = System.currentTimeMillis();
-                    state = 6;
+                    state = 7;
                 }
                 break;
             case 6:
@@ -162,7 +166,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 break;
             case 7:
                 // push
-                if (0 == moveByDistance(glyphDeliverPower * 2, pushDistance + 150)) {
+                if (0 == moveByDistance(glyphDeliverPower * 2, pushDistance)) {
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
@@ -239,7 +243,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                         fGlyphTurnAngle+rand.nextInt(20)-10,
                         leftMotors, rightMotors);
                 // move to center slower to collect glyph
-                if (0 == moveByDistance(collectingGlyphPower, (int) (glyph2CenterDistance * 0.2)+400)) {
+                if (0 == moveByDistance(collectingGlyphPower, (int) (glyph2CenterDistance * 0.2)+900)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -283,7 +287,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 }
 
                 // move away from center
-                if (0 == moveByDistance(-move2CenterPower, center2GlyphDistance)) {
+                if (0 == moveByDistance(-move2CenterPower, center2GlyphDistance+300)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     wheelDistanceLandMark = getWheelOdometer();
@@ -322,15 +326,9 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     timeStamp = System.currentTimeMillis();
                 }
 
-                if ("unknown" == vuforia.vumarkImage.toLowerCase()) {
-                    vuforia.identifyGlyphCrypto();
-                }
                 break;
             case 19: {
 
-                if ("unknown" == vuforia.vumarkImage.toLowerCase()) {
-                    vuforia.identifyGlyphCrypto();
-                }
                 OpenGLMatrix pose = vuforia.getGlyphCryptoPosition();
                 telemetry.addData("vuforiaMissCount   =", vuforiaMissCount);
                 telemetry.addData("vuforiaHitCount", vuforiaHitCount);
@@ -367,7 +365,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     // adjust distance by vuforia values
                     double errorZ = vuforiaTargetDistance - tD;
                     telemetry.addData("vuforia distance error", errorZ);
-                    if ( Math.abs(errorZ) > 200 || Math.abs(rot.secondAngle) > 30) {
+                    if ( Math.abs(errorZ) > 300 || Math.abs(rot.secondAngle) > 30) {
                         vuforiaMissCount++;
                     } else {
                         if (Math.abs(errorZ) < 15) {
@@ -397,17 +395,18 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
             case 20:
                 vuforia.relicTrackables.deactivate();
 
-                int  deltaDistance = 0;
-                if (vuforia.vumarkImage == "left") {
-                    state = 21;
-                    getWheelLandmarks();
-                    wheelDistanceLandMark = getWheelOdometer();
-                    navigation.resetTurn(leftMotors, rightMotors);
-                } else if (vuforia.vumarkImage == "center") {
-                    deltaDistance = leftColumnDistance - centerColumnDistance;
-                } else {
-                    deltaDistance = leftColumnDistance - rightColumnDistance;
-                }
+                int  deltaDistance = deliverDis[getNextDeliverIndex(1)];
+
+//                if (vuforia.vumarkImage == "left") {
+//                    state = 21;
+//                    getWheelLandmarks();
+//                    wheelDistanceLandMark = getWheelOdometer();
+//                    navigation.resetTurn(leftMotors, rightMotors);
+//                } else if (vuforia.vumarkImage == "center") {
+//                    deltaDistance = leftColumnDistance - centerColumnDistance;
+//                } else {
+//                    deltaDistance = leftColumnDistance - rightColumnDistance;
+//                }
 
                 if (0 == sideMoveByDistance(-sideMovePower/2, deltaDistance)) {
                     wheelDistanceLandMark = getWheelOdometer();
@@ -418,6 +417,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     robot.retractJewelArm();
                     robot.retractGlyphBlocker();
                     navigation.resetTurn(leftMotors, rightMotors);
+                    deliverIndex = (deliverIndex+1)%3; // move on to the next column
                     state = 21;
                 }
 
@@ -467,6 +467,13 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     getWheelLandmarks();
                     state = 26;
                 }
+                break;
+            case 26:
+                robot.loadGlyph();
+                robot.retractGlyphBlocker();
+                VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorMovePower);
+                // stop
+                vuforia.relicTrackables.deactivate();
                 break;
             default:
                 robot.loadGlyph();
