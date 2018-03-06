@@ -48,7 +48,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list.
  */
-@Autonomous(name = "Harvester_PlanB_Red_VF", group = "A_Harvester")
+@Autonomous(name = "Harvester_PlanB_Red_VF", group = "A_Harvester_red")
 
 public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
 
@@ -66,7 +66,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
     public void loop() {
         switch (state) {
             case 0:
-                cryptoBoxDistance = 100;
+                cryptoBoxDistance = 0;
                 pushDistance = 400;
                 robot.defaultGlyphWheelPower = 0.5;
                 vuforiaMissCount = 0;
@@ -141,6 +141,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
 
                 break;
             case 5:
+                updateDeliverHistory();
                 // release the glyph
                 time = System.currentTimeMillis();
 
@@ -240,7 +241,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 //wiggle
                 navigation.turnByGyroCloseLoop(0.0,
                         (double) robot.imu.getAngularOrientation().firstAngle,
-                        fGlyphTurnAngle+rand.nextInt(20)-10,
+                        fGlyphTurnAngle+rand.nextInt(30)-15,
                         leftMotors, rightMotors);
                 // move to center slower to collect glyph
                 if (0 == moveByDistance(collectingGlyphPower, (int) (glyph2CenterDistance * 0.2)+900)) {
@@ -273,6 +274,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     getWheelLandmarks();
                     robot.levelGlyph();
                     robot.retractGlyphBlocker();
+                    robot.stopGlyphWheels();
                     // lift
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, liftMotorMovePower);
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -374,7 +376,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                             vuforiaHitCount = 0;
                         }
 
-                        if ( vuforiaHitCount > 10) {
+                        if ( vuforiaHitCount > 20) {
                             state = 20;
                             getWheelLandmarks();
                             timeStamp = System.currentTimeMillis();

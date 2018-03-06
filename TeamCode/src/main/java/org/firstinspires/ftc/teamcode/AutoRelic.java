@@ -150,7 +150,7 @@ public class AutoRelic extends OpMode {
         int next = deliverIndex;
         for (int i = 0; i < deliverDone.length; i++) {
             if (deliverDone[next]) {
-                next = (next+incrV)%deliverDone.length;
+                next = (Math.abs(next+incrV))%deliverDone.length;
             } else {
                 break;
             }
@@ -162,30 +162,48 @@ public class AutoRelic extends OpMode {
         if (d < 0) d =0;
         deliverIndex = Math.min(d, deliverDone.length-1);
         deliverDis[0] =0;
-        deliverDis[1] = leftColumnDistance - centerColumnDistance;
-        deliverDis[2] = leftColumnDistance - rightColumnDistance;
+        deliverDis[1] = Math.abs(leftColumnDistance - centerColumnDistance);
+        deliverDis[2] = Math.abs(leftColumnDistance - rightColumnDistance);
         for ( int i =0 ; i < deliverDone.length; i++) {
             deliverDone[i] = false;
         }
     }
 
+    public void resetDeliverHistory2 (int d) {
+        if (d < 0) d =0;
+        deliverIndex = Math.min(d, deliverDone.length-1);
+        deliverDis[2] =0;
+        deliverDis[1] = Math.abs(rightColumnDistance - centerColumnDistance);
+        deliverDis[0] = Math.abs(rightColumnDistance - leftColumnDistance);
+        for ( int i =0 ; i < deliverDone.length; i++) {
+            deliverDone[i] = false;
+        }
+    }
+
+    public void updateDeliverHistory () {
+        if (vuforia.vumarkImage == "left") {
+            deliverDone[0] = true;
+        } else if (vuforia.vumarkImage == "center") {
+            deliverDone[1] = true;
+        } else if (vuforia.vumarkImage == "right") {
+            deliverDone[2] = true;
+        } else {
+            deliverDone[2] = true;
+        }
+    }
     public String computeGlyphColumnDistance() {
         vuforia.identifyGlyphCrypto();
         if (vuforia.vumarkImage == "left") {
             columnDistance = leftColumnDistance;
             glyphOffAngle = 20;
-            deliverDone[0] = true;
         } else if (vuforia.vumarkImage == "center") {
             columnDistance = centerColumnDistance;
             glyphOffAngle = 13;
-            deliverDone[1] = true;
         } else if (vuforia.vumarkImage == "right") {
             columnDistance = rightColumnDistance;
             glyphOffAngle = -18;
-            deliverDone[2] = true;
         } else {
             columnDistance = rightColumnDistance;
-            deliverDone[2] = true;
             glyphOffAngle = -18;
         }
 
