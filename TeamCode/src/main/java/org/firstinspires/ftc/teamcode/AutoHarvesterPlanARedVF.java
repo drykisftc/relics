@@ -166,7 +166,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
     public void loop() {
         switch (state) {
             case 0:
-                cryptoBoxDistance = 250;
+                cryptoBoxDistance = 50;
                 pushDistance = 500;
                 robot.defaultGlyphWheelPower = 0.5;
                 vuforiaMissCount = 0;
