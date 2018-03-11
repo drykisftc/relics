@@ -474,9 +474,8 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     cryptoBoxDistance = 0;
-                    backupDistance = cryptoBoxDistance + 2000;
-                    state = 19;
                     backupDistance = 200;
+                    state = 19;
                 }
 
                 if (null == pose) {
