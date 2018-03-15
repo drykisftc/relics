@@ -87,7 +87,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
 
         glyphLiftPosition = 1500;
         centerGlyphAngleOffset = 0;
-        vuforiaDetectingPower = -0.2;
+        vuforiaDetectingPower = -0.15;
         move2GlyphBoxPower = -0.6;
         move2CenterPower = 0.8;
         fGlyphTurnAngle = -90;
@@ -191,30 +191,33 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
 
                 robot.retractGlyphBlocker();
 
+                timeStamp = System.currentTimeMillis();
+
                 break;
             case 1:
 
-                // lift glyph bar
-                VortexUtils.moveMotorByEncoder(robot.liftMotor, 10, liftMotorHolderPower);
+                    // lift glyph bar
+                    VortexUtils.moveMotorByEncoder(robot.liftMotor, 10, liftMotorHolderPower);
 
-                //set jewel hitter position
-                robot.retractJewelArm();
+                    //set jewel hitter position
+                    robot.retractJewelArm();
 
-                //move forward with encoder
-                //read vumark
-                double movePower = vuforiaDetectingPower;
-                if ("unknown" == vuforia.vumarkImage.toLowerCase() ) {
-                    computeGlyphColumnDistance();
-                } else {
-                    movePower = vuforiaDetectingPower*3.0;
-                }
+                    //move forward with encoder
+                    //read vumark
+                    double movePower = vuforiaDetectingPower;
+                    if ("unknown" == vuforia.vumarkImage.toLowerCase()) {
+                        computeGlyphColumnDistance();
+                    } else {
+                        movePower = vuforiaDetectingPower * 3.0;
+                    }
 
-                if (0 == moveByDistance(movePower, columnDistance)) {
-                    moveAtPower(0.0);
-                    getWheelLandmarks();
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    state = 2;
-                }
+                    if (0 == moveByDistance(movePower, columnDistance)) {
+                        moveAtPower(0.0);
+                        getWheelLandmarks();
+                        navigation.resetTurn(leftMotors, rightMotors);
+                        state = 2;
+                    }
+
 
                 break;
             case 2:
@@ -471,9 +474,8 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     cryptoBoxDistance = 0;
-                    backupDistance = cryptoBoxDistance + 2000;
-                    state = 19;
                     backupDistance = 200;
+                    state = 19;
                 }
 
                 if (null == pose) {

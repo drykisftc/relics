@@ -73,7 +73,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
 
         glyphLiftPosition = 1500;
         centerGlyphAngleOffset = 0;
-        vuforiaDetectingPower = -0.2;
+        vuforiaDetectingPower = -0.15;
         move2GlyphBoxPower = -0.6;
         move2CenterPower = 0.8;
         fGlyphTurnAngle = -90;
