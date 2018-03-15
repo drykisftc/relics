@@ -433,7 +433,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 }
 
                 // back up from glyph
-                if (0 == leftDiagonalMoveByDistance(-collectingGlyphPower, 7500)) {
+                if (0 == leftDiagonalMoveByDistance(-collectingGlyphPower, 6000)) {
 
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);

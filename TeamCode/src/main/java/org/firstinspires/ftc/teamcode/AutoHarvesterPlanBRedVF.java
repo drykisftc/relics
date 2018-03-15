@@ -318,7 +318,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 // make sure the angle is right and wait for vuforia to catch up
                 if (0 == navigation.turnByGyroCloseLoop(0.0,
                         (double) robot.imu.getAngularOrientation().firstAngle,
-                        fGlyphTurnAngle, leftMotors, rightMotors)
+                        fGlyphTurnAngle-6, leftMotors, rightMotors)
                         && System.currentTimeMillis() - timeStamp > 1000) {
                     state = 19;
                     getWheelLandmarks();
