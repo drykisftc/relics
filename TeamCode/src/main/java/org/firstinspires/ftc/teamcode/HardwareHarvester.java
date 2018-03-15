@@ -62,11 +62,11 @@ public class HardwareHarvester extends HardwareBase
     protected float axleDistance = 2200; //80.79 * 14;
 
     double leftFlipperLoadPosition = 0.14;
-    double leftFlipperDumpPosition = 0.75;
+    double leftFlipperDumpPosition = 0.74;
     double leftFlipperLevelPosition = 0.23;
 
     double rightFlipperLoadPosition = 0.96;
-    double rightFlipperDumpPosition = 0.34;
+    double rightFlipperDumpPosition = 0.35;
     double rightFlipperLevelPosition = 0.87;
 
     double defaultGlyphWheelPower = 0.7;
