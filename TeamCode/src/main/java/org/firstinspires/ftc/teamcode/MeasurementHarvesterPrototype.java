@@ -55,11 +55,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="TeleOp: Measurement Harvester", group="Measurement")
-public class MeasurementHarvester extends OpMode{
+@TeleOp(name="TeleOp: Measurement Harvester Prototype", group="Measurement")
+public class MeasurementHarvesterPrototype extends OpMode{
 
     /* Declare OpMode members. */
-    protected HardwareHarvester robot = new HardwareHarvester();
+    protected HardwareHarvesterPrototype robot = new HardwareHarvesterPrototype();
 
     protected int liftHeightLimit = 3200;
     protected int liftMotorPosition = 0;
@@ -122,6 +122,7 @@ public class MeasurementHarvester extends OpMode{
         jewelArmControl();
         jewelSensorReadValue();
         imuReadings();
+        otherSensorReadings();
         telemetry.update();
     }
 
@@ -260,7 +261,11 @@ public class MeasurementHarvester extends OpMode{
 
     }
 
+    public void otherSensorReadings() {
 
+        telemetry.addData("glyph touch sensor: ", robot.glyphTouchSensor.getState());
+
+    }
 
     /*
      * Code to run ONCE after the driver hits STOP
