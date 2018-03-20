@@ -265,7 +265,7 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     deliverCount ++;
-                    state = 6;
+                    state = 5;
 
                 }
 
@@ -305,10 +305,14 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                     moveAtPower(0.0);
                     robot.loadGlyph();
                     timeStamp = System.currentTimeMillis();
-
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
-                    state = 9;
+
+                    if (deliverCount >= 3) {
+                        state = 15;
+                    } else {
+                        state = 8;
+                    }
 
                 }
                 break;
@@ -349,7 +353,7 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
-                    state = 10;
+                    state = 11;
                 }
                 break;
             case 11:
@@ -359,13 +363,13 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
-                    state = 10;
+                    state = 12;
                 }
                 break;
             case 12:
                 // wait 0.5 seconds for robot to collect glyph
                 if (System.currentTimeMillis() - timeStamp > 500) {
-                    state = 12;
+                    state = 13;
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
                     timeStamp = System.currentTimeMillis();
@@ -384,7 +388,7 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                     getWheelLandmarks();
                     wheelDistanceLandMark = getWheelOdometer();
                     timeStamp = System.currentTimeMillis();
-                    state = 9;
+                    state = 14;
                 }
                 break;
             case 14:
@@ -394,17 +398,27 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                 }
 
                 // back up to crypto box
-                if (0 == moveByDistance(center2GlyphBoxPower, center2GlyphDistance)) {
+                if (0 == moveByDistance(center2GlyphBoxPower, center2GlyphDistance + 500)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
 
-                    state = 14;
+                    state = 4;
                 }
                 break;
             case 15:
-                //
+                // move left to ensure robot is inside parking zone
+                if (0 == sideMoveByDistance(-0.8, 650)) {
+                    moveAtPower(0.0);
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    getWheelLandmarks();
+                    timeStamp = System.currentTimeMillis();
+
+                    state = 16;
+                }
+                break;
+
 
                 /*if ("right" == vuforia.vumarkImage.toLowerCase()
                         || "unknown" == vuforia.vumarkImage.toLowerCase()) {
@@ -695,7 +709,7 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                         state = 23;
                     }
                 }
-                break;*/
+                break;
             case 23:
                 // release glyph
                 robot.dumpGlyph();
@@ -720,7 +734,7 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                     getWheelLandmarks();
                     state = 26;
                 }
-                break;
+                break;*/
             default:
                 robot.loadGlyph();
                 VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorMovePower);
