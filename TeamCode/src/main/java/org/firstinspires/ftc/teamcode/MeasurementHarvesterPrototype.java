@@ -263,7 +263,7 @@ public class MeasurementHarvesterPrototype extends OpMode{
 
     public void otherSensorReadings() {
 
-        telemetry.addData("glyph touch sensor: ", robot.glyphTouchSensor.getState());
+        telemetry.addData("glyph touch sensor: ", !robot.glyphTouchSensor.getState());
 
     }
 
