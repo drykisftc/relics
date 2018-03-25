@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -58,6 +59,7 @@ public class HardwareHarvester extends HardwareBase
     //sensors
     public ColorSensor jewelSensor = null;
     public DistanceSensor jewelSensorDistance = null;
+    public DistanceSensor glyphSensor = null;
 
     protected float axleDistance = 2200; //80.79 * 14;
 
@@ -122,6 +124,7 @@ public class HardwareHarvester extends HardwareBase
 
         jewelSensor = hwMap.get(ColorSensor.class, "jewelSensor");
         jewelSensorDistance = hwMap.get(DistanceSensor.class, "jewelSensor");
+        glyphSensor = hwMap.get(DistanceSensor.class, "glyphSensor");
 
         leftLiftWheel = hwMap.dcMotor.get("leftLiftWheel");
         leftLiftWheel.setDirection(DcMotor.Direction.FORWARD);

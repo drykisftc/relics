@@ -122,6 +122,7 @@ public class MeasurementHarvester extends OpMode{
         jewelArmControl();
         jewelSensorReadValue();
         imuReadings();
+        glyphSensorReadings();
         telemetry.update();
     }
 
@@ -260,6 +261,12 @@ public class MeasurementHarvester extends OpMode{
 
     }
 
+    public void glyphSensorReadings() {
+
+        telemetry.addData("Glyph Distance :", robot.glyphSensor.getDistance(DistanceUnit.CM));
+        telemetry.addData("Have Glyph     :", (robot.glyphSensor.getDistance(DistanceUnit.CM) < 5)? "Yes": "No");
+
+    }
 
 
     /*
