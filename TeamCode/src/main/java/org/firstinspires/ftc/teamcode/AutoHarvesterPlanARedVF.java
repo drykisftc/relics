@@ -39,6 +39,7 @@ import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
@@ -397,6 +398,10 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 break;
             case 14:
                 robot.retractJewelArm();
+                // If the glyphDistance is not NaN, jump to case 15
+                if (Double.isNaN(robot.glyphDistance.getDistance(DistanceUnit.CM)) == false) {
+                    state = 15;
+                }
                 //wiggle
                 navigation.turnByGyroCloseLoop(0.0,
                         (double) robot.imu.getAngularOrientation().firstAngle,

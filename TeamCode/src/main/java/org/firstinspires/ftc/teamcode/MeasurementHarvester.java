@@ -114,7 +114,7 @@ public class MeasurementHarvester extends OpMode{
      */
     @Override
     public void loop() {
-
+        glyphSensorReadValue();
         joystickWheelControl();
         glyphWheelControl();
         glyphDepositControl();
@@ -122,6 +122,7 @@ public class MeasurementHarvester extends OpMode{
         jewelArmControl();
         jewelSensorReadValue();
         imuReadings();
+
         telemetry.update();
     }
 
@@ -260,7 +261,9 @@ public class MeasurementHarvester extends OpMode{
 
     }
 
-
+    public void glyphSensorReadValue() {
+        telemetry.addData("glyph sensor distance: ", robot.glyphDistance.getDistance(DistanceUnit.CM));
+    }
 
     /*
      * Code to run ONCE after the driver hits STOP

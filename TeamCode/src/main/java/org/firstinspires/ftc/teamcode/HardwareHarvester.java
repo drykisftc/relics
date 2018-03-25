@@ -58,6 +58,7 @@ public class HardwareHarvester extends HardwareBase
     //sensors
     public ColorSensor jewelSensor = null;
     public DistanceSensor jewelSensorDistance = null;
+    public DistanceSensor glyphDistance = null;
 
     protected float axleDistance = 2200; //80.79 * 14;
 
@@ -122,6 +123,8 @@ public class HardwareHarvester extends HardwareBase
 
         jewelSensor = hwMap.get(ColorSensor.class, "jewelSensor");
         jewelSensorDistance = hwMap.get(DistanceSensor.class, "jewelSensor");
+
+        glyphDistance = hwMap.get(DistanceSensor.class, "glyphDistance");
 
         leftLiftWheel = hwMap.dcMotor.get("leftLiftWheel");
         leftLiftWheel.setDirection(DcMotor.Direction.FORWARD);

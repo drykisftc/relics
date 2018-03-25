@@ -37,6 +37,7 @@ import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 /*
@@ -238,6 +239,10 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 }
                 break;
             case 13:
+                // If the glyphDistance is not NaN, jump to case 15
+                if (Double.isNaN(robot.glyphDistance.getDistance(DistanceUnit.CM)) == false) {
+                    state = 15;
+                }
                 //wiggle
                 navigation.turnByGyroCloseLoop(0.0,
                         (double) robot.imu.getAngularOrientation().firstAngle,
@@ -253,7 +258,10 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 }
                 break;
             case 14:
-
+                // If the glyphDistance is not NaN, jump to case 15
+                if (Double.isNaN(robot.glyphDistance.getDistance(DistanceUnit.CM)) == false) {
+                    state = 15;
+                }
                 // wiggle to improve intake
                 navigation.turnByGyroCloseLoop(0.0,
                         (double) robot.imu.getAngularOrientation().firstAngle,
