@@ -16,6 +16,7 @@ import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 import java.util.Locale;
@@ -133,7 +134,7 @@ public class HardwareHarvester extends HardwareBase
         leftLiftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         rightLiftWheel = hwMap.dcMotor.get("rightLiftWheel");
-        rightLiftWheel.setDirection(DcMotor.Direction.FORWARD);
+        rightLiftWheel.setDirection(DcMotor.Direction.REVERSE);
         rightLiftWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightLiftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -269,11 +270,14 @@ public class HardwareHarvester extends HardwareBase
         rightLiftWheel.setPower(-defaultGlyphWheelPower);
     }
 
-    public void stopGlyphWheels(){
+    public void stopGlyphWheels() {
         leftLiftWheel.setPower(0.0);
         rightLiftWheel.setPower(0.0);
     }
 
+    public boolean haveGlyph() {
+        return (glyphDistance.getDistance(DistanceUnit.CM) < 6);
+    }
 
     public static double getVuforiaLeftRightDistance(OpenGLMatrix pose ) {
         if (pose != null) {

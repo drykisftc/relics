@@ -365,6 +365,11 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                     navigation.resetTurn(leftMotors, rightMotors);
                     state = 12;
                 }
+
+                if (robot.haveGlyph()) {
+                    state = 13;
+                }
+
                 break;
             case 12:
                 // wait 0.5 seconds for robot to collect glyph
