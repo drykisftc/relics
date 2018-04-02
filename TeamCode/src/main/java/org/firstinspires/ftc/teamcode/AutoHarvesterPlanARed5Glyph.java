@@ -101,8 +101,6 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
         center2GlyphDistance = 3500;
         pushDistance = 500;
 
-        robot.defaultGlyphWheelPower = 0.5;
-
 //        leftColumnDistance = 3860;
 //        centerColumnDistance = 3150;
 //        rightColumnDistance = 2500;
@@ -129,7 +127,7 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
         rightMotors = new DcMotor[2];
         rightMotors[0] = robot.motorRightFrontWheel;
         rightMotors[1] = robot.motorRightBackWheel;
-        robot.defaultGlyphWheelPower = 0.15;
+        robot.defaultGlyphWheelPower = 0.5;
 
         jewelArm = robot.jewelArm;
         jewelHitter = robot.jewelHitter;
@@ -290,7 +288,7 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                 break;
             case 6:
                 // push glyph into place
-                if (0 == moveByDistance(move2GlyphBoxPower, pushDistance)) {
+                if (0 == moveByDistance(move2GlyphBoxPower, pushDistance + 150)) {
                     moveAtSpeed(0.0);
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
@@ -321,7 +319,7 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                 robot.retractJewelArm();
                 if (0 == navigation.turnByGyroCloseLoop(0.0,
                         (double) robot.imu.getAngularOrientation().firstAngle,
-                        fGlyphTurnAngle,leftMotors,rightMotors)) {
+                        fGlyphTurnAngle, leftMotors, rightMotors)) {
                     moveAtPower(0.0);
                     robot.loadGlyph();
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorMovePower);
@@ -336,7 +334,7 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                 // Go to next column
                 robot.retractJewelArm();
 
-                if (0 == sideMoveByDistance(sideMovePower, 650)) {
+                if (0 == sideMoveByDistance(-sideMovePower, 600)) {
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
@@ -346,7 +344,7 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                 break;
             case 10:
                 // drive forward to center fast
-                if (0 == moveByDistance(move2CenterPower, (int)(glyph2CenterDistance*0.75) + backupDistance + 500)) {
+                if (0 == moveByDistance(move2CenterPower, (int)(glyph2CenterDistance*0.75) + backupDistance + 1200)) {
                     moveAtPower(0.0);
                     robot.glyphWheelLoad();
                     robot.loadGlyph();
@@ -372,8 +370,8 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
 
                 break;
             case 12:
-                // wait 0.5 seconds for robot to collect glyph
-                if (System.currentTimeMillis() - timeStamp > 500) {
+                // wait 1 seconds for robot to collect glyph
+                if (System.currentTimeMillis() - timeStamp > 1000) {
                     state = 13;
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -744,13 +742,13 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                 robot.loadGlyph();
                 VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorMovePower);
                 // stop
-                vuforia.relicTrackables.deactivate();
+//                vuforia.relicTrackables.deactivate();
                 robot.stop();
                 break;
         }
 
         telemetry.addData("teamColor", teamColor);
-        telemetry.addData("vumark", vuforia.vumarkImage);
+//        telemetry.addData("vumark", vuforia.vumarkImage);
         telemetry.addData("state", state);
         telemetry.addData("backupDistance", backupDistance);
         telemetry.addData("devilver index", deliverIndex);

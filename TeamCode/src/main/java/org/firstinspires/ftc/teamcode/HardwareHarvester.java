@@ -30,9 +30,9 @@ public class HardwareHarvester extends HardwareBase
 {
     // DC Motors
     public DcMotor motorLeftBackWheel = null;
-    public DcMotor motorRightBackWheel =null;
+    public DcMotor motorRightBackWheel = null;
     public DcMotor motorLeftFrontWheel = null;
-    public DcMotor motorRightFrontWheel =null;
+    public DcMotor motorRightFrontWheel = null;
 
     public DcMotor liftMotor = null;
 
@@ -64,13 +64,13 @@ public class HardwareHarvester extends HardwareBase
 
     protected float axleDistance = 2200; //80.79 * 14;
 
-    double leftFlipperLoadPosition = 0.14;
-    double leftFlipperDumpPosition = 0.74;
-    double leftFlipperLevelPosition = 0.23;
+    double leftFlipperLoadPosition = 0.19;    // a
+    double leftFlipperLevelPosition = 0.26;   // b
+    double leftFlipperDumpPosition = 0.70;    // y
 
-    double rightFlipperLoadPosition = 0.96;
-    double rightFlipperDumpPosition = 0.35;
-    double rightFlipperLevelPosition = 0.87;
+    double rightFlipperLoadPosition = 0.91;   // a
+    double rightFlipperLevelPosition = 0.84;  // b
+    double rightFlipperDumpPosition = 0.39;   // y
 
     double defaultGlyphWheelPower = 0.7;
     double defaultGlyphLiftPower = 0.9;
@@ -261,13 +261,13 @@ public class HardwareHarvester extends HardwareBase
     }
 
     void glyphWheelLoad(){
-        leftLiftWheel.setPower(-defaultGlyphWheelPower);
-        rightLiftWheel.setPower(defaultGlyphWheelPower);
+        leftLiftWheel.setPower(defaultGlyphWheelPower);
+        rightLiftWheel.setPower(-defaultGlyphWheelPower - 0.3);
     }
 
     void glyphWheelUnload() {
-        leftLiftWheel.setPower(defaultGlyphWheelPower);
-        rightLiftWheel.setPower(-defaultGlyphWheelPower);
+        leftLiftWheel.setPower(-defaultGlyphWheelPower);
+        rightLiftWheel.setPower(defaultGlyphWheelPower + 0.3);
     }
 
     public void stopGlyphWheels() {
