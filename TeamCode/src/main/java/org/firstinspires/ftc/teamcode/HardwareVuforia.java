@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.vuforia.Image;
+import com.vuforia.PIXEL_FORMAT;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -99,4 +101,29 @@ public class HardwareVuforia extends HardwareBase
     public OpenGLMatrix getGlyphCryptoPosition() {
         return ((VuforiaTrackableDefaultListener) relicTemplate.getListener()).getPose();
     }
+
+    public Image getImage(){
+        VuforiaLocalizer.CloseableFrame frame = null;
+        try{
+            frame = vuforia.getFrameQueue().take();
+            long numImages = frame.getNumImages();
+            Image rgbImage = null;
+            for (int i = 0; i < numImages; i++) {
+                Image img = frame.getImage(i);
+                int fmt = img.getFormat();
+                if (fmt == PIXEL_FORMAT.RGB565) {
+                    rgbImage = frame.getImage(i);
+                    break;
+                }
+            }
+            return rgbImage;
+        }
+        catch(InterruptedException exc){
+            return null;
+        }
+        finally{
+            if (frame != null) frame.close();
+        }
+    }
+
 }

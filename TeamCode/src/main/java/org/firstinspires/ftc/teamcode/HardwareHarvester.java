@@ -324,4 +324,5 @@ public class HardwareHarvester extends HardwareBase
     public static int robotToCryptoBoxADistance (double tD) {
         return (int)((Math.abs(tD) * 0.0393701 - 8) * 89);
     }
+
 }
