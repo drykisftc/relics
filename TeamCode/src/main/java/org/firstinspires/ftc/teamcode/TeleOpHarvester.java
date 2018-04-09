@@ -60,7 +60,7 @@ public class TeleOpHarvester extends OpMode{
 
     protected int liftHeightLimit = 3300;
     protected int liftMotorPosition = 0;
-    protected double liftMotorHolderPower = 0.3;
+    protected double liftMotorHolderPower = 0.4;
 
     double [] wheelPowerLUT = {0.0f, 0.0f, 0.02f, 0.05f, 0.08f, 0.1f, 0,12f, 0.15f,
             0.18f, 0.20f, 0.21f, 0.22f, 0.23f, 0.24f, 0.25f, 0.26f, 0.28f, 0.30f,
@@ -229,19 +229,16 @@ public class TeleOpHarvester extends OpMode{
                 robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                 robot.liftMotor.setPower(-robot.defaultGlyphLiftPower);
 
+            } else if (gamepad1.x || gamepad2.x) {
+
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.liftMotor.setPower(-robot.defaultGlyphLiftPower);
+                robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
             } else {
-
-                if (gamepad1.x || gamepad2.x) {
-                    robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    robot.liftMotor.setPower(-robot.defaultGlyphLiftPower);
-                    robot.liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                    robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-                } else {
-                    robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                    robot.liftMotor.setPower(0);
-                }
-
+                robot.liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                robot.liftMotor.setPower(0);
             }
 
         } else {
