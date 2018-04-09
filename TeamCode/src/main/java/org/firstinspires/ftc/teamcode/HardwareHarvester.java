@@ -262,12 +262,12 @@ public class HardwareHarvester extends HardwareBase
 
     void glyphWheelLoad(){
         leftLiftWheel.setPower(defaultGlyphWheelPower);
-        rightLiftWheel.setPower(-defaultGlyphWheelPower - 0.3);
+        rightLiftWheel.setPower(defaultGlyphWheelPower);
     }
 
     void glyphWheelUnload() {
         leftLiftWheel.setPower(-defaultGlyphWheelPower);
-        rightLiftWheel.setPower(defaultGlyphWheelPower + 0.3);
+        rightLiftWheel.setPower(-defaultGlyphWheelPower);
     }
 
     public void stopGlyphWheels() {
