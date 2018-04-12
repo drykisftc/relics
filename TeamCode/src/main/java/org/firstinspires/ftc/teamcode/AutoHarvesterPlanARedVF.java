@@ -142,7 +142,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
 
         navigation = new Navigation(telemetry);
 
-        vuforia = new HardwareVuforia(VuforiaLocalizer.CameraDirection.FRONT);
+        vuforia = new HardwareVuforia(VuforiaLocalizer.CameraDirection.BACK);
         vuforia.init(hardwareMap);
 
         telemetry.addData("jewelArm", jewelArm.getPosition());
@@ -168,7 +168,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
         switch (state) {
             case 0:
                 cryptoBoxDistance = 50;
-                pushDistance = 500;
+                pushDistance = 550;
                 robot.defaultGlyphWheelPower = 0.5;
                 vuforiaMissCount = 0;
                 vuforiaHitCount = 0;
@@ -209,7 +209,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                     if ("unknown" == vuforia.vumarkImage.toLowerCase()) {
                         computeGlyphColumnDistance();
                     } else {
-                        movePower = vuforiaDetectingPower * 3.0;
+                        movePower = Range.clip(vuforiaDetectingPower * 5.0, -1.0, 1.0);
                     }
 
                     if (0 == moveByDistance(movePower, columnDistance)) {
@@ -331,7 +331,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                         robot.retractJewelArm();
                         robot.retractGlyphBlocker();
                         navigation.resetTurn(leftMotors, rightMotors);
-                        state = 21;
+                        state = 11;
                     }
                 }
                 // side move to the right column
@@ -400,6 +400,9 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 robot.retractJewelArm();
                 // If the glyphDistance is not NaN, jump to case 15
                 if (Double.isNaN(robot.glyphDistance.getDistance(DistanceUnit.CM)) == false) {
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    getWheelLandmarks();
+                    timeStamp = System.currentTimeMillis();
                     state = 15;
                 }
                 //wiggle
@@ -421,7 +424,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 robot.retractJewelArm();
 
                 // back up from glyph
-                if (0 == moveByDistance(-collectingGlyphPower, 500)) {
+                if (0 == moveByDistance(-rushPower, 700)) {
                     robot.retractGlyphBlocker();
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -441,7 +444,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 }
 
                 // back up from glyph
-                if (0 == leftDiagonalMoveByDistance(-collectingGlyphPower, 6000)) {
+                if (0 == leftDiagonalMoveByDistance(-rushPower, 5000)) {
 
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -452,6 +455,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 }
                 break;
             case 17:
+                vuforiaMissCount = 0;
                 // find vuforia mark
                 if ("unknown" == vuforia.vumarkImage.toLowerCase()) {
                     vuforia.identifyGlyphCrypto();
@@ -510,7 +514,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                     double errorY = cryptoBoxTargetDistance - tG;
                     telemetry.addData("vuforia Z error", errorZ);
                     telemetry.addData("vuforia Y error", errorY);
-                    if ( Math.abs(errorY) > 200 || Math.abs(rot.secondAngle) > 80) {
+                    if ( Math.abs(rot.secondAngle) > 80) {
                         vuforiaMissCount++;
                     } else {
                         if (Math.abs(errorY) < 15) {
