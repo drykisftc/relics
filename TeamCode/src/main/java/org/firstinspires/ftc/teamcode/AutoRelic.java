@@ -135,6 +135,8 @@ public class AutoRelic extends OpMode {
     boolean [] deliverDone = new boolean[3];
     int deliverIndex = 0;
 
+    int collectionDistance = 0;
+
     @Override
     public void init() {
     }

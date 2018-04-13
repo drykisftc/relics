@@ -80,7 +80,6 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
     int vuforiaTargetDistance = -672;
     int cryptoBoxTargetDistance = -494; // 40 inches? change this landmark
 
-
     protected double distanceToVumark;
 
     public AutoHarvesterPlanARedVF() {
@@ -102,9 +101,9 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
 //        leftColumnDistance = 3860;
 //        centerColumnDistance = 3150;
 //        rightColumnDistance = 2500;
-        leftColumnDistance = 3600;
-        centerColumnDistance = 2950;
-        rightColumnDistance = 2300;
+        leftColumnDistance = 3500;
+        centerColumnDistance = 2850;
+        rightColumnDistance = 2200;
 
         glyph2CenterDistance = 1800;
 
@@ -172,6 +171,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 robot.defaultGlyphWheelPower = 0.5;
                 vuforiaMissCount = 0;
                 vuforiaHitCount = 0;
+                collectionDistance = 0;
                 resetDeliverHistory2(2);
 
                 robot.retractGlyphBlocker();
@@ -249,14 +249,13 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 // release the glyph
                 time = System.currentTimeMillis();
 
-                if (time - timeStamp < 800) {
+                if (time - timeStamp < 1500) {
                     robot.dumpGlyph();
                 } else {
 
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 6;
-
                 }
 
                 break;
@@ -403,6 +402,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
+                    collectionDistance = (int)(getWheelOdometer() - wheelDistanceLandMark);
                     state = 15;
                 }
                 //wiggle
@@ -424,7 +424,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 robot.retractJewelArm();
 
                 // back up from glyph
-                if (0 == moveByDistance(-rushPower, 700)) {
+                if (0 == moveByDistance(-rushPower, Math.min(0,400+collectionDistance))) {
                     robot.retractGlyphBlocker();
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -444,7 +444,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 }
 
                 // back up from glyph
-                if (0 == leftDiagonalMoveByDistance(-rushPower, 5000)) {
+                if (0 == leftDiagonalMoveByDistance(-rushPower, 7000)) {
 
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -622,14 +622,14 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 // release glyph
                 robot.dumpGlyph();
 
-                if (System.currentTimeMillis() - timeStamp > 1000) {
+                if (System.currentTimeMillis() - timeStamp > 1500) {
                     getWheelLandmarks();
                     state = 24;
                 }
                 break;
             case 24:
                 // push
-                if (0 == moveByDistance(move2GlyphBoxPower*0.6, 600)) {
+                if (0 == moveByDistance(move2GlyphBoxPower*0.6, 700)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 25;

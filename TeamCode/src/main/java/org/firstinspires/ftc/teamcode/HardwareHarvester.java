@@ -65,11 +65,11 @@ public class HardwareHarvester extends HardwareBase
     protected float axleDistance = 2200; //80.79 * 14;
 
     double leftFlipperLoadPosition = 0.19;    // a
-    double leftFlipperLevelPosition = 0.26;   // b
+    double leftFlipperLevelPosition = 0.28;   // b
     double leftFlipperDumpPosition = 0.70;    // y
 
     double rightFlipperLoadPosition = 0.91;   // a
-    double rightFlipperLevelPosition = 0.84;  // b
+    double rightFlipperLevelPosition = 0.82;  // b
     double rightFlipperDumpPosition = 0.39;   // y
 
     double defaultGlyphWheelPower = 0.7;
@@ -326,6 +326,6 @@ public class HardwareHarvester extends HardwareBase
 //    }
 
     public static int robotToCryptoBoxADistance (double tD) {
-        return (int)((Math.abs(tD) * 0.0393701 - 10) * 89);
+        return (int)((Math.abs(tD) * 0.0393701 - 12) * 89);
     }
 }
