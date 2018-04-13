@@ -122,7 +122,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
 
         navigation = new Navigation(telemetry);
 
-        vuforia = new HardwareVuforia(VuforiaLocalizer.CameraDirection.FRONT);
+        vuforia = new HardwareVuforia(VuforiaLocalizer.CameraDirection.BACK);
         vuforia.init(hardwareMap);
 
         telemetry.addData("jewelArm", jewelArm.getPosition());

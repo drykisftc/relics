@@ -148,10 +148,10 @@ public class TeleOpHarvester extends OpMode{
             // clip the right/left values so that the values never exceed +/- 1
             right = Range.clip(right, -1, 1);
             left = Range.clip(left, -1, 1);
-            robot.motorLeftBackWheel.setPower(left);
-            robot.motorLeftFrontWheel.setPower(left);
-            robot.motorRightBackWheel.setPower(right);
-            robot.motorRightFrontWheel.setPower(right);
+            robot.motorLeftBackWheel.setPower(left*Math.abs(left));
+            robot.motorLeftFrontWheel.setPower(left*Math.abs(left));
+            robot.motorRightBackWheel.setPower(right*Math.abs(right));
+            robot.motorRightFrontWheel.setPower(right*Math.abs(right));
 
         }
 
@@ -296,7 +296,8 @@ public class TeleOpHarvester extends OpMode{
 
         if (Math.abs(gamepad2.left_stick_y) > 0.1) {
             //robot.relicFlipper.setPower(-gamepad2.left_stick_y * Math.abs(gamepad2.left_stick_y));
-            robot.relicFlipper.setPosition(robot.relicFlipper.getPosition() + gamepad2.left_stick_y / 120.0);
+            //robot.relicFlipper.setPosition(robot.relicFlipper.getPosition() + gamepad2.left_stick_y / 120.0);
+            robot.relicFlipper.setPosition(robot.relicFlipper.getPosition() + gamepad2.left_stick_y / 1200.0);
         }
 //        } else {
 //            robot.relicFlipper.setPower(-0.05); // prevent it popped up

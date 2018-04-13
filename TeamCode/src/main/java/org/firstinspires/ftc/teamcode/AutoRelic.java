@@ -90,6 +90,7 @@ public class AutoRelic extends OpMode {
     protected double collectingGlyphPower = 0.7;
     protected double glyphDeliverPower = 0.2;
     protected double backupPower = -0.1;
+    protected double rushPower = 1.0;
 
     protected int cryptoBoxStopDistance = 20;
     protected int offBalanceStoneDistance = 2500;
@@ -133,6 +134,8 @@ public class AutoRelic extends OpMode {
     int [] deliverDis = new int[3];
     boolean [] deliverDone = new boolean[3];
     int deliverIndex = 0;
+
+    int collectionDistance = 0;
 
     @Override
     public void init() {
