@@ -67,7 +67,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
     public void loop() {
         switch (state) {
             case 0:
-                cryptoBoxDistance = 0;
+                cryptoBoxDistance = 80;
                 pushDistance = 400;
                 robot.defaultGlyphWheelPower = 0.5;
                 vuforiaMissCount = 0;
@@ -105,7 +105,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
 
 
                 // lift glyph bar
-                VortexUtils.moveMotorByEncoder(robot.liftMotor, 10, liftMotorHolderPower);
+                VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorHolderPower);
 
                 //set jewel hitter position
                 robot.jewelHitter.setPosition(0.00);
@@ -285,7 +285,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 }
                 break;
             case 15:
-                // correct angle just increase it got knocked out the cource
+                // correct angle just increase it got knocked out the course
                 if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle, fGlyphTurnAngle, leftMotors, rightMotors)) {
                     state = 16;
                     getWheelLandmarks();
@@ -306,7 +306,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 }
 
                 // move away from center
-                if (0 == moveByDistance(-move2CenterPower, center2GlyphDistance+collectionDistance-600)) {
+                if (0 == moveByDistance(-move2CenterPower, center2GlyphDistance+collectionDistance-1200)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     wheelDistanceLandMark = getWheelOdometer();
@@ -412,8 +412,8 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
             }
                 break;
             case 20:
-                // back up
-                if (0 == moveByDistance(-move2CenterPower, 500)) {
+                // move forward
+                if (0 == moveByDistance(-move2CenterPower, 1200)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -468,7 +468,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 break;
             case 23:
                 // move to glyph
-                if (0 == moveByDistance(glyphDeliverPower*2, cryptoBoxDistance-600)) {
+                if (0 == moveByDistance(glyphDeliverPower*2, Math.min(0,cryptoBoxDistance-300))) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 24;
@@ -484,7 +484,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 break;
             case 25:
                 // push
-                if (0 == moveByDistance(glyphDeliverPower*3, 400)) {
+                if (0 == moveByDistance(glyphDeliverPower*3, 700)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 26;

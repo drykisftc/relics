@@ -72,7 +72,7 @@ public class HardwareHarvester extends HardwareBase
     double rightFlipperLevelPosition = 0.82;  // b
     double rightFlipperDumpPosition = 0.39;   // y
 
-    double defaultGlyphWheelPower = 0.7;
+    double defaultGlyphWheelPower = 1.0;
     double defaultGlyphLiftPower = 0.9;
 
     double relicClawOpenPosition = 0.0;

@@ -116,6 +116,8 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
         robot = new HardwareHarvester();
         robot.init(hardwareMap);
 
+        robot.defaultGlyphWheelPower = 1.0;
+
         leftMotors = new DcMotor[2];
         leftMotors[0] = robot.motorLeftFrontWheel;
         leftMotors[1] = robot.motorLeftBackWheel;
