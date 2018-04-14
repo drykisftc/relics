@@ -76,6 +76,7 @@ public class AutoRelic extends OpMode {
     protected double glyTurnPower = -0.8;
     protected double glyTurnPowerLow = -0.5;
     protected float fCenterTurnAngle = 180;
+    protected float glyphOffAngle = 0;
 
 
     protected double jewelArmPos = 0;
@@ -101,7 +102,7 @@ public class AutoRelic extends OpMode {
     protected int pushDistance = 600;
     protected int glyph2CenterDistance = 3200;
     protected int center2GlyphDistance = 3080;
-    protected float glyphOffAngle = 0;
+    protected double RKArmDistance = 6; // in cm
 
     float centerGlyphAngleOffset = 0;
 

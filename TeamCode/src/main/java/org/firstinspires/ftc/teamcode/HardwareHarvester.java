@@ -49,18 +49,23 @@ public class HardwareHarvester extends HardwareBase
     public Servo rightFlipper = null;
 
     public Servo relicClaw = null;
-    public Servo relicFlipper = null;
+    public Servo relicFlipper = null; // winch servo
 
     public Servo glyphBlocker = null;
+
+    public Servo RKArm = null; // roboknight arm for auto
 
     // Orientation sensor
     BNO055IMU imu = null;
     Orientation angles = null;
 
     //sensors
-    public ColorSensor jewelSensor = null;
-    public DistanceSensor jewelSensorDistance = null;
+    public ColorSensor jewelSensor = null; // jewel arm
+    public DistanceSensor jewelSensorDistance = null; //jewel arm
+
     public DistanceSensor glyphDistance = null;
+
+    public DistanceSensor RKSensor = null; // roboknight arm for auto
 
     protected float axleDistance = 2200; //80.79 * 14;
 
@@ -77,6 +82,9 @@ public class HardwareHarvester extends HardwareBase
 
     double relicClawOpenPosition = 0.0;
     double relicClawClosePosition = 0.55;
+
+    double RKArmRetractPosition = 0.0;
+    double RKArmExtendPosition = 1.0;
 
     /* Constructor */
     public HardwareHarvester(){
@@ -123,10 +131,14 @@ public class HardwareHarvester extends HardwareBase
         relicFlipper = hwMap.servo.get("relicFlipper");
         relicClaw = hwMap.servo.get("relicClaw");
 
+        RKArm = hwMap.servo.get("RKArm");
+
         jewelSensor = hwMap.get(ColorSensor.class, "jewelSensor");
         jewelSensorDistance = hwMap.get(DistanceSensor.class, "jewelSensor");
 
         glyphDistance = hwMap.get(DistanceSensor.class, "glyphDistance");
+
+        RKSensor = hwMap.get(DistanceSensor.class, "RKSensor");
 
         leftLiftWheel = hwMap.dcMotor.get("leftLiftWheel");
         leftLiftWheel.setDirection(DcMotor.Direction.FORWARD);
@@ -259,8 +271,8 @@ public class HardwareHarvester extends HardwareBase
         leftFlipper.setPosition(leftFlipperLevelPosition);
         rightFlipper.setPosition(rightFlipperLevelPosition);
     }
-
     void glyphWheelLoad(){
+
         leftLiftWheel.setPower(defaultGlyphWheelPower);
         rightLiftWheel.setPower(defaultGlyphWheelPower);
     }
@@ -268,6 +280,14 @@ public class HardwareHarvester extends HardwareBase
     void glyphWheelUnload() {
         leftLiftWheel.setPower(-defaultGlyphWheelPower);
         rightLiftWheel.setPower(-defaultGlyphWheelPower);
+    }
+
+    void extendRKArm() {
+        RKArm.setPosition(RKArmExtendPosition);
+    }
+
+    void retractRKArm() {
+        RKArm.setPosition(RKArmRetractPosition);
     }
 
     public void stopGlyphWheels() {
