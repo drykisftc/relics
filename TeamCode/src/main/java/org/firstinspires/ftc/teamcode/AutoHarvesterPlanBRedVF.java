@@ -453,7 +453,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
 
                 break;
             case 22:
-                // correct angle just increase it got knocked out the cource
+                // correct angle just increase it got knocked out the course
                 if (0 == navigation.turnByGyroCloseLoop(0.0,
                         (double) robot.imu.getAngularOrientation().firstAngle,
                         fGlyphTurnAngle, leftMotors, rightMotors)) {
@@ -464,14 +464,23 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, liftMotorMovePower);
                     navigation.resetTurn(leftMotors, rightMotors);
                     timeStamp = System.currentTimeMillis();
+                    cryptoBoxDistance = (int) (robot.backDistanceSensor.getDistance(DistanceUnit.INCH)*robot.encoderStepsPerInch) -500;
                 }
                 break;
             case 23:
                 // move to glyph
-                if (0 == moveByDistance(glyphDeliverPower*2, 300)) {
-                    timeStamp = System.currentTimeMillis();
-                    getWheelLandmarks();
-                    state = 24;
+                if (cryptoBoxDistance > 0) {
+                    if (0 == moveByDistance(glyphDeliverPower * 2, cryptoBoxDistance)) {
+                        timeStamp = System.currentTimeMillis();
+                        getWheelLandmarks();
+                        state = 24;
+                    }
+                } else {
+                    if (0 == moveByDistance(glyphDeliverPower * -2, cryptoBoxDistance)) {
+                        timeStamp = System.currentTimeMillis();
+                        getWheelLandmarks();
+                        state = 24;
+                    }
                 }
                 break;
             case 24:
