@@ -306,7 +306,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 }
 
                 // move away from center
-                if (0 == moveByDistance(-move2CenterPower, center2GlyphDistance+collectionDistance-1200)) {
+                if (0 == moveByDistance(-move2CenterPower, collectionDistance+700)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     wheelDistanceLandMark = getWheelOdometer();
@@ -342,6 +342,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     robot.levelGlyph();
                     navigation.resetTurn(leftMotors, rightMotors);
                     robot.retractJewelArm();
+                    cryptoBoxDistance = glyph2CenterDistance/2;
                     timeStamp = System.currentTimeMillis();
                 }
 
@@ -368,7 +369,6 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
 
                     // Extract the X, Y, and Z components of the offset of the target relative to the robot
-                    //double tX = trans.get(0);
                     double tY = trans.get(1);
                     double tZ = trans.get(2);
                     double tD = robot.getVuforiaFrontBackDistance(pose);
@@ -413,7 +413,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 break;
             case 20:
                 // move forward
-                if (0 == moveByDistance(-move2CenterPower, 1200)) {
+                if (0 == moveByDistance(-move2CenterPower, cryptoBoxDistance)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -468,7 +468,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 break;
             case 23:
                 // move to glyph
-                if (0 == moveByDistance(glyphDeliverPower*2, Math.min(0,cryptoBoxDistance-300))) {
+                if (0 == moveByDistance(glyphDeliverPower*2, 300)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 24;
