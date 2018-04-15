@@ -2,9 +2,11 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -67,6 +69,8 @@ public class HardwareHarvester extends HardwareBase
 
     public DistanceSensor RKSensor = null; // roboknight arm for auto
 
+    public ModernRoboticsI2cRangeSensor backDistanceSensor = null; // sensor in the back
+
     protected float axleDistance = 2200; //80.79 * 14;
 
     double leftFlipperLoadPosition = 0.19;    // a
@@ -83,8 +87,8 @@ public class HardwareHarvester extends HardwareBase
     double relicClawOpenPosition = 0.0;
     double relicClawClosePosition = 0.55;
 
-    double RKArmRetractPosition = 0.0;
-    double RKArmExtendPosition = 1.0;
+    double RKArmRetractPosition = 0.6;
+    double RKArmExtendPosition = 0.2;
 
     /* Constructor */
     public HardwareHarvester(){
@@ -121,7 +125,7 @@ public class HardwareHarvester extends HardwareBase
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         relicMotor = hwMap.dcMotor.get("relicMotor");
-        relicMotor.setDirection(DcMotor.Direction.FORWARD);
+        relicMotor.setDirection(DcMotor.Direction.REVERSE);
         relicMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         relicMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -139,6 +143,8 @@ public class HardwareHarvester extends HardwareBase
         glyphDistance = hwMap.get(DistanceSensor.class, "glyphDistance");
 
         RKSensor = hwMap.get(DistanceSensor.class, "RKSensor");
+
+        backDistanceSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "backDistanceSensor");
 
         leftLiftWheel = hwMap.dcMotor.get("leftLiftWheel");
         leftLiftWheel.setDirection(DcMotor.Direction.FORWARD);
@@ -296,7 +302,7 @@ public class HardwareHarvester extends HardwareBase
     }
 
     public boolean haveGlyph() {
-        return (glyphDistance.getDistance(DistanceUnit.CM) < 6);
+        return (glyphDistance.getDistance(DistanceUnit.CM) < 8);
     }
 
     public static double getVuforiaLeftRightDistance(OpenGLMatrix pose ) {
@@ -331,6 +337,10 @@ public class HardwareHarvester extends HardwareBase
         } else {
             return 0.0;
         }
+    }
+
+    public int CM2Encoder (double cm) {
+        return (int)(cm / 2.54 * 89);
     }
 
     public static int imageDistance2GlyphBoxBDistance (double tG) {

@@ -117,34 +117,15 @@ public class MeasurementHarvester extends OpMode{
      */
     @Override
     public void loop() {
-        switch (state) {
-            case 0:
-                telemetry.addData("Mode: ", "Normal");
-
-                glyphSensorReadValue();
-                joystickWheelControl();
-                glyphWheelControl();
-                glyphDepositControl();
-                glyphLiftControl();
-                jewelArmControl();
-                jewelSensorReadValue();
-                imuReadings();
-                break;
-            case 1:
-                telemetry.addData("Mode: ", "SecondControlSet");
-
-                RKArmControl();
-                break;
-            default:
-                state = 0;
-                break;
-        }
-
-        if ((gamepad1.back || gamepad2.back) && !preBack) {
-            state = ((state == 0)? 1:0);
-        }
-
-        preBack = (gamepad1.back || gamepad2.back);
+        RKArmControl();
+        glyphSensorReadValue();
+        joystickWheelControl();
+        glyphWheelControl();
+        glyphDepositControl();
+        glyphLiftControl();
+        jewelArmControl();
+        jewelSensorReadValue();
+        imuReadings();
         telemetry.update();
     }
 
@@ -288,13 +269,14 @@ public class MeasurementHarvester extends OpMode{
     }
 
     public void RKArmControl() {
-        if (gamepad2.a) {
+        if (gamepad1.a || gamepad2.a) {
             robot.RKArm.setPosition(robot.RKArmExtendPosition); // extend
-        } else if (gamepad1.b) {
+        } else if (gamepad1.b || gamepad2.b) {
             robot.RKArm.setPosition(robot.RKArmRetractPosition); // retract
         }
 
         telemetry.addData("RKSensorDistance", robot.RKSensor.getDistance(DistanceUnit.CM));
+        telemetry.addData("Back Distance: ", robot.backDistanceSensor.getDistance(DistanceUnit.CM));
     }
 
     /*

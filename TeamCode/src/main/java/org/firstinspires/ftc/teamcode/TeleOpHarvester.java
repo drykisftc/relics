@@ -111,6 +111,7 @@ public class TeleOpHarvester extends OpMode{
     @Override
     public void loop() {
 
+        telemetry.addData("Wait Wait Wait Wait Wait Wait ", "Ming");
         joystickWheelControl();
         glyphWheelControl();
         glyphDepositControl();
@@ -169,10 +170,7 @@ public class TeleOpHarvester extends OpMode{
             robot.glyphWheelLoad();
         } else if (gamepad2.left_bumper || gamepad1.left_bumper) {
             robot.glyphWheelUnload();
-        } /*else if (Math.abs(lw) > 0.05 || Math.abs(rw) > 0.05) {
-            robot.leftLiftWheel.setPower(lw * -0.25);
-            robot.rightLiftWheel.setPower(rw * 0.25);
-        } */else {
+        } else {
             robot.stopGlyphWheels();
         }
     }
@@ -294,9 +292,11 @@ public class TeleOpHarvester extends OpMode{
 
         }
 
+//        telemetry.addData("Relic Flipper Position: ", robot.relicFlipper.getPosition());
+
         if (Math.abs(gamepad2.left_stick_y) > 0.1) {
             //robot.relicFlipper.setPower(-gamepad2.left_stick_y * Math.abs(gamepad2.left_stick_y));
-            robot.relicFlipper.setPosition(robot.relicFlipper.getPosition() + gamepad2.left_stick_y / 120.0);
+            robot.relicFlipper.setPosition(robot.relicFlipper.getPosition() - gamepad2.left_stick_y / 120.0);
         } else {
             robot.relicFlipper.setPosition(robot.relicFlipper.getPosition());
         }

@@ -61,6 +61,7 @@ public class HardwareHarvesterPrototype extends HardwareBase
     public ColorSensor jewelSensor = null;
     public DistanceSensor jewelSensorDistance = null;
     public DigitalChannel glyphTouchSensor = null; // use get state, false when pressed, true when released
+    public DigitalChannel RKArm = null;
 
     protected float axleDistance = 2200; //80.79 * 14;
 
@@ -128,6 +129,8 @@ public class HardwareHarvesterPrototype extends HardwareBase
 
         glyphTouchSensor = hwMap.get(DigitalChannel.class, "glyphTouchSensor");
 
+        RKArm = hwMap.get(DigitalChannel.class, "RKArm");
+
         leftLiftWheel = hwMap.dcMotor.get("leftLiftWheel");
         leftLiftWheel.setDirection(DcMotor.Direction.FORWARD);
         leftLiftWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -191,6 +194,8 @@ public class HardwareHarvesterPrototype extends HardwareBase
         rightLiftWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightLiftWheel.setPower(0.0);
         //jewelArm.setPosition(0.8);
+
+        RKArm.setMode(DigitalChannel.Mode.OUTPUT);
     }
 
     @Override
