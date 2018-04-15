@@ -296,8 +296,9 @@ public class TeleOpHarvester extends OpMode{
 
         if (Math.abs(gamepad2.left_stick_y) > 0.1) {
             //robot.relicFlipper.setPower(-gamepad2.left_stick_y * Math.abs(gamepad2.left_stick_y));
-            //robot.relicFlipper.setPosition(robot.relicFlipper.getPosition() + gamepad2.left_stick_y / 120.0);
-            robot.relicFlipper.setPosition(robot.relicFlipper.getPosition() + gamepad2.left_stick_y / 1200.0);
+            robot.relicFlipper.setPosition(robot.relicFlipper.getPosition() + gamepad2.left_stick_y / 120.0);
+        } else {
+            robot.relicFlipper.setPosition(robot.relicFlipper.getPosition());
         }
 //        } else {
 //            robot.relicFlipper.setPower(-0.05); // prevent it popped up
