@@ -67,13 +67,14 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
     public void loop() {
         switch (state) {
             case 0:
-                cryptoBoxDistance = 0;
+                cryptoBoxDistance = 80;
                 pushDistance = 400;
                 robot.defaultGlyphWheelPower = 0.5;
                 vuforiaMissCount = 0;
                 vuforiaHitCount = 0;
                 vuforiaCheckDistance = leftColumnDistance;
                 vuforiaTargetDistance = leftVuDis;
+                offBalanceStoneDistance = 2300;
                 resetDeliverHistory(0);
 
                 // jewel handling
@@ -89,6 +90,8 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
 
                 robot.retractGlyphBlocker();
 
+                collectionDistance =0;
+
                 break;
             case 1:
 
@@ -102,7 +105,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
 
 
                 // lift glyph bar
-                VortexUtils.moveMotorByEncoder(robot.liftMotor, 10, liftMotorHolderPower);
+                VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorHolderPower);
 
                 //set jewel hitter position
                 robot.jewelHitter.setPosition(0.00);
@@ -146,7 +149,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 // release the glyph
                 time = System.currentTimeMillis();
 
-                if (time - timeStamp < 800) {
+                if (time - timeStamp < 1500) {
 
                     robot.dumpGlyph();
 
@@ -224,6 +227,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
+                    center2GlyphDistance = (int)(glyph2CenterDistance*0.8);
                     state = 12;
                 }
                 break;
@@ -241,6 +245,9 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
             case 13:
                 // If the glyphDistance is not NaN, jump to case 15
                 if (Double.isNaN(robot.glyphDistance.getDistance(DistanceUnit.CM)) == false) {
+                    collectionDistance = (int)(getWheelOdometer() - wheelDistanceLandMark);
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
                     state = 15;
                 }
                 //wiggle
@@ -260,6 +267,8 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
             case 14:
                 // If the glyphDistance is not NaN, jump to case 15
                 if (Double.isNaN(robot.glyphDistance.getDistance(DistanceUnit.CM)) == false) {
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
                     state = 15;
                 }
                 // wiggle to improve intake
@@ -276,7 +285,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 }
                 break;
             case 15:
-                // correct angle just increase it got knocked out the cource
+                // correct angle just increase it got knocked out the course
                 if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle, fGlyphTurnAngle, leftMotors, rightMotors)) {
                     state = 16;
                     getWheelLandmarks();
@@ -297,7 +306,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 }
 
                 // move away from center
-                if (0 == moveByDistance(-move2CenterPower, center2GlyphDistance+300)) {
+                if (0 == moveByDistance(-move2CenterPower, center2GlyphDistance+collectionDistance-1200)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     wheelDistanceLandMark = getWheelOdometer();
@@ -307,7 +316,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 break;
             case 17:
                 // move side way to left column
-                if (0 == sideMoveByDistance(-sideMovePower, sideWayDistance - vuforiaCheckDistance-1000)) {
+                if (0 == sideMoveByDistance(-sideMovePower, sideWayDistance - vuforiaCheckDistance-500)) {
                     wheelDistanceLandMark = getWheelOdometer();
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
@@ -403,6 +412,17 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
             }
                 break;
             case 20:
+                // move forward
+                if (0 == moveByDistance(-move2CenterPower, 1200)) {
+                    moveAtPower(0.0);
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    getWheelLandmarks();
+                    timeStamp = System.currentTimeMillis();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    state = 21;
+                }
+                break;
+            case 21:
                 vuforia.relicTrackables.deactivate();
 
                 int  deltaDistance = deliverDis[getNextDeliverIndex(1)];
@@ -428,16 +448,16 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     robot.retractGlyphBlocker();
                     navigation.resetTurn(leftMotors, rightMotors);
                     deliverIndex = (deliverIndex+1)%3; // move on to the next column
-                    state = 21;
+                    state = 22;
                 }
 
                 break;
-            case 21:
+            case 22:
                 // correct angle just increase it got knocked out the cource
                 if (0 == navigation.turnByGyroCloseLoop(0.0,
                         (double) robot.imu.getAngularOrientation().firstAngle,
                         fGlyphTurnAngle, leftMotors, rightMotors)) {
-                    state = 22;
+                    state = 23;
                     getWheelLandmarks();
                     robot.levelGlyph();
                     // lift
@@ -446,39 +466,39 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     timeStamp = System.currentTimeMillis();
                 }
                 break;
-            case 22:
-                // move to glyph
-                if (0 == moveByDistance(glyphDeliverPower*2, cryptoBoxDistance)) {
-                    timeStamp = System.currentTimeMillis();
-                    getWheelLandmarks();
-                    state = 23;
-                }
-                break;
             case 23:
-                // release glyph
-                robot.dumpGlyph();
-                if (System.currentTimeMillis() - timeStamp > 1000) {
+                // move to glyph
+                if (0 == moveByDistance(glyphDeliverPower*2, Math.min(0,cryptoBoxDistance-300))) {
+                    timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 24;
                 }
                 break;
             case 24:
-                // push
-                if (0 == moveByDistance(glyphDeliverPower*3, 300)) {
-                    timeStamp = System.currentTimeMillis();
+                // release glyph
+                robot.dumpGlyph();
+                if (System.currentTimeMillis() - timeStamp > 1500) {
                     getWheelLandmarks();
                     state = 25;
                 }
                 break;
             case 25:
-                // back up
-                if (0 == moveByDistance(-glyphDeliverPower*3, 300)) {
+                // push
+                if (0 == moveByDistance(glyphDeliverPower*3, 700)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 26;
                 }
                 break;
             case 26:
+                // back up
+                if (0 == moveByDistance(-glyphDeliverPower*3, 300)) {
+                    timeStamp = System.currentTimeMillis();
+                    getWheelLandmarks();
+                    state = 27;
+                }
+                break;
+            case 27:
                 robot.loadGlyph();
                 robot.retractGlyphBlocker();
                 VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorMovePower);
