@@ -121,6 +121,10 @@ public class AutoHarvesterPlanARed extends AutoRelic {
         jewelHitterPos = jewelKicker.jewelHitterRestPosition;
 
         navigation = new Navigation(telemetry);
+        navigation.pidControlHeading.setKp(0.01f);//0.004
+        navigation.pidControlHeading.setKi(0.01f);
+        navigation.pidControlHeading.setKd(0.00000001f);
+        navigation.pidControlHeading.setMaxIntegralError(0.6f/navigation.pidControlHeading.fKi);
 
         vuforia = new HardwareVuforia(VuforiaLocalizer.CameraDirection.BACK);
         vuforia.init(hardwareMap);
@@ -142,6 +146,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
         jewelKicker.start();
         robot.initAllDevices();
         robot.relicMotor.setPower(0.005);
+        robot.relicFlipper.setPosition(1.0);
 
     }
 
