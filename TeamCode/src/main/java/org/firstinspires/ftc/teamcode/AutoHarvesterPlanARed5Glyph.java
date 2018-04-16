@@ -63,6 +63,8 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
 
     protected int deliverCount = 0;
     protected int RKSensorCount = 0;
+    protected double ultraDistance = 100;
+    protected double lastUltraDistance = 100;
 
     protected int leftBackStamp;
     protected int leftFrontStamp;
@@ -99,7 +101,7 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
         glyTurnPower = -0.4;
         glyphOffAngle = 45;
 
-        cryptoBoxDistance = 500;
+        cryptoBoxDistance = 600;
         center2GlyphDistance = 3500;
         pushDistance = 500;
 
@@ -108,7 +110,7 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
 //        rightColumnDistance = 2500;
         leftColumnDistance = 3600;
         centerColumnDistance = 2950;
-        rightColumnDistance = 2300;
+        rightColumnDistance = 2130;
 
         columnDistance = rightColumnDistance;
         RKArmDistance = 6; // in cm
@@ -191,8 +193,8 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                 state = jewelKicker.loop(0, 1, teamColor);
 
                 // move jewel arm to avoid jewel holes
-                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.08*rand.nextDouble()-0.04;
-                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.02*rand.nextDouble()-0.01;
+//                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.08*rand.nextDouble()-0.04;
+//                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.02*rand.nextDouble()-0.01;
 
                 robot.levelGlyph();
 
@@ -209,9 +211,6 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
             case 1:
                 // lift glyph bar
                 VortexUtils.moveMotorByEncoder(robot.liftMotor, 10, liftMotorHolderPower);
-
-                //set jewel hitter position
-                robot.retractJewelArm();
 
                 //move forward with encoder
                 //read vumark
@@ -251,17 +250,19 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
 //                    robot.extendRKArm();
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
-                    state = 4;
+                    state = 6;
                 }
 
                 break;
             case 4:
+                VortexUtils.moveMotorByEncoder(robot.liftMotor, 2500, liftMotorMovePower);
+
                 // use ultra sensor
-                if (0 == fitColumn(0.2)) {
+                if (0 == fitColumn(0.1)) {
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
-                    state = 5;
+                    state = 6;
                 }
                 /*robot.extendRKArm();
 
@@ -286,7 +287,7 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
 
                 telemetry.addData("RKSensor distance: ", robot.RKSensor.getDistance(DistanceUnit.CM));*/
                 break;
-            case 5:
+            case 6:
                 // release the glyph
                 time = System.currentTimeMillis();
 
@@ -298,13 +299,13 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     deliverCount ++;
-                    state = 6;
+                    state = 7;
 
                 }
 
                 break;
 
-            case 6:
+            case 7:
                 // Move forward from the crypto box
                 if (0 == moveByDistance(-move2GlyphBoxPower, pushDistance)) {
 
@@ -317,21 +318,21 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
 
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
-                    state = 7;
+                    state = 8;
 
                 }
                 break;
-            case 7:
+            case 8:
                 // push glyph into place
                 if (0 == moveByDistance(move2GlyphBoxPower, pushDistance + 200)) {
                     moveAtSpeed(0.0);
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
-                    state = 8;
+                    state = 9;
                 }
                 break;
-            case 8:
+            case 9:
                 // move forward from the crypto box
                 if (0 == moveByDistance(0.8, 500)) {
 
@@ -342,16 +343,15 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                     getWheelLandmarks();
 
                     if (deliverCount >= 3) {
-                        state = 20;
+                        state = 21;
                     } else {
-                        state = 9;
+                        state = 10;
                     }
 
                 }
                 break;
-            case 9:
+            case 10:
                 // use gyro to adjust angle
-                robot.retractJewelArm();
                 if (0 == navigation.turnByGyroCloseLoop(0.0,
                         (double) robot.imu.getAngularOrientation().firstAngle,
                         fGlyphTurnAngle, leftMotors, rightMotors)) {
@@ -362,26 +362,23 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                     getWheelLandmarks();
                     wheelDistanceLandMark = getWheelOdometer();
                     timeStamp = System.currentTimeMillis();
-                    state = 10;
-                }
-                break;
-            case 10:
-                // Go to next column
-                robot.retractJewelArm();
-
-                if (0 == sideMoveByDistance(-sideMovePower, 550)) {
-                    moveAtPower(0.0);
-                    robot.glyphWheelLoad();
-                    robot.loadGlyph();
-                    timeStamp = System.currentTimeMillis();
-                    getWheelLandmarks();
-                    navigation.resetTurn(leftMotors, rightMotors);
                     state = 11;
                 }
+
+                // go to next step if takes too long
+                if (System.currentTimeMillis() - timeStamp > 3000) {
+                    VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorMovePower);
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    getWheelLandmarks();
+                    wheelDistanceLandMark = getWheelOdometer();
+                    timeStamp = System.currentTimeMillis();
+                    state = 11;
+                }
+
                 break;
             case 11:
-                // drive forward to center fast
-                if (0 == moveByDistance(move2CenterPower, (int)(glyph2CenterDistance*0.75) + backupDistance + 1200)) {
+                // Go to next column
+                if (0 == sideMoveByDistance(-sideMovePower, 650)) {
                     moveAtPower(0.0);
                     robot.glyphWheelLoad();
                     robot.loadGlyph();
@@ -392,29 +389,20 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                 }
                 break;
             case 12:
-                // drive forward to center slower
-                if (0 == moveByDistance(collectingGlyphPower, (int)(glyph2CenterDistance*0.25))) {
+                // drive forward to center fast
+                if (0 == moveByDistance(move2CenterPower, (int)(glyph2CenterDistance*0.75) + backupDistance + 1200)) {
                     moveAtPower(0.0);
+                    robot.glyphWheelLoad();
+                    robot.loadGlyph();
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
                     state = 13;
                 }
-
-                if (robot.haveGlyph()) {
-                    state = 15;
-                }
-
                 break;
             case 13:
-                // wiggle(Wiggin)
-                navigation.turnByGyroCloseLoop(0.0,
-                        (double) robot.imu.getAngularOrientation().firstAngle,
-                        -45+rand.nextInt(20)-10,
-                        leftMotors, rightMotors);
-
-                // move forward more
-                if (0 == moveByDistance(collectingGlyphPower, (int)(glyph2CenterDistance*0.2))) {
+                // drive forward to center slower
+                if (0 == moveByDistance(collectingGlyphPower, (int)(glyph2CenterDistance*0.25))) {
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
@@ -423,26 +411,57 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                 }
 
                 if (robot.haveGlyph()) {
-                    state = 15;
+                    state = 17;
                 }
+
                 break;
             case 14:
+                // back up
+                if (0 == moveByDistance(-0.8, 500)) {
+                    moveAtPower(0.0);
+                    timeStamp = System.currentTimeMillis();
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    state = 15;
+                }
+
+                break;
+            case 15:
+                // wiggin
+                /*navigation.turnByGyroCloseLoop(0.0,
+                        (double) robot.imu.getAngularOrientation().firstAngle,
+                        -45+rand.nextInt(20)-10,
+                        leftMotors, rightMotors);*/
+
+                // move forward more
+                if (0 == moveByDistance(collectingGlyphPower, 1000)) {
+                    moveAtPower(0.0);
+                    timeStamp = System.currentTimeMillis();
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    state = 16;
+                }
+
+                if (robot.haveGlyph()) {
+                    state = 17;
+                }
+                break;
+            case 16:
                 // wait 1 seconds for robot to collect glyph
                 if (System.currentTimeMillis() - timeStamp > 1000) {
-                    state = 15;
+                    state = 17;
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
                     timeStamp = System.currentTimeMillis();
                 }
 
                 if (robot.haveGlyph()) {
-                    state = 15;
+                    state = 17;
                 }
 
                 break;
-            case 15:
+            case 17:
                 // use gyro to adjust angle
-                robot.retractJewelArm();
                 if (0 == navigation.turnByGyroCloseLoop(0.0,
                         (double) robot.imu.getAngularOrientation().firstAngle,
                         fGlyphTurnAngle,leftMotors,rightMotors)) {
@@ -453,38 +472,54 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                     getWheelLandmarks();
                     wheelDistanceLandMark = getWheelOdometer();
                     timeStamp = System.currentTimeMillis();
-                    state = 16;
-                }
-                break;
-            case 16:
-                // unload extra glyph
-                robot.glyphWheelUnload();
-
-
-                // back up to crypto box
-                if (0 == moveByDistance(center2GlyphBoxPower, center2GlyphDistance/* + 500*/)) {
-                    moveAtPower(0.0);
-//                    robot.extendRKArm();
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    getWheelLandmarks();
-                    timeStamp = System.currentTimeMillis();
-
-                    state = 17;
-                }
-                break;
-            case 17:
-                //move to 25 cm
-                if (0 == moveByBackUltrasonicSensor(0.3, 25)) {
-                    moveAtPower(0.0);
-//                    robot.extendRKArm();
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    getWheelLandmarks();
-                    timeStamp = System.currentTimeMillis();
                     state = 18;
                 }
 
+                // go to next step if takes too long
+                if (System.currentTimeMillis() - timeStamp > 3000) {
+                    VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorMovePower);
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    getWheelLandmarks();
+                    wheelDistanceLandMark = getWheelOdometer();
+                    timeStamp = System.currentTimeMillis();
+                    state = 18;
+                }
                 break;
             case 18:
+                // back up to crypto box
+                if (0 == moveByDistance(center2GlyphBoxPower, center2GlyphDistance + 500)) {
+                    moveAtPower(0.0);
+//                    robot.extendRKArm();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    getWheelLandmarks();
+                    timeStamp = System.currentTimeMillis();
+
+                    state = 19;
+                }
+
+                if (System.currentTimeMillis() - timeStamp > 1000) {
+                    // unload extra glyph
+                    robot.glyphWheelUnload();
+                }
+                break;
+            case 19:
+                // unload extra glyph
+                robot.glyphWheelUnload();
+
+                //move to 25 cm
+                if (0 == moveByBackUltrasonicSensor(0.3, 27)) {
+                    moveAtPower(0.0);
+//                    robot.extendRKArm();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    getWheelLandmarks();
+                    timeStamp = System.currentTimeMillis();
+                    state = 20;
+                }
+
+                break;
+            case 20:
+                VortexUtils.moveMotorByEncoder(robot.liftMotor, 2500, liftMotorMovePower);
+
                 //move the last distance
                 if (0 == moveByDistance(-0.4, robot.CM2Encoder(5))) {
                     moveAtPower(0.0);
@@ -495,15 +530,15 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                     state = 4;
                 }
                 break;
-            case 19:
+            case 21:
                 // move left to ensure robot is inside parking zone
-                if (0 == sideMoveByDistance(-0.8, 650)) {
+                if (0 == sideMoveByDistance(0.8, 650)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
 
-                    state = 20;
+                    state = 22;
                 }
                 break;
             default:
@@ -515,11 +550,14 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                 break;
         }
 
+        robot.relicFlipper.setPosition(1.0);
+        robot.retractJewelArm();
+
+        telemetry.addData("Ultrasonic Distance Sensor: ", robot.backDistanceSensor.getDistance(DistanceUnit.CM));
         telemetry.addData("teamColor", teamColor);
 //        telemetry.addData("vumark", vuforia.vumarkImage);
         telemetry.addData("state", state);
-        telemetry.addData("backupDistance", backupDistance);
-        telemetry.addData("devilver index", deliverIndex);
+//        telemetry.addData("devilver index", deliverIndex);
         telemetry.addData("devilver count", deliverCount);
         telemetry.update();
     }
@@ -558,6 +596,7 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
 
     // positive power moves left
     public int sideMoveByDistance (double power, int d) {
+        // positive power moves left
         int distance = Math.abs(d)*2;
         if (power == 0) {
             return 0; // zero power do nothing
@@ -619,10 +658,10 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
     }
 
     public int fitColumn(double power) {
-        double ultraReading = robot.backDistanceSensor.getDistance(DistanceUnit.CM);
-        double lastUltraReading = ultraReading;
+        lastUltraDistance = ultraDistance;
+        ultraDistance = robot.backDistanceSensor.getDistance(DistanceUnit.CM);
 
-        if (ultraReading - lastUltraReading > 6) {
+        if (ultraDistance - lastUltraDistance >= 5) {
             return 0;
         } else {
             sideMoveAtPower(power);

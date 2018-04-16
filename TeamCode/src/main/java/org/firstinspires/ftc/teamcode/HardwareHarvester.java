@@ -120,7 +120,7 @@ public class HardwareHarvester extends HardwareBase
         motorRightFrontWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         liftMotor = hwMap.dcMotor.get("liftMotor");
-        liftMotor.setDirection(DcMotor.Direction.REVERSE);
+        liftMotor.setDirection(DcMotor.Direction.FORWARD);
         liftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         liftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
