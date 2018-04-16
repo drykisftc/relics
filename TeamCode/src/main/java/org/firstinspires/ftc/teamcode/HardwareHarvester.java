@@ -90,6 +90,8 @@ public class HardwareHarvester extends HardwareBase
     double RKArmRetractPosition = 0.6;
     double RKArmExtendPosition = 0.2;
 
+    double encoderStepsPerInch = 89;
+
     /* Constructor */
     public HardwareHarvester(){
 
