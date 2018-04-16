@@ -599,7 +599,8 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
             case 22:
                 if (backupDistance > 0) {
                     // continue moving straight
-                    if (0 == moveByDistance(move2GlyphBoxPower, backupDistance)) {
+                    if (0 == moveByDistance(move2GlyphBoxPower, backupDistance)
+                            || robot.backDistanceSensor.getDistance(DistanceUnit.INCH) < 12) {
                         moveAtPower(0.0);
                         navigation.resetTurn(leftMotors, rightMotors);
                         getWheelLandmarks();
@@ -609,7 +610,8 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                         state = 23;
                     }
                 } else {
-                    if (0 == moveByDistance(-move2GlyphBoxPower, backupDistance)) {
+                    if (0 == moveByDistance(-move2GlyphBoxPower, backupDistance)
+                            || robot.backDistanceSensor.getDistance(DistanceUnit.INCH) < 12) {
                         moveAtPower(0.0);
                         navigation.resetTurn(leftMotors, rightMotors);
                         getWheelLandmarks();

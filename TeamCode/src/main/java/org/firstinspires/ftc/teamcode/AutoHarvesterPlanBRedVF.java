@@ -258,6 +258,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 // move to center slower to collect glyph
                 if (0 == moveByDistance(collectingGlyphPower, (int) (glyph2CenterDistance * 0.2)+900)) {
                     moveAtPower(0.0);
+                    collectionDistance = (int)(getWheelOdometer() - wheelDistanceLandMark);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
@@ -291,7 +292,6 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     getWheelLandmarks();
                     robot.levelGlyph();
                     robot.retractGlyphBlocker();
-                    robot.stopGlyphWheels();
                     // lift
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, liftMotorMovePower);
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -303,6 +303,8 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 // unload
                 if (System.currentTimeMillis() - timeStamp > 900) {
                     robot.glyphWheelUnload();
+                    // lift
+                    VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, liftMotorMovePower);
                 }
 
                 // move away from center
@@ -311,6 +313,9 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     getWheelLandmarks();
                     wheelDistanceLandMark = getWheelOdometer();
                     navigation.resetTurn(leftMotors, rightMotors);
+                    // lift
+                    VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, liftMotorMovePower);
+
                     state = 17;
                 }
                 break;
@@ -412,8 +417,10 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
             }
                 break;
             case 20:
+                vuforia.relicTrackables.deactivate();
                 // move forward
-                if (0 == moveByDistance(-move2CenterPower, cryptoBoxDistance)) {
+                if (0 == moveByDistance(-move2CenterPower, cryptoBoxDistance)
+                        || robot.backDistanceSensor.getDistance(DistanceUnit.INCH) < 15) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -423,7 +430,6 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 }
                 break;
             case 21:
-                vuforia.relicTrackables.deactivate();
 
                 int  deltaDistance = deliverDis[getNextDeliverIndex(1)];
 
@@ -469,19 +475,13 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 break;
             case 23:
                 // move to glyph
-                if (cryptoBoxDistance > 0) {
-                    if (0 == moveByDistance(glyphDeliverPower * 2, cryptoBoxDistance)) {
-                        timeStamp = System.currentTimeMillis();
-                        getWheelLandmarks();
-                        state = 24;
-                    }
-                } else {
-                    if (0 == moveByDistance(glyphDeliverPower * -2, cryptoBoxDistance)) {
-                        timeStamp = System.currentTimeMillis();
-                        getWheelLandmarks();
-                        state = 24;
-                    }
+
+                if (0 == moveByDistance(glyphDeliverPower * 2, 100)) {
+                    timeStamp = System.currentTimeMillis();
+                    getWheelLandmarks();
+                    state = 24;
                 }
+
                 break;
             case 24:
                 // release glyph

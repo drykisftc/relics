@@ -275,8 +275,9 @@ public class MeasurementHarvester extends OpMode{
             robot.RKArm.setPosition(robot.RKArmRetractPosition); // retract
         }
 
-        telemetry.addData("RKSensorDistance", robot.RKSensor.getDistance(DistanceUnit.CM));
-        telemetry.addData("Back Distance: ", robot.backDistanceSensor.getDistance(DistanceUnit.CM));
+        telemetry.addData("RKSensorDistance  : ", robot.RKSensor.getDistance(DistanceUnit.CM));
+        telemetry.addData("Back Distance inch:", robot.backDistanceSensor.getDistance(DistanceUnit.INCH));
+        telemetry.addData("Back Distance cm  : ", robot.backDistanceSensor.getDistance(DistanceUnit.CM));
     }
 
     /*
