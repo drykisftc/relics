@@ -54,21 +54,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
  */
 @Autonomous(name = "Harvester_PlanA_Red_VF", group = "A_Harvester_red")
 
-public class AutoHarvesterPlanARedVF extends AutoRelic {
-
-
-    protected BNO055IMU imuSensor = null;
-
-    protected HardwareHarvester robot= null;
-
-    protected int leftBackStamp;
-    protected int leftFrontStamp;
-    protected int rightBackStamp;
-    protected int rightFrontStamp;
-
-    protected OpenGLMatrix vuforiaMatrix;
-    protected VectorF trans;
-    protected Orientation rot;
+public class AutoHarvesterPlanARedVF extends AutoHarvesterPlanARed {
 
     final int leftVuDis = -968;  // 42.5 inches
     final int centerVuDis = -760; // 35 inches
@@ -92,7 +78,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
         move2CenterPower = 0.8;
         fGlyphTurnAngle = -90;
         center2GlyphBoxPower = -0.8;
-        glyTurnPower = -0.4;
+        glyTurnPower = -0.5;
         glyphOffAngle = 45;
 
         cryptoBoxDistance = 400;
@@ -108,70 +94,14 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
         glyph2CenterDistance = 1800;
 
         sideMovePower = 0.65;
-
-    }
-
-    @Override
-    public void init() {
-        robot = new HardwareHarvester();
-        robot.init(hardwareMap);
-
-        robot.defaultGlyphWheelPower = 1.0;
-
-        leftMotors = new DcMotor[2];
-        leftMotors[0] = robot.motorLeftFrontWheel;
-        leftMotors[1] = robot.motorLeftBackWheel;
-        rightMotors = new DcMotor[2];
-        rightMotors[0] = robot.motorRightFrontWheel;
-        rightMotors[1] = robot.motorRightBackWheel;
-        robot.defaultGlyphWheelPower = 0.15;
-
-        jewelArm = robot.jewelArm;
-        jewelHitter = robot.jewelHitter;
-
-        jewelSensor = robot.jewelSensor;
-        jewelSensorDistance = robot.jewelSensorDistance;
-        imuSensor = robot.imu;
-
-        jewelKicker = new JewelKicker(jewelSensor,jewelArm,jewelHitter,telemetry);
-        //jewelKicker.init();
-        jewelKicker.jewelArmActionPosition = 0.27;
-        jewelKicker.jewelArmRestPosition = 0.55;
-        jewelKicker.jewelHitterRestPosition= 0.5;
-        jewelArmPos = jewelKicker.jewelArmActionPosition;
-        jewelHitterPos = jewelKicker.jewelHitterRestPosition;
-
-        navigation = new Navigation(telemetry);
-
-        vuforia = new HardwareVuforia(VuforiaLocalizer.CameraDirection.BACK);
-        vuforia.init(hardwareMap);
-
-        telemetry.addData("jewelArm", jewelArm.getPosition());
-        telemetry.addData("jewelHitter", jewelHitter.getPosition());
-        telemetry.update();
-    }
-
-
-    @Override
-    public void start() {
-        robot.start();
-        vuforia.start();
-        state = 0;
-        timeStamp = System.currentTimeMillis();
-        vuforia.vumarkImage = "unknown";
-        jewelKicker.start();
-        robot.initAllDevices();
-        robot.relicMotor.setPower(0.005);
-        robot.relicFlipper.setPosition(0.5);
     }
 
     @Override
     public void loop() {
         switch (state) {
             case 0:
-                cryptoBoxDistance = 250;
+                cryptoBoxDistance = 200;
                 pushDistance = 550;
-                robot.defaultGlyphWheelPower = 0.5;
                 vuforiaMissCount = 0;
                 vuforiaHitCount = 0;
                 collectionDistance = 0;
@@ -239,7 +169,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 break;
             case 3:
                 // move straight to crypto box
-                if (robot.backDistanceSensor.getDistance(DistanceUnit.INCH) < 12
+                if (robot.backDistanceSensor.getDistance(DistanceUnit.INCH) < 10
                 || 0 == moveByDistance(move2GlyphBoxPower, cryptoBoxDistance)) {
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
@@ -390,7 +320,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 break;
             case 13:
                 // back up
-                if (0 == moveByDistance(-move2CenterPower, 300)) {
+                if (0 == moveByDistance(-move2CenterPower, 100)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -430,7 +360,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 robot.retractJewelArm();
 
                 // back up from glyph
-                if (0 == moveByDistance(-rushPower, Math.min(0,1100+collectionDistance))) {
+                if (0 == moveByDistance(-rushPower, Math.max(0,collectionDistance-1600))) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -450,7 +380,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 }
 
                 // back up from glyph
-                if (0 == leftDiagonalMoveByDistance(-rushPower, 7000)) {
+                if (0 == leftDiagonalMoveByDistance(-rushPower, 5000)) {
 
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -489,12 +419,13 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 telemetry.addData("vuforiaMissCount   =", vuforiaMissCount);
                 telemetry.addData("vuforiaHitCount", vuforiaHitCount);
                 // if too many errors, move on
-                if (vuforiaMissCount > 200) {
+                if (vuforiaMissCount > 400) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
                     cryptoBoxDistance = 0;
-                    backupDistance = 200;
+                    backupDistance
+                            =(int)(robot.backDistanceSensor.getDistance(DistanceUnit.INCH)*89/1.414);
                     state = 19;
                 }
 
@@ -543,7 +474,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                             sideMoveAtPower(0);
                             // set glyph box distance. image to glyph box distance is 34.5 inch , camera to flipper distance is 4
                             //cryptoBoxDistance = robot.imageDistance2GlyphBoxADistance(tG, columnDistance);
-                            backupDistance = robot.robotToCryptoBoxADistance(tD);
+                            backupDistance = robot.robotToCryptoBoxADistance(tD)-150;
                         } else {
                             rightDiagonalMoveAtPower(Range.clip(errorY * 0.015, -0.35, 0.35));
                         }
@@ -608,7 +539,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
             case 22:
                 if (backupDistance > 0) {
                     // continue moving straight
-                    if (robot.backDistanceSensor.getDistance(DistanceUnit.INCH) < 12
+                    if (robot.backDistanceSensor.getDistance(DistanceUnit.INCH) < 15
                     || 0 == moveByDistance(move2GlyphBoxPower, backupDistance)) {
                         moveAtPower(0.0);
                         navigation.resetTurn(leftMotors, rightMotors);
@@ -619,7 +550,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                         state = 23;
                     }
                 } else {
-                    if (robot.backDistanceSensor.getDistance(DistanceUnit.INCH) < 12
+                    if (robot.backDistanceSensor.getDistance(DistanceUnit.INCH) < 15
                     || 0 == moveByDistance(-move2GlyphBoxPower, backupDistance)) {
                         moveAtPower(0.0);
                         navigation.resetTurn(leftMotors, rightMotors);
@@ -654,6 +585,22 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 26;
+                }
+                break;
+            case 26:
+                // push
+                if (0 == moveByDistance(move2GlyphBoxPower, 300)) {
+                    timeStamp = System.currentTimeMillis();
+                    getWheelLandmarks();
+                    state = 27;
+                }
+                break;
+            case 27:
+                // back up
+                if (0 == moveByDistance(-move2GlyphBoxPower, 300)) {
+                    timeStamp = System.currentTimeMillis();
+                    getWheelLandmarks();
+                    state = 28;
                 }
                 break;
             default:

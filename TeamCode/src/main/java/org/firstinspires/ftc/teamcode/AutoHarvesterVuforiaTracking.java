@@ -100,7 +100,6 @@ public class AutoHarvesterVuforiaTracking extends AutoRelic {
         rightMotors = new DcMotor[2];
         rightMotors[0] = robot.motorRightFrontWheel;
         rightMotors[1] = robot.motorRightBackWheel;
-        robot.defaultGlyphWheelPower = 0.15;
 
         jewelArm = robot.jewelArm;
         jewelHitter = robot.jewelHitter;

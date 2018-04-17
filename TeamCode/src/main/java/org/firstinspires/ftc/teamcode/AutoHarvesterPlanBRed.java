@@ -81,7 +81,6 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
     public void loop() {
         switch (state) {
             case 0:
-                robot.defaultGlyphWheelPower = 0.5;
                 // jewel handling
                 state = jewelKicker.loop(0, 1, teamColor);
 

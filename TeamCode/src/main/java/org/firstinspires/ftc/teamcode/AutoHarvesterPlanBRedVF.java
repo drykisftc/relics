@@ -67,9 +67,8 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
     public void loop() {
         switch (state) {
             case 0:
-                cryptoBoxDistance = 80;
+                cryptoBoxDistance = 150;
                 pushDistance = 400;
-                robot.defaultGlyphWheelPower = 0.5;
                 vuforiaMissCount = 0;
                 vuforiaHitCount = 0;
                 vuforiaCheckDistance = leftColumnDistance;
@@ -111,7 +110,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 robot.jewelHitter.setPosition(0.00);
                 robot.jewelArm.setPosition(0.90);
 
-                if (robot.backDistanceSensor.getDistance(DistanceUnit.INCH) < 12
+                if (robot.backDistanceSensor.getDistance(DistanceUnit.INCH) < 11
                         || 0 == moveByDistance(movePower, offBalanceStoneDistance)) {
                     moveAtPower(0.0);
                     getWheelLandmarks();
@@ -478,7 +477,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, liftMotorMovePower);
                     navigation.resetTurn(leftMotors, rightMotors);
                     timeStamp = System.currentTimeMillis();
-                    cryptoBoxDistance = Math.min(0,(int) (robot.backDistanceSensor.getDistance(DistanceUnit.INCH)*robot.encoderStepsPerInch)-1200);
+                    cryptoBoxDistance = Math.max(0,(int) (robot.backDistanceSensor.getDistance(DistanceUnit.INCH)*robot.encoderStepsPerInch)-1200);
                 }
                 break;
             case 23:
@@ -525,7 +524,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 break;
             case 28:
                 // back up
-                if (0 == moveByDistance(-glyphDeliverPower*3, 600)) {
+                if (0 == moveByDistance(-glyphDeliverPower*3, 300)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 29;
