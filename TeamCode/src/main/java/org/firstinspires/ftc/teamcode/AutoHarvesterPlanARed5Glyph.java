@@ -187,24 +187,20 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
 //                vuforiaHitCount = 0;
 //                resetDeliverHistory2(2);
 
+                robot.levelGlyph();
                 robot.retractGlyphBlocker();
 
                 // jewel handling
                 state = jewelKicker.loop(0, 1, teamColor);
 
                 // move jewel arm to avoid jewel holes
-//                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.08*rand.nextDouble()-0.04;
-//                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.02*rand.nextDouble()-0.01;
-
-                robot.levelGlyph();
+                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.08*rand.nextDouble()-0.04;
+                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.02*rand.nextDouble()-0.01;
 
                 //read vumark
 //                computeGlyphColumnDistance();
 
                 getWheelLandmarks();
-
-                robot.retractGlyphBlocker();
-
                 timeStamp = System.currentTimeMillis();
 
                 break;
@@ -257,38 +253,35 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
             case 4:
                 VortexUtils.moveMotorByEncoder(robot.liftMotor, 2500, liftMotorMovePower);
 
-                // use ultra sensor
+                // use ultra sensor to fit column
                 if (0 == fitColumn(0.1)) {
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 6;
                 }
-                /*robot.extendRKArm();
 
-                // correct position with RKArm
-                if (robot.RKSensor.getDistance(DistanceUnit.CM) > RKArmDistance + 0.3) {
-                    sideMoveAtPower(-0.2);
-                } else if (robot.RKSensor.getDistance(DistanceUnit.CM) < RKArmDistance - 0.3) {
-                    sideMoveAtPower(0.2);
-                } else {
-                    RKSensorCount ++;
-                    moveAtPower(0.0);
+                // use negative power if blue 3rd dump
+                if (teamColor == "blue" && deliverCount == 2) {
+                    if (0 == fitColumn(-0.1)) {
+                        moveAtPower(0.0);
+                        timeStamp = System.currentTimeMillis();
+                        getWheelLandmarks();
+                        state = 5;
+                    }
                 }
 
-                if (RKSensorCount > 5) {
+                break;
+            case 5:
+                // move back
+                if (0 == sideMoveByDistance(-0.6, 100)) {
                     moveAtPower(0.0);
-                    robot.retractRKArm();
                     timeStamp = System.currentTimeMillis();
-                    navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
-                    state = 5;
+                    state = 6;
                 }
-
-                telemetry.addData("RKSensor distance: ", robot.RKSensor.getDistance(DistanceUnit.CM));*/
                 break;
             case 6:
-                // release the glyph
                 time = System.currentTimeMillis();
 
                 if (time - timeStamp < 800) {
@@ -427,12 +420,6 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
 
                 break;
             case 15:
-                // wiggin
-                /*navigation.turnByGyroCloseLoop(0.0,
-                        (double) robot.imu.getAngularOrientation().firstAngle,
-                        -45+rand.nextInt(20)-10,
-                        leftMotors, rightMotors);*/
-
                 // move forward more
                 if (0 == moveByDistance(collectingGlyphPower, 1000)) {
                     moveAtPower(0.0);
@@ -497,7 +484,7 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                     state = 19;
                 }
 
-                if (System.currentTimeMillis() - timeStamp > 1000) {
+                if (System.currentTimeMillis() - timeStamp > 500) {
                     // unload extra glyph
                     robot.glyphWheelUnload();
                 }
