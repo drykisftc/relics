@@ -161,7 +161,8 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
         vuforia.vumarkImage = "unknown";
         jewelKicker.start();
         robot.initAllDevices();
-
+        robot.relicMotor.setPower(0.005);
+        robot.relicFlipper.setPosition(0.5);
     }
 
     @Override

@@ -28,7 +28,7 @@ public class Navigation {
     int rightWheelLandMark= 0;
     double currentTurnAngle =0.0f;
     int convergeCount = 0;
-    double angleErrorTolerance = 1.1f;
+    double angleErrorTolerance = 2.1f;
     int convergeCountThreshold = 4;
 
     double maxTurnDeltaPower = 0.5;

@@ -146,7 +146,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
         jewelKicker.start();
         robot.initAllDevices();
         robot.relicMotor.setPower(0.005);
-        robot.relicFlipper.setPosition(1.0);
+        robot.relicFlipper.setPosition(0.5);
 
     }
 
