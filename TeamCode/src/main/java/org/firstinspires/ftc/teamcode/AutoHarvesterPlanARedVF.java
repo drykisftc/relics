@@ -238,7 +238,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 break;
             case 3:
                 // move straight to crypto box
-                if (robot.backDistanceSensor.getDistance(DistanceUnit.INCH) < 10
+                if (robot.backDistanceSensor.getDistance(DistanceUnit.INCH) < 12
                 || 0 == moveByDistance(move2GlyphBoxPower, cryptoBoxDistance)) {
                     moveAtPower(0.0);
                     timeStamp = System.currentTimeMillis();
@@ -402,10 +402,11 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 robot.retractJewelArm();
                 // If the glyphDistance is not NaN, jump to case 15
                 if (Double.isNaN(robot.glyphDistance.getDistance(DistanceUnit.CM)) == false) {
+                    moveAtPower(0.0);
+                    collectionDistance = (int)(getWheelOdometer() - wheelDistanceLandMark);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
-                    collectionDistance = (int)(getWheelOdometer() - wheelDistanceLandMark);
                     state = 15;
                 }
                 //wiggle
@@ -416,6 +417,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 // move to center slower to collect glyph
                 if (0 == moveByDistance(collectingGlyphPower, 2500)) {
                     moveAtPower(0.0);
+                    collectionDistance = (int)(getWheelOdometer() - wheelDistanceLandMark);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
@@ -427,7 +429,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 robot.retractJewelArm();
 
                 // back up from glyph
-                if (0 == moveByDistance(-rushPower, Math.min(0,400+collectionDistance))) {
+                if (0 == moveByDistance(-rushPower, Math.min(0,1100+collectionDistance))) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -466,12 +468,13 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 if ("unknown" == vuforia.vumarkImage.toLowerCase()) {
                     vuforia.identifyGlyphCrypto();
                 }
-                vuforia.getGlyphCryptoPosition();
+                OpenGLMatrix pose1 = vuforia.getGlyphCryptoPosition();
 
                 // turn 45 degrees
                 if (0 == navigation.turnByGyroCloseLoop(0.0,
                         (double) robot.imu.getAngularOrientation().firstAngle,
-                        -45,leftMotors,rightMotors)) {
+                        -45,leftMotors,rightMotors)
+                        || pose1 != null) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -488,6 +491,7 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
                 if (vuforiaMissCount > 200) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
                     cryptoBoxDistance = 0;
                     backupDistance = 200;
                     state = 19;
@@ -685,12 +689,16 @@ public class AutoHarvesterPlanARedVF extends AutoRelic {
 
     public void rightDiagonalMoveAtPower(double p) {
         robot.motorRightFrontWheel.setPower(p);
+        robot.motorRightBackWheel.setPower(0.0);
         robot.motorLeftBackWheel.setPower(p);
+        robot.motorLeftFrontWheel.setPower(0.0);
     }
 
     public void leftDiagonalMoveAtPower(double p) {
         robot.motorLeftFrontWheel.setPower(p);
+        robot.motorLeftBackWheel.setPower(0.0);
         robot.motorRightBackWheel.setPower(p);
+        robot.motorRightFrontWheel.setPower(0.0);
     }
 
     public void moveAtSpeed(double p){
