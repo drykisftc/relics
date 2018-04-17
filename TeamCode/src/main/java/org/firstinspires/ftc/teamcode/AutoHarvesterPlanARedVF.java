@@ -100,7 +100,7 @@ public class AutoHarvesterPlanARedVF extends AutoHarvesterPlanARed {
     public void loop() {
         switch (state) {
             case 0:
-                cryptoBoxDistance = 200;
+                cryptoBoxDistance = 400;
                 pushDistance = 550;
                 vuforiaMissCount = 0;
                 vuforiaHitCount = 0;
@@ -474,7 +474,7 @@ public class AutoHarvesterPlanARedVF extends AutoHarvesterPlanARed {
                             sideMoveAtPower(0);
                             // set glyph box distance. image to glyph box distance is 34.5 inch , camera to flipper distance is 4
                             //cryptoBoxDistance = robot.imageDistance2GlyphBoxADistance(tG, columnDistance);
-                            backupDistance = robot.robotToCryptoBoxADistance(tD)-150;
+                            backupDistance = robot.robotToCryptoBoxADistance(tD)-250;
                         } else {
                             rightDiagonalMoveAtPower(Range.clip(errorY * 0.015, -0.35, 0.35));
                         }
@@ -597,7 +597,7 @@ public class AutoHarvesterPlanARedVF extends AutoHarvesterPlanARed {
                 break;
             case 27:
                 // back up
-                if (0 == moveByDistance(-move2GlyphBoxPower, 300)) {
+                if (0 == moveByDistance(-move2GlyphBoxPower, 200)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 28;

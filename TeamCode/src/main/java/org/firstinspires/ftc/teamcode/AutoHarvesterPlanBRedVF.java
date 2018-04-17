@@ -524,7 +524,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 break;
             case 28:
                 // back up
-                if (0 == moveByDistance(-glyphDeliverPower*3, 300)) {
+                if (0 == moveByDistance(-glyphDeliverPower*3, 200)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 29;
