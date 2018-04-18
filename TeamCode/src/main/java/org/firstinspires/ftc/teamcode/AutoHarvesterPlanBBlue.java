@@ -64,4 +64,10 @@ public class AutoHarvesterPlanBBlue extends AutoHarvesterPlanBRed {
         sideWayCompensation = -1800;
     }
 
+    @Override
+    public void start () {
+        super.start();
+        robot.relicFlipper.setPosition(1.0);
+    }
+
 }

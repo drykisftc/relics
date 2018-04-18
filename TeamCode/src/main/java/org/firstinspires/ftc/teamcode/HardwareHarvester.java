@@ -55,7 +55,7 @@ public class HardwareHarvester extends HardwareBase
 
     public Servo glyphBlocker = null;
 
-    public Servo RKArm = null; // roboknight arm for auto
+    //public Servo RKArm = null; // roboknight arm for auto
 
     // Orientation sensor
     BNO055IMU imu = null;
@@ -67,7 +67,7 @@ public class HardwareHarvester extends HardwareBase
 
     public DistanceSensor glyphDistance = null;
 
-    public DistanceSensor RKSensor = null; // roboknight arm for auto
+    //public DistanceSensor RKSensor = null; // roboknight arm for auto
 
     public ModernRoboticsI2cRangeSensor backDistanceSensor = null; // sensor in the back
 
@@ -137,14 +137,14 @@ public class HardwareHarvester extends HardwareBase
         relicFlipper = hwMap.servo.get("relicFlipper");
         relicClaw = hwMap.servo.get("relicClaw");
 
-        RKArm = hwMap.servo.get("RKArm");
+//        RKArm = hwMap.servo.get("RKArm");
 
         jewelSensor = hwMap.get(ColorSensor.class, "jewelSensor");
         jewelSensorDistance = hwMap.get(DistanceSensor.class, "jewelSensor");
 
         glyphDistance = hwMap.get(DistanceSensor.class, "glyphDistance");
 
-        RKSensor = hwMap.get(DistanceSensor.class, "RKSensor");
+        //RKSensor = hwMap.get(DistanceSensor.class, "RKSensor");
 
         backDistanceSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "backDistanceSensor");
 
@@ -290,13 +290,13 @@ public class HardwareHarvester extends HardwareBase
         rightLiftWheel.setPower(-defaultGlyphWheelPower);
     }
 
-    void extendRKArm() {
-        RKArm.setPosition(RKArmExtendPosition);
-    }
-
-    void retractRKArm() {
-        RKArm.setPosition(RKArmRetractPosition);
-    }
+//    void extendRKArm() {
+//        RKArm.setPosition(RKArmExtendPosition);
+//    }
+//
+//    void retractRKArm() {
+//        RKArm.setPosition(RKArmRetractPosition);
+//    }
 
     public void stopGlyphWheels() {
         leftLiftWheel.setPower(0.0);

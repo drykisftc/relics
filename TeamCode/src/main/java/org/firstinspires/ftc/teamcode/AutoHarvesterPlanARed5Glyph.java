@@ -71,23 +71,6 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
     protected int rightBackStamp;
     protected int rightFrontStamp;
 
-    protected OpenGLMatrix vuforiaMatrix;
-    protected VectorF trans;
-    protected Orientation rot;
-
-    final int leftVuDis = -968;  // 42.5 inches
-    final int centerVuDis = -760; // 35 inches
-    final int rightVuDis = -574; // 27.5 inches
-
-    int vuforiaMissCount = 0;
-    int vuforiaHitCount = 0;
-    int vuforiaCheckDistance = 0;
-    int vuforiaTargetDistance = -672;
-    int cryptoBoxTargetDistance = -494; // 40 inches? change this landmark
-
-
-    protected double distanceToVumark;
-
     public AutoHarvesterPlanARed5Glyph() {
         teamColor = "red";
 
@@ -288,7 +271,7 @@ public class AutoHarvesterPlanARed5Glyph extends AutoRelic {
                     robot.dumpGlyph();
                 } else {
 
-                    robot.retractRKArm();
+                    //robot.retractRKArm();
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     deliverCount ++;

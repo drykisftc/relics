@@ -119,7 +119,7 @@ public class TeleOpHarvester extends OpMode{
         jewelArmControl();
         relicArmControl();
         glyphBlockerControl();
-        RKArmControl();
+        //RKArmControl();
         telemetry.update();
     }
 
@@ -307,9 +307,9 @@ public class TeleOpHarvester extends OpMode{
 
     }
 
-    public void RKArmControl() {
-        robot.retractRKArm();
-    }
+//    public void RKArmControl() {
+//        robot.retractRKArm();
+//    }
 
     /*
      * Code to run ONCE after the driver hits STOP

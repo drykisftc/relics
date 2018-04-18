@@ -117,7 +117,7 @@ public class MeasurementHarvester extends OpMode{
      */
     @Override
     public void loop() {
-        RKArmControl();
+        //RKArmControl();
         glyphSensorReadValue();
         joystickWheelControl();
         glyphWheelControl();
@@ -268,17 +268,17 @@ public class MeasurementHarvester extends OpMode{
         telemetry.addData("glyph sensor distance: ", robot.glyphDistance.getDistance(DistanceUnit.CM));
     }
 
-    public void RKArmControl() {
-        if (gamepad1.a || gamepad2.a) {
-            robot.RKArm.setPosition(robot.RKArmExtendPosition); // extend
-        } else if (gamepad1.b || gamepad2.b) {
-            robot.RKArm.setPosition(robot.RKArmRetractPosition); // retract
-        }
-
-        telemetry.addData("RKSensorDistance  : ", robot.RKSensor.getDistance(DistanceUnit.CM));
-        telemetry.addData("Back Distance inch:", robot.backDistanceSensor.getDistance(DistanceUnit.INCH));
-        telemetry.addData("Back Distance cm  : ", robot.backDistanceSensor.getDistance(DistanceUnit.CM));
-    }
+//    public void RKArmControl() {
+//        if (gamepad1.a || gamepad2.a) {
+//            robot.RKArm.setPosition(robot.RKArmExtendPosition); // extend
+//        } else if (gamepad1.b || gamepad2.b) {
+//            robot.RKArm.setPosition(robot.RKArmRetractPosition); // retract
+//        }
+//
+//        telemetry.addData("RKSensorDistance  : ", robot.RKSensor.getDistance(DistanceUnit.CM));
+//        telemetry.addData("Back Distance inch:", robot.backDistanceSensor.getDistance(DistanceUnit.INCH));
+//        telemetry.addData("Back Distance cm  : ", robot.backDistanceSensor.getDistance(DistanceUnit.CM));
+//    }
 
     /*
      * Code to run ONCE after the driver hits STOP

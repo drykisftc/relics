@@ -138,6 +138,8 @@ public class AutoRelic extends OpMode {
 
     int collectionDistance = 0;
 
+    int vuforiaTargetDistance = -672;
+
     @Override
     public void init() {
     }

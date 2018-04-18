@@ -53,7 +53,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
 
-    final int leftVuDis = -968;  //42.5 inches  change this a landmark
+    //final int leftVuDis = -968;  //42.5 inches  change this a landmark
+    final int leftVuDis = -908;
     final int centerVuDis = -745; // 35 inches
     final int rightVuDis = -574; // 27.5 inches
 
@@ -61,7 +62,6 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
     int vuforiaMissCount = 0;
     int vuforiaHitCount = 0;
     int vuforiaCheckDistance = 0;
-    int vuforiaTargetDistance = leftVuDis;
 
     @Override
     public void loop() {
@@ -121,7 +121,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 break;
             case 2:
                 // move left
-                if (0 == sideMoveByDistance(sideMovePower*0.5, columnDistance)) {
+                if (0 == sideMoveByDistance(sideMovePower*0.4, columnDistance)) {
                     wheelDistanceLandMark = getWheelOdometer();
                     state = 3;
                 }
