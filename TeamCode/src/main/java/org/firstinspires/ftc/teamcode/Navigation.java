@@ -42,14 +42,14 @@ public class Navigation {
         pidControlDistance.setKp(0.01f);
         pidControlDistance.setKi(0.005f);
         pidControlDistance.setKd(0.0000001f);
-        pidControlDistance.setMaxIntegralError(2.0f/pidControlDistance.fKi);
+        pidControlDistance.setMaxIntegralError(0.6f/pidControlDistance.fKi);
 
         // speed control
         pidControlSpeed = new PIDControl();
         pidControlSpeed.setKp(0.001f);
         pidControlSpeed.setKi(0.001f);
         pidControlSpeed.setKd(0.001f);
-        pidControlSpeed.setMaxIntegralError(2.0f/pidControlSpeed.fKi);
+        pidControlSpeed.setMaxIntegralError(0.6f/pidControlSpeed.fKi);
 
         //heading control
         pidControlHeading = new PIDControl();

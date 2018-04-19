@@ -52,6 +52,10 @@ public class AutoHarvesterPlanABlueVF extends AutoHarvesterPlanARedVF {
         centerColumnDistance = -2850;
         rightColumnDistance = -3600;
 
+        cryptoTurnAngle = -45;
+        cryptoCollectionAngle = 45;
+        collectionCompensation = 800;
+
     }
 
 }

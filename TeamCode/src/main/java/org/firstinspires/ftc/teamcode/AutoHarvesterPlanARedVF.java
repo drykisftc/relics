@@ -29,9 +29,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -41,7 +39,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
 /*
  * This is an example LinearOpMode that shows how to use
@@ -61,6 +58,12 @@ public class AutoHarvesterPlanARedVF extends AutoHarvesterPlanARed {
     int vuforiaCheckDistance = 0;
 
     int cryptoBoxTargetDistance = -494; // 40 inches? change this landmark
+
+    int cryptoTurnAngle = 45;
+    int cryptoCollectionAngle = -45;
+    int vuforiaDetectAngle = -45;
+    int collectionCompensation = 1600;
+    int diagnalDistance = 6000;
 
     protected double distanceToVumark;
 
@@ -308,7 +311,7 @@ public class AutoHarvesterPlanARedVF extends AutoHarvesterPlanARed {
             case 12:
                 // turn 45 degree
                  robot.glyphWheelLoad();
-                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower, 45,
+                if (0 == navigation.turnByEncoderOpenLoop(glyTurnPower, cryptoTurnAngle,
                         robot.axleDistance, leftMotors, rightMotors)) {
                     getWheelLandmarks();
                     robot.glyphWheelLoad();
@@ -341,7 +344,7 @@ public class AutoHarvesterPlanARedVF extends AutoHarvesterPlanARed {
                 //wiggle
                 navigation.turnByGyroCloseLoop(0.0,
                         (double) robot.imu.getAngularOrientation().firstAngle,
-                        -45+rand.nextInt(20)-10,
+                        cryptoCollectionAngle +rand.nextInt(20)-10,
                         leftMotors, rightMotors);
                 // move to center slower to collect glyph
                 if (0 == moveByDistance(collectingGlyphPower, 2500)) {
@@ -358,7 +361,7 @@ public class AutoHarvesterPlanARedVF extends AutoHarvesterPlanARed {
                 robot.retractJewelArm();
 
                 // back up from glyph
-                if (0 == moveByDistance(-rushPower, Math.max(0,collectionDistance-1600))) {
+                if (0 == moveByDistance(-rushPower, Math.max(0,collectionDistance-collectionCompensation))) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -369,7 +372,7 @@ public class AutoHarvesterPlanARedVF extends AutoHarvesterPlanARed {
                 }
                 break;
             case 16:
-                // back up
+
                 robot.retractJewelArm();
                 if (System.currentTimeMillis() - timeStamp > 900) {
                     robot.glyphWheelUnload();
@@ -377,9 +380,30 @@ public class AutoHarvesterPlanARedVF extends AutoHarvesterPlanARed {
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, liftMotorMovePower);
                 }
 
-                // back up from glyph
-                if (0 == leftDiagonalMoveByDistance(-rushPower, 5000)) {
+                // turn 45 degrees
+                if (0 == navigation.turnByGyroCloseLoop(0.0,
+                        (double) robot.imu.getAngularOrientation().firstAngle,
+                        vuforiaDetectAngle,leftMotors,rightMotors)) {
+                    moveAtPower(0.0);
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    getWheelLandmarks();
+                    timeStamp = System.currentTimeMillis();
+                    state = 17;
+                }
+                break;
+            case 17:
 
+                vuforiaMissCount = 0;
+
+                // find vuforia mark
+                if ("unknown" == vuforia.vumarkImage.toLowerCase()) {
+                    vuforia.identifyGlyphCrypto();
+                }
+                OpenGLMatrix pose1 = vuforia.getGlyphCryptoPosition();
+
+                // back up from glyph
+                if (0 == leftDiagonalMoveByDistance(-rushPower, diagnalDistance)
+                        || pose1 != null) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -388,26 +412,6 @@ public class AutoHarvesterPlanARedVF extends AutoHarvesterPlanARed {
                     robot.retractGlyphBlocker();
                     VortexUtils.moveMotorByEncoder(robot.liftMotor, glyphLiftPosition, liftMotorMovePower);
 
-                    state = 17;
-                }
-                break;
-            case 17:
-                vuforiaMissCount = 0;
-                // find vuforia mark
-                if ("unknown" == vuforia.vumarkImage.toLowerCase()) {
-                    vuforia.identifyGlyphCrypto();
-                }
-                OpenGLMatrix pose1 = vuforia.getGlyphCryptoPosition();
-
-                // turn 45 degrees
-                if (0 == navigation.turnByGyroCloseLoop(0.0,
-                        (double) robot.imu.getAngularOrientation().firstAngle,
-                        -45,leftMotors,rightMotors)
-                        || pose1 != null) {
-                    moveAtPower(0.0);
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    getWheelLandmarks();
-                    timeStamp = System.currentTimeMillis();
                     state = 18;
                 }
                 break;
