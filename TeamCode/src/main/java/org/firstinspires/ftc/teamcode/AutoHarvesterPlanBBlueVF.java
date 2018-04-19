@@ -53,6 +53,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 public class AutoHarvesterPlanBBlueVF extends AutoHarvesterPlanBBlue {
 
+    public AutoHarvesterPlanBBlueVF() {
+        super();
+    }
+
+    @Override
+    public void start () {
+        super.start();
+     }
+
     @Override
     public void loop() {
         switch (state) {
@@ -108,8 +117,9 @@ public class AutoHarvesterPlanBBlueVF extends AutoHarvesterPlanBBlue {
             case 2:
                 vuforia.relicTrackables.deactivate();
                 // move left
-                if (0 == sideMoveByDistance(sideMovePower*0.4, columnDistance)) {
+                if (0 == sideMoveByDistance(sideMovePower, columnDistance)) {
                     wheelDistanceLandMark = getWheelOdometer();
+                    robot.retractJewelArm();
                     state = 3;
                 }
 
@@ -199,7 +209,7 @@ public class AutoHarvesterPlanBBlueVF extends AutoHarvesterPlanBBlue {
                 break;
             case 10:
                 // move side way
-                if (0 == sideMoveByDistance(sideMovePower, sideWayDistance - columnDistance)) {
+                if (0 == sideMoveByDistance(-sideMovePower, sideWayDistance - columnDistance)) {
                     wheelDistanceLandMark = getWheelOdometer();
                     getWheelLandmarks();
                     robot.glyphWheelLoad();
@@ -210,7 +220,7 @@ public class AutoHarvesterPlanBBlueVF extends AutoHarvesterPlanBBlue {
                 break;
             case 11:
                 // move to center
-                if (0 == moveByDistance(move2CenterPower, (int)(glyph2CenterDistance*0.75))) {
+                if (0 == moveByDistance(move2CenterPower, (int)(glyph2CenterDistance*0.6))) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
@@ -244,7 +254,7 @@ public class AutoHarvesterPlanBBlueVF extends AutoHarvesterPlanBBlue {
                         fGlyphTurnAngle+rand.nextInt(30)-15,
                         leftMotors, rightMotors);
                 // move to center slower to collect glyph
-                if (0 == moveByDistance(collectingGlyphPower, (int) (glyph2CenterDistance * 0.25)+900)) {
+                if (0 == moveByDistance(collectingGlyphPower, (int) (glyph2CenterDistance * 0.4)+400)) {
                     moveAtPower(0.0);
                     collectionDistance = (int)(getWheelOdometer() - wheelDistanceLandMark);
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -314,7 +324,7 @@ public class AutoHarvesterPlanBBlueVF extends AutoHarvesterPlanBBlue {
                 break;
             case 17:
                 // move side way to right column
-                if (0 == sideMoveByDistance(-sideMovePower, sideWayDistance - rightColumnDistance)) {
+                if (0 == sideMoveByDistance(sideMovePower, sideWayDistance - rightColumnDistance+400)) {
                     wheelDistanceLandMark = getWheelOdometer();
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
@@ -378,7 +388,7 @@ public class AutoHarvesterPlanBBlueVF extends AutoHarvesterPlanBBlue {
 //                    deltaDistance = leftColumnDistance - rightColumnDistance;
 //                }
 
-                if (0 == sideMoveByDistance(-sideMovePower/2, deltaDistance)) {
+                if (0 == sideMoveByDistance(sideMovePower/2, deltaDistance)) {
                     wheelDistanceLandMark = getWheelOdometer();
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();

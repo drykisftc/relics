@@ -54,7 +54,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
 
     //final int leftVuDis = -968;  //42.5 inches  change this a landmark
-    final int leftVuDis = -908;
+    final int leftVuDis = -888;
     final int centerVuDis = -745; // 35 inches
     final int rightVuDis = -574; // 27.5 inches
 
@@ -223,7 +223,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 break;
             case 11:
                 // move to center
-                if (0 == moveByDistance(move2CenterPower, (int)(glyph2CenterDistance*0.75))) {
+                if (0 == moveByDistance(move2CenterPower, (int)(glyph2CenterDistance*0.6))) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
@@ -257,7 +257,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                         fGlyphTurnAngle+rand.nextInt(30)-15,
                         leftMotors, rightMotors);
                 // move to center slower to collect glyph
-                if (0 == moveByDistance(collectingGlyphPower, (int) (glyph2CenterDistance * 0.25)+900)) {
+                if (0 == moveByDistance(collectingGlyphPower, (int) (glyph2CenterDistance * 0.4)+400)) {
                     moveAtPower(0.0);
                     collectionDistance = (int)(getWheelOdometer() - wheelDistanceLandMark);
                     navigation.resetTurn(leftMotors, rightMotors);

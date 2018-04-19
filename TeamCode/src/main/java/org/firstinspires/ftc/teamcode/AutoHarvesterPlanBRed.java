@@ -44,7 +44,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
 
-    int sideWayDistance = 5400;
+    int sideWayDistance = 6400;
     int sideWayCompensation = 900;
     double sideMovePower2 = 0;
 
@@ -210,7 +210,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
             case 10:
                 robot.retractJewelArm();
                 // move to center
-                if (0 == moveByDistance(move2CenterPower, (int)(glyph2CenterDistance*0.75))) {
+                if (0 == moveByDistance(move2CenterPower, (int)(glyph2CenterDistance*0.6))) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 11;
@@ -234,7 +234,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
                         fGlyphTurnAngle+rand.nextInt(30)-15,
                         leftMotors, rightMotors);
                 // move to center slower to collect glyph
-                if (0 == moveByDistance(collectingGlyphPower, (int) (glyph2CenterDistance * 0.25)+300)) {
+                if (0 == moveByDistance(collectingGlyphPower, (int) (glyph2CenterDistance * 0.4)+300)) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
