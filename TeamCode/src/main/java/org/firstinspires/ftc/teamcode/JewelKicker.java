@@ -115,7 +115,7 @@ class JewelKicker {
                 jewelHitter.setPosition(jewelHitterRestPosition);
 
                 if(System.currentTimeMillis() - timeStamp > jewelWaitTime) {
-                    if (jewelSensor.blue() > jewelSensor.red() + 3 ) {
+                    if (jewelSensor.blue() > jewelSensor.red() + 2 ) {
                         colorCounter ++;
                         if(teamColor == "blue" && colorCounter > 5) {
                             telemetry.addData("kick ", "blue");
@@ -128,7 +128,7 @@ class JewelKicker {
                             timeStamp = System.currentTimeMillis();
                             state = 1;
                         }
-                    } else if (jewelSensor.red() > jewelSensor.blue() + 3) {
+                    } else if (jewelSensor.red() > jewelSensor.blue() + 2) {
                         colorCounter ++;
                         if(teamColor == "red" && colorCounter > 5) {
                             telemetry.addData("kick ", "red");

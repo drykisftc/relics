@@ -80,8 +80,8 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 state = jewelKicker.loop(0, 1, teamColor);
 
                 // hitter arm to avoid jewel holes
-                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.08 * rand.nextDouble() - 0.04;
-                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.02 * rand.nextDouble() - 0.01;
+                jewelKicker.jewelArmActionPosition = jewelArmPos + 0.1 * rand.nextDouble() - 0.05;
+                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.04 * rand.nextDouble() - 0.02;
 
                 robot.levelGlyph();
 
