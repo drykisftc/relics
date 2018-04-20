@@ -220,7 +220,7 @@ public class AutoHarvesterPlanBBlueVF extends AutoHarvesterPlanBBlue {
                 break;
             case 11:
                 // move to center
-                if (0 == moveByDistance(move2CenterPower, (int)(glyph2CenterDistance*0.6))) {
+                if (0 == moveByDistance(move2CenterPower, (int)(glyph2CenterDistance*0.75))) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
@@ -254,7 +254,7 @@ public class AutoHarvesterPlanBBlueVF extends AutoHarvesterPlanBBlue {
                         fGlyphTurnAngle+rand.nextInt(30)-15,
                         leftMotors, rightMotors);
                 // move to center slower to collect glyph
-                if (0 == moveByDistance(collectingGlyphPower, (int) (glyph2CenterDistance * 0.4)+400)) {
+                if (0 == moveByDistance(collectingGlyphPower, (int) (glyph2CenterDistance * 0.25)+900)) {
                     moveAtPower(0.0);
                     collectionDistance = (int)(getWheelOdometer() - wheelDistanceLandMark);
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -469,8 +469,18 @@ public class AutoHarvesterPlanBBlueVF extends AutoHarvesterPlanBBlue {
                 robot.loadGlyph();
                 robot.retractGlyphBlocker();
                 VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorMovePower);
-                // stop
-                vuforia.relicTrackables.deactivate();
+
+                if ( numberOfRounds >= numberOfRoundsLimit) {
+                    // stop
+                    vuforia.relicTrackables.deactivate();
+                    state++;
+                } else {
+                    columnDistance = sideMoveColumn;
+                    getWheelLandmarks();
+                    timeStamp = System.currentTimeMillis();
+                    state = 10;
+                }
+
                 break;
             default:
                 robot.loadGlyph();

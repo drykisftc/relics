@@ -101,7 +101,7 @@ public class AutoHarvesterPlanARedVF extends AutoHarvesterPlanARed {
     public void loop() {
         switch (state) {
             case 0:
-                cryptoBoxDistance = 400;
+                cryptoBoxDistance = 300;
                 pushDistance = 550;
                 vuforiaMissCount = 0;
                 vuforiaHitCount = 0;

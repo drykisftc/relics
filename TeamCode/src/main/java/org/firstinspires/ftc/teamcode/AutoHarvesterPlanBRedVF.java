@@ -122,7 +122,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
             case 2:
                 // move left
                 if (0 == sideMoveByDistance(sideMovePower*0.4, columnDistance)) {
-                    wheelDistanceLandMark = getWheelOdometer();
+                    timeStamp = System.currentTimeMillis();
                     state = 3;
                 }
 
@@ -133,10 +133,17 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                         robot.axleDistance, leftMotors, rightMotors)) {
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
+                    timeStamp = System.currentTimeMillis();
                     state = 4;
                 }
                 break;
             case 4:
+
+//                if ( stopAtWallByRangeSensor(10) <= 0
+//                        || System.currentTimeMillis() - timeStamp > 5000) {
+//                    timeStamp = System.currentTimeMillis();
+//                    state = 5;
+//                }
 
                 if (robot.backDistanceSensor.getDistance(DistanceUnit.INCH) < 12
                 || 0 == moveByDistance(glyphDeliverPower, cryptoBoxDistance)) {
@@ -156,6 +163,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
 
                 } else {
                     timeStamp = System.currentTimeMillis();
+                    numberOfRounds ++;
                     state = 7;
                 }
                 break;
@@ -223,7 +231,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 break;
             case 11:
                 // move to center
-                if (0 == moveByDistance(move2CenterPower, (int)(glyph2CenterDistance*0.6))) {
+                if (0 == moveByDistance(move2CenterPower, (int)(glyph2CenterDistance*0.75))) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
@@ -257,7 +265,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                         fGlyphTurnAngle+rand.nextInt(30)-15,
                         leftMotors, rightMotors);
                 // move to center slower to collect glyph
-                if (0 == moveByDistance(collectingGlyphPower, (int) (glyph2CenterDistance * 0.4)+400)) {
+                if (0 == moveByDistance(collectingGlyphPower, (int) (glyph2CenterDistance * 0.25)+900)) {
                     moveAtPower(0.0);
                     collectionDistance = (int)(getWheelOdometer() - wheelDistanceLandMark);
                     navigation.resetTurn(leftMotors, rightMotors);
@@ -483,6 +491,13 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 break;
             case 23:
                 // move to glyph
+//                if ( stopAtWallByRangeSensor(10) <= 0
+//                        || System.currentTimeMillis() - timeStamp > 5000) {
+//                    timeStamp = System.currentTimeMillis();
+//                    getWheelLandmarks();
+//                    state = 24;
+//                }
+
                 if (robot.backDistanceSensor.getDistance(DistanceUnit.INCH) < 12 ||
                         0 == moveByDistance(glyphDeliverPower *2, cryptoBoxDistance)) {
                     getWheelLandmarks();
@@ -496,6 +511,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 robot.dumpGlyph();
                 if (System.currentTimeMillis() - timeStamp > 1500) {
                     getWheelLandmarks();
+                    numberOfRounds ++;
                     state = 25;
                 }
                 break;
@@ -535,8 +551,17 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 robot.loadGlyph();
                 robot.retractGlyphBlocker();
                 VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorMovePower);
-                // stop
-                vuforia.relicTrackables.deactivate();
+
+                if ( numberOfRounds >= numberOfRoundsLimit) {
+                    // stop
+                    vuforia.relicTrackables.deactivate();
+                    state++;
+                } else {
+                    columnDistance = sideMoveColumn;
+                    getWheelLandmarks();
+                    timeStamp = System.currentTimeMillis();
+                    state = 10;
+                }
                 break;
             default:
                 robot.loadGlyph();

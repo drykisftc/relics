@@ -53,6 +53,7 @@ public class AutoHarvesterPlanBBlue extends AutoHarvesterPlanBRed {
         rightColumnDistance = 3900;
         centerColumnDistance = 2500;
         leftColumnDistance = 1200;
+        sideMoveColumn = rightColumnDistance;
 
         offBalanceStoneDistance = 2300;
         cryptoBoxDistance = 150;

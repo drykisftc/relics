@@ -29,15 +29,15 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.util.Range;
+
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 
@@ -67,6 +67,11 @@ public class AutoHarvesterPlanARed extends AutoRelic {
     protected OpenGLMatrix vuforiaMatrix;
     protected VectorF trans;
     protected Orientation rot;
+
+    int numberOfRounds = 0;
+    int numberOfRoundsLimit =2;
+
+    int distanceReachCount = 0;
 
     public AutoHarvesterPlanARed() {
         teamColor = "red";
@@ -134,6 +139,23 @@ public class AutoHarvesterPlanARed extends AutoRelic {
 
     }
 
+    @Override
+    public void init_loop() {
+        if (gamepad1.x) {
+            numberOfRoundsLimit --;
+        }
+
+        if (gamepad1.y) {
+            numberOfRoundsLimit ++;
+        }
+
+        if (numberOfRoundsLimit < 2) {
+            numberOfRoundsLimit = 2;
+        }
+
+        telemetry.addData("Number of glyph rounds", numberOfRoundsLimit);
+
+    }
 
     @Override
     public void start() {
@@ -146,6 +168,8 @@ public class AutoHarvesterPlanARed extends AutoRelic {
         robot.initAllDevices();
         robot.relicMotor.setPower(0.005);
         robot.relicFlipper.setPosition(0.0);
+        numberOfRounds = 0;
+        distanceReachCount = 0;
 
     }
 
@@ -482,6 +506,25 @@ public class AutoHarvesterPlanARed extends AutoRelic {
     public void stopGlyphWheels(){
         robot.leftLiftWheel.setPower(0.0);
         robot.rightLiftWheel.setPower(0.0);
+    }
+
+    public int stopAtWallByRangeSensor(double distance) {
+
+        double err = robot.backDistanceSensor.getDistance(DistanceUnit.INCH) - distance;
+
+        if (Math.abs(err) < 0.7) {
+            distanceReachCount ++;
+        } else {
+            distanceReachCount = 0;
+        }
+
+        if ( distanceReachCount > 3) {
+            return 0;
+        } else {
+            moveAtPower(com.qualcomm.robotcore.util.Range.clip(err * 0.05, -1.0, 1.0));
+        }
+
+        return 1;
     }
 
 }

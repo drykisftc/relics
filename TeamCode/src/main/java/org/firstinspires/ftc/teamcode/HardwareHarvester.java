@@ -67,6 +67,8 @@ public class HardwareHarvester extends HardwareBase
 
     public DistanceSensor glyphDistance = null;
 
+    public DistanceSensor frontDistance = null;
+
     //public DistanceSensor RKSensor = null; // roboknight arm for auto
 
     public ModernRoboticsI2cRangeSensor backDistanceSensor = null; // sensor in the back
@@ -147,6 +149,8 @@ public class HardwareHarvester extends HardwareBase
         //RKSensor = hwMap.get(DistanceSensor.class, "RKSensor");
 
         backDistanceSensor = hwMap.get(ModernRoboticsI2cRangeSensor.class, "backDistanceSensor");
+
+        frontDistance = hwMap.get(DistanceSensor.class, "frontDistance");
 
         leftLiftWheel = hwMap.dcMotor.get("leftLiftWheel");
         leftLiftWheel.setDirection(DcMotor.Direction.FORWARD);
@@ -306,6 +310,8 @@ public class HardwareHarvester extends HardwareBase
     public boolean haveGlyph() {
         return (glyphDistance.getDistance(DistanceUnit.CM) < 8);
     }
+
+    public boolean gotGlyph() { return (frontDistance.getDistance(DistanceUnit.CM) < 6);}
 
     public static double getVuforiaLeftRightDistance(OpenGLMatrix pose ) {
         if (pose != null) {

@@ -265,7 +265,8 @@ public class MeasurementHarvester extends OpMode{
     }
 
     public void glyphSensorReadValue() {
-        telemetry.addData("glyph sensor distance: ", robot.glyphDistance.getDistance(DistanceUnit.CM));
+        telemetry.addData("flipper glyph sensor distance: ", robot.glyphDistance.getDistance(DistanceUnit.INCH));
+        telemetry.addData("front glyph sensor distance: ", robot.frontDistance.getDistance(DistanceUnit.INCH));
     }
 
 //    public void RKArmControl() {

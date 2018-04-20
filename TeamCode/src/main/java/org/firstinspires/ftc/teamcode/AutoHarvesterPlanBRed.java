@@ -48,6 +48,8 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
     int sideWayCompensation = 900;
     double sideMovePower2 = 0;
 
+    int sideMoveColumn = 0;
+
     public AutoHarvesterPlanBRed() {
 
         super();
@@ -60,6 +62,7 @@ public class AutoHarvesterPlanBRed extends AutoHarvesterPlanARed {
         leftColumnDistance = 3000;
         centerColumnDistance = 1800;
         rightColumnDistance = 300;
+        sideMoveColumn = leftColumnDistance;
 
         offBalanceStoneDistance = 2400;
         cryptoBoxDistance = 100;

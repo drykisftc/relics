@@ -33,6 +33,8 @@ public class Navigation {
 
     double maxTurnDeltaPower = 0.5;
 
+    int moveErrCount =0;
+
     Telemetry telemetry = null;
 
     public Navigation(Telemetry t) {
@@ -358,5 +360,30 @@ public class Navigation {
         return robotError;
     }
 
+    public int moveByError ( double err, double gain, double threshold,
+                             DcMotor [] leftMs, DcMotor [] rightMs) {
+
+        if (Math.abs(err) < threshold) {
+            moveErrCount ++;
+        } else {
+            moveErrCount = 0;
+        }
+
+        if ( moveErrCount > 3) {
+
+            return 0;
+
+        } else {
+
+            for ( int i =0; i < leftMs.length; i++ ) {
+                leftMs[i].setPower(err * gain);
+            }
+            for ( int i =0; i < rightMs.length; i++ ) {
+                rightMs[i].setPower(err * gain);
+            }
+        }
+
+        return 1;
+    }
 
 }
