@@ -34,6 +34,7 @@ import android.util.Range;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.robot.Robot;
 
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
@@ -72,6 +73,10 @@ public class AutoHarvesterPlanARed extends AutoRelic {
     int numberOfRoundsLimit =2;
 
     int distanceReachCount = 0;
+
+    double baselineDis [] = new double[10];
+    int baselineIndex = 0;
+    double baselineAvg = 0;
 
     public AutoHarvesterPlanARed() {
         teamColor = "red";
@@ -130,6 +135,12 @@ public class AutoHarvesterPlanARed extends AutoRelic {
         navigation.pidControlHeading.setKd(0.00000001f);
         navigation.pidControlHeading.setMaxIntegralError(0.6f/navigation.pidControlHeading.fKi);
 
+        navigation.pidControlDistance.setKp(-0.03f);//0.004
+        navigation.pidControlDistance.setKi(-0.0001f);
+        navigation.pidControlDistance.setKd(-0.00000001f);
+        navigation.pidControlDistance.setMaxIntegralError(0.2f/navigation.pidControlDistance.fKi);
+        baselineIndex = 0;
+
         vuforia = new HardwareVuforia(VuforiaLocalizer.CameraDirection.BACK);
         vuforia.init(hardwareMap);
 
@@ -170,7 +181,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
         robot.relicFlipper.setPosition(0.0);
         numberOfRounds = 0;
         distanceReachCount = 0;
-
+        baselineIndex = 0;
     }
 
     @Override
@@ -227,16 +238,17 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                     telemetry.addData("right", robot.motorRightBackWheel.getCurrentPosition() - rightBackStamp + robot.motorRightFrontWheel.getCurrentPosition() - rightFrontStamp);
                     getWheelLandmarks();
                     navigation.resetTurn(leftMotors, rightMotors);
+                    timeStamp = System.currentTimeMillis();
                     state = 3;
                 }
 
                 break;
             case 3:
-                // move straight to crypto box
-                if (0 == moveByDistance(move2GlyphBoxPower, cryptoBoxDistance)) {
-                    moveAtPower(0.0);
+
+                // stop at wall by range sensor
+                if ( stopAtWallByRangeSensor(10, 1) <= 0
+                        || System.currentTimeMillis() - timeStamp > 5000) {
                     timeStamp = System.currentTimeMillis();
-                    getWheelLandmarks();
                     state = 4;
                 }
 
@@ -252,14 +264,13 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 5;
-
                 }
 
                 break;
 
             case 5:
                 // back up from the crypto box
-                if (0 == moveByDistance(-move2GlyphBoxPower, 500)) {
+                if (0 == moveByDistance(-move2GlyphBoxPower, 300)) {
 
                     moveAtPower(0.0);
                     robot.loadGlyph();
@@ -276,7 +287,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                 break;
             case 6:
                 // push glyph into place
-                if (0 == moveByDistance(move2GlyphBoxPower*3.0, 500)) {
+                if (0 == moveByDistance(move2GlyphBoxPower*3.0, 300)) {
                     moveAtSpeed(0.0);
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
@@ -304,6 +315,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                     state = 9;
                     getWheelLandmarks();
                     robot.glyphWheelLoad();
+                    robot.loadGlyph();
                     navigation.resetTurn(leftMotors, rightMotors);
                 }
                 break;
@@ -321,8 +333,22 @@ public class AutoHarvesterPlanARed extends AutoRelic {
 
                 break;
             case 10:
+                // If the glyphDistance is not NaN, jump to case 15
+                if (Double.isNaN(robot.glyphDistance.getDistance(DistanceUnit.CM)) == false) {
+                    moveAtPower(0.0);
+                    collectionDistance = (int)(getWheelOdometer() - wheelDistanceLandMark);
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    state = 15;
+                }
+                //wiggle
+                navigation.turnByGyroCloseLoop(0.0,
+                        (double) robot.imu.getAngularOrientation().firstAngle,
+                        fGlyphTurnAngle+rand.nextInt(30)-15,
+                        leftMotors, rightMotors);
+
                 // move to center slower to collect glyph
-                if (0 == moveByDistance(collectingGlyphPower, (int)(glyph2CenterDistance*0.25))) {
+                if (0 == moveByDistance(collectingGlyphPower, (int)(glyph2CenterDistance*0.25+500))) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
@@ -332,13 +358,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
 
                 break;
             case 11:
-                // wait 0.5 second for robot to collect
-                if (System.currentTimeMillis() - timeStamp > 500) {
-                    state = 12;
-                    getWheelLandmarks();
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    timeStamp = System.currentTimeMillis();
-                }
+                state = 12;
                 break;
             case 12:
                 // correct angle just increase it got knocked out of course
@@ -357,42 +377,45 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                 }
                 break;
             case 13:
-
-                // unload
-                if (System.currentTimeMillis() - timeStamp > 1000) {
+                // clean up flipper
+                if (System.currentTimeMillis() - timeStamp > 500) {
                     robot.glyphWheelUnload();
                 }
-
-                // back up
-                if (0 == moveByDistance(center2GlyphBoxPower, center2GlyphDistance)) {
+                // back up, stop at wall by range sensor
+                if ( stopAtWallByRangeSensor(10, 1) <= 0
+                        || System.currentTimeMillis() - timeStamp > 5000) {
                     moveAtPower(0.0);
                     navigation.resetTurn(leftMotors, rightMotors);
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
-
                     state = 14;
                 }
 
                 break;
             case 14:
-                // correct angle just in case it got knocked out the course
-                if (0 == navigation.turnByGyroCloseLoop(0.0, (double) robot.imu.getAngularOrientation().firstAngle,fGlyphTurnAngle,leftMotors,rightMotors)) {
+                // collect some distance data
+                baselineDis[baselineIndex++] = robot.backDistanceSensor.getDistance(DistanceUnit.INCH);
+
+                // if done, compute average, then go to next state
+                if (baselineIndex >= 10) {
+                    baselineIndex = 0;
+                    baselineAvg = 0;
+                    for (int i =0; i < baselineDis.length; i++) {
+                        baselineAvg += baselineDis[i];
+                    }
+                    baselineAvg = baselineAvg / baselineDis.length;
                     state = 15;
-                    getWheelLandmarks();
-                    navigation.resetTurn(leftMotors, rightMotors);
                 }
                 break;
+
             case 15:
-                // move to center slower to collect glyph
-                if (0 == moveByDistance(-collectingGlyphPower, 300)) {
+                // start side move
+                if (0 != sideMoveByRangeSensor(baselineAvg, 2) ) {
                     moveAtPower(0.0);
-                    navigation.resetTurn(leftMotors, rightMotors);
-                    getWheelLandmarks();
-                    timeStamp = System.currentTimeMillis();
                     state = 16;
                 }
-
                 break;
+
             case 16:
                 // release glyph
                 robot.dumpGlyph();
@@ -409,6 +432,28 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                     state = 18;
                 }
                 break;
+            case 18:
+                if ( numberOfRounds >= numberOfRoundsLimit) {
+                    // stop
+                    vuforia.relicTrackables.deactivate();
+                    state = 1000;
+                } else {
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    timeStamp = System.currentTimeMillis();
+                    state = 19;
+                }
+                break;
+            case 19:
+                // side move
+                if (0 == sideMoveByDistance(sideMovePower, columnDistance)) {
+                    wheelDistanceLandMark = getWheelOdometer();
+                    robot.retractJewelArm();
+                    timeStamp = System.currentTimeMillis();
+                    state = 8;
+                }
+                break;
+
             default:
                 robot.loadGlyph();
                 VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorMovePower);
@@ -508,23 +553,44 @@ public class AutoHarvesterPlanARed extends AutoRelic {
         robot.rightLiftWheel.setPower(0.0);
     }
 
-    public int stopAtWallByRangeSensor(double distance) {
+    public int stopAtWallByRangeSensor(double distance, double threshold) {
 
         double err = robot.backDistanceSensor.getDistance(DistanceUnit.INCH) - distance;
 
-        if (Math.abs(err) < 0.7) {
+        if (Math.abs(err) <  threshold) {
             distanceReachCount ++;
         } else {
             distanceReachCount = 0;
         }
 
         if ( distanceReachCount > 3) {
+            moveAtPower(0.0);
             return 0;
         } else {
-            moveAtPower(com.qualcomm.robotcore.util.Range.clip(err * 0.05, -1.0, 1.0));
+            //moveAtPower(com.qualcomm.robotcore.util.Range.clip(err * gain, -1.0, 1.0));
+            moveAtPower(navigation.pidControlDistance.update(err, System.currentTimeMillis()));
         }
 
         return 1;
     }
+
+
+    public int sideMoveByRangeSensor(double distance, double threshold) {
+        // All inches, rise returns 0 and fall returns 1
+        double backDistanceD = robot.backDistanceSensor.getDistance(DistanceUnit.INCH) - distance;
+
+        if (backDistanceD > threshold) {
+            //moveAtPower(0.0);
+            return 1;
+        } else if (backDistanceD < -threshold) {
+            //moveAtPower(0.0);
+            return -1;
+        } else {
+            //sideMoveAtPower(0.3);
+        }
+
+        return 0;
+    }
+
 
 }

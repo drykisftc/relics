@@ -81,7 +81,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
 
                 // hitter arm to avoid jewel holes
                 jewelKicker.jewelArmActionPosition = jewelArmPos + 0.1 * rand.nextDouble() - 0.05;
-                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.04 * rand.nextDouble() - 0.02;
+                jewelKicker.jewelHitterRestPosition = jewelHitterPos + 0.04 * rand.nextDouble() - 0.0;
 
                 robot.levelGlyph();
 
@@ -139,7 +139,7 @@ public class AutoHarvesterPlanBRedVF extends AutoHarvesterPlanBRed {
                 break;
             case 4:
 
-//                if ( stopAtWallByRangeSensor(10) <= 0
+//                if ( stopAtWallByRangeSensor(10, 1) <= 0
 //                        || System.currentTimeMillis() - timeStamp > 5000) {
 //                    timeStamp = System.currentTimeMillis();
 //                    state = 5;
