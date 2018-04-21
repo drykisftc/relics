@@ -175,6 +175,17 @@ public class AutoRelic extends OpMode {
         }
     }
 
+    public void resetDeliverHistoryBBlue (int d) {
+        if (d < 0) d =0;
+        deliverIndex = Math.min(d, deliverDone.length-1);
+        deliverDis[0] = Math.abs(leftColumnDistance - rightColumnDistance);
+        deliverDis[1] = Math.abs(leftColumnDistance - centerColumnDistance);
+        deliverDis[2] =0;
+        for ( int i =0 ; i < deliverDone.length; i++) {
+            deliverDone[i] = false;
+        }
+    }
+
     public void resetDeliverHistory2 (int d) {
         if (d < 0) d =0;
         deliverIndex = Math.min(d, deliverDone.length-1);

@@ -60,6 +60,7 @@ public class AutoHarvesterPlanBBlueVF extends AutoHarvesterPlanBBlue {
     @Override
     public void start () {
         super.start();
+        resetDeliverHistoryBBlue(0);
      }
 
     @Override
@@ -335,14 +336,15 @@ public class AutoHarvesterPlanBBlueVF extends AutoHarvesterPlanBBlue {
                 }
 
                 break;
-            case 18: {
+            case 18:
+                {
 
-                timeStamp = System.currentTimeMillis();
-                getWheelLandmarks();
-                navigation.resetTurn(leftMotors, rightMotors);
-                state = 19;
-                cryptoBoxDistance = 1500;
-            }
+                    timeStamp = System.currentTimeMillis();
+                    getWheelLandmarks();
+                    navigation.resetTurn(leftMotors, rightMotors);
+                    state = 19;
+                    cryptoBoxDistance = 1500;
+                }
             break;
             case 19:
 
@@ -416,7 +418,7 @@ public class AutoHarvesterPlanBBlueVF extends AutoHarvesterPlanBBlue {
                 }
                 break;
             case 23:
-                // move to glyph
+                // move to crypto box
                 if (robot.backDistanceSensor.getDistance(DistanceUnit.INCH) < 12 ||
                         0 == moveByDistance(glyphDeliverPower *2, cryptoBoxDistance)) {
                     getWheelLandmarks();
@@ -426,46 +428,54 @@ public class AutoHarvesterPlanBBlueVF extends AutoHarvesterPlanBBlue {
 
                 break;
             case 24:
-                // release glyph
-                robot.dumpGlyph();
-                if (System.currentTimeMillis() - timeStamp > 1500) {
+                // move right
+                if (0 == sideMoveByDistance( -0.8, 1000)) {
+                    timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 25;
                 }
                 break;
             case 25:
-                // push
-                if (0 == moveByDistance(glyphDeliverPower*3, 300)) {
-                    timeStamp = System.currentTimeMillis();
+                // release glyph
+                robot.dumpGlyph();
+                if (System.currentTimeMillis() - timeStamp > 1500) {
                     getWheelLandmarks();
                     state = 26;
                 }
                 break;
             case 26:
-                // back up
-                if (0 == moveByDistance(-glyphDeliverPower*3, 300)) {
+                // push
+                if (0 == moveByDistance(glyphDeliverPower*3, 300)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 27;
                 }
                 break;
             case 27:
-                // push
-                if (0 == moveByDistance(glyphDeliverPower*3, 300)) {
+                // back up
+                if (0 == moveByDistance(-glyphDeliverPower*3, 300)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 28;
                 }
                 break;
             case 28:
-                // back up
-                if (0 == moveByDistance(-glyphDeliverPower*3, 200)) {
+                // push
+                if (0 == moveByDistance(glyphDeliverPower*3, 300)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 29;
                 }
                 break;
             case 29:
+                // back up
+                if (0 == moveByDistance(-glyphDeliverPower*3, 200)) {
+                    timeStamp = System.currentTimeMillis();
+                    getWheelLandmarks();
+                    state = 31;
+                }
+                break;
+            case 30:
                 robot.loadGlyph();
                 robot.retractGlyphBlocker();
                 VortexUtils.moveMotorByEncoder(robot.liftMotor, 0, liftMotorMovePower);
@@ -478,7 +488,7 @@ public class AutoHarvesterPlanBBlueVF extends AutoHarvesterPlanBBlue {
                     columnDistance = sideMoveColumn;
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
-                    state = 10;
+                    state = 31;
                 }
 
                 break;
