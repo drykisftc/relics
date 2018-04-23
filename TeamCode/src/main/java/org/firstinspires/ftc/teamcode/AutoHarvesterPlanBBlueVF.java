@@ -60,7 +60,6 @@ public class AutoHarvesterPlanBBlueVF extends AutoHarvesterPlanBBlue {
     @Override
     public void start () {
         super.start();
-        resetDeliverHistoryBBlue(0);
      }
 
     @Override
@@ -70,7 +69,7 @@ public class AutoHarvesterPlanBBlueVF extends AutoHarvesterPlanBBlue {
                 cryptoBoxDistance = 150;
                 pushDistance = 400;
                 offBalanceStoneDistance = 2300;
-                resetDeliverHistory(0);
+                resetDeliverHistoryBBlue(1);
 
                 // jewel handling
                 state = jewelKicker.loop(0, 1, teamColor);
@@ -357,7 +356,7 @@ public class AutoHarvesterPlanBBlueVF extends AutoHarvesterPlanBBlue {
                     robot.levelGlyph();
                     navigation.resetTurn(leftMotors, rightMotors);
                     robot.retractJewelArm();
-                    cryptoBoxDistance = glyph2CenterDistance/2;
+                    cryptoBoxDistance = glyph2CenterDistance/2-500;
                     timeStamp = System.currentTimeMillis();
                 }
 
@@ -390,7 +389,7 @@ public class AutoHarvesterPlanBBlueVF extends AutoHarvesterPlanBBlue {
 //                    deltaDistance = leftColumnDistance - rightColumnDistance;
 //                }
 
-                if (0 == sideMoveByDistance(sideMovePower/2, deltaDistance)) {
+                if (0 == sideMoveByDistance(sideMovePower/2, deltaDistance+1000)) {
                     wheelDistanceLandMark = getWheelOdometer();
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
@@ -420,7 +419,7 @@ public class AutoHarvesterPlanBBlueVF extends AutoHarvesterPlanBBlue {
             case 23:
                 // move to crypto box
                 if (robot.backDistanceSensor.getDistance(DistanceUnit.INCH) < 12 ||
-                        0 == moveByDistance(glyphDeliverPower *2, cryptoBoxDistance)) {
+                        0 == moveByDistance(glyphDeliverPower *2, cryptoBoxDistance-500)) {
                     getWheelLandmarks();
                     timeStamp = System.currentTimeMillis();
                     state = 24;
@@ -429,11 +428,13 @@ public class AutoHarvesterPlanBBlueVF extends AutoHarvesterPlanBBlue {
                 break;
             case 24:
                 // move right
-                if (0 == sideMoveByDistance( -0.8, 1000)) {
-                    timeStamp = System.currentTimeMillis();
-                    getWheelLandmarks();
-                    state = 25;
-                }
+//                if (0 == sideMoveByDistance( -0.8, 1000)) {
+//                    timeStamp = System.currentTimeMillis();
+//                    getWheelLandmarks();
+//                    state = 25;
+//                }
+                state = 25;
+
                 break;
             case 25:
                 // release glyph
@@ -445,7 +446,7 @@ public class AutoHarvesterPlanBBlueVF extends AutoHarvesterPlanBBlue {
                 break;
             case 26:
                 // push
-                if (0 == moveByDistance(glyphDeliverPower*3, 300)) {
+                if (0 == moveByDistance(glyphDeliverPower*3, 600)) {
                     timeStamp = System.currentTimeMillis();
                     getWheelLandmarks();
                     state = 27;

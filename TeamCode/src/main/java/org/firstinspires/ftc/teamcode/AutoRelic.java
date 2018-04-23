@@ -140,6 +140,8 @@ public class AutoRelic extends OpMode {
 
     int vuforiaTargetDistance = -672;
 
+    int glyphBoxIndex = 0;
+
     @Override
     public void init() {
     }
@@ -213,15 +215,19 @@ public class AutoRelic extends OpMode {
         if (vuforia.vumarkImage == "left") {
             columnDistance = leftColumnDistance;
             glyphOffAngle = 20;
+            glyphBoxIndex = 0;
         } else if (vuforia.vumarkImage == "center") {
             columnDistance = centerColumnDistance;
             glyphOffAngle = 13;
+            glyphBoxIndex = 1;
         } else if (vuforia.vumarkImage == "right") {
             columnDistance = rightColumnDistance;
             glyphOffAngle = -18;
+            glyphBoxIndex = 2;
         } else {
             columnDistance = rightColumnDistance;
             glyphOffAngle = -18;
+            glyphBoxIndex = 2;
         }
 
         OpenGLMatrix pose = vuforia.getGlyphCryptoPosition();

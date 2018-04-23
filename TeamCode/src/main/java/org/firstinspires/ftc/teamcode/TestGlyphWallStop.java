@@ -46,7 +46,7 @@ public class TestGlyphWallStop extends AutoHarvesterPlanARed {
                 break;
             case 1:
                 // start side move
-                if (0 != sideMoveByRangeSensor(baselineAvg, 2) ) {
+                if (0 != sideMoveByRangeSensor(baselineAvg, 2, 0.2) ) {
                     moveAtPower(0.0);
                     state = 2;
                 }

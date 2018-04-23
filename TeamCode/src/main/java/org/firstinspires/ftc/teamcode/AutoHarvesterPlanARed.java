@@ -34,6 +34,7 @@ import android.util.Range;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.robot.Robot;
 
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -410,7 +411,7 @@ public class AutoHarvesterPlanARed extends AutoRelic {
 
             case 15:
                 // start side move
-                if (0 != sideMoveByRangeSensor(baselineAvg, 2) ) {
+                if (0 != sideMoveByRangeSensor(baselineAvg, 2, 0.2) ) {
                     moveAtPower(0.0);
                     state = 16;
                 }
@@ -445,13 +446,29 @@ public class AutoHarvesterPlanARed extends AutoRelic {
                 }
                 break;
             case 19:
-                // side move
-                if (0 == sideMoveByDistance(sideMovePower, columnDistance)) {
-                    wheelDistanceLandMark = getWheelOdometer();
-                    robot.retractJewelArm();
-                    timeStamp = System.currentTimeMillis();
-                    state = 8;
+                glyphBoxIndex ++;
+
+                int moveDis = Math.abs((rightColumnDistance - leftColumnDistance)/2);
+                if (glyphBoxIndex >=2) {
+                    glyphBoxIndex = 0;
+                    moveDis = Math.abs(rightColumnDistance - leftColumnDistance);
+                    // side move left
+                    if (0 == sideMoveByDistance(-0.9, moveDis)) {
+                        wheelDistanceLandMark = getWheelOdometer();
+                        robot.retractJewelArm();
+                        timeStamp = System.currentTimeMillis();
+                        state = 8;
+                    }
+                } else {
+                    // side move left
+                    if (0 == sideMoveByDistance(0.9, moveDis)) {
+                        wheelDistanceLandMark = getWheelOdometer();
+                        robot.retractJewelArm();
+                        timeStamp = System.currentTimeMillis();
+                        state = 8;
+                    }
                 }
+
                 break;
 
             default:
@@ -555,7 +572,12 @@ public class AutoHarvesterPlanARed extends AutoRelic {
 
     public int stopAtWallByRangeSensor(double distance, double threshold) {
 
-        double err = robot.backDistanceSensor.getDistance(DistanceUnit.INCH) - distance;
+        double dis = robot.backDistanceSensor.getDistance(DistanceUnit.INCH);
+        if (DistanceSensor.distanceOutOfRange == dis) {
+            dis = 100;
+        }
+
+        double err = dis - distance;
 
         if (Math.abs(err) <  threshold) {
             distanceReachCount ++;
@@ -575,18 +597,24 @@ public class AutoHarvesterPlanARed extends AutoRelic {
     }
 
 
-    public int sideMoveByRangeSensor(double distance, double threshold) {
+    public int sideMoveByRangeSensor(double distance, double threshold, double power) {
+
+        double dis = robot.backDistanceSensor.getDistance(DistanceUnit.INCH);
+        if (DistanceSensor.distanceOutOfRange == dis) {
+            dis = 100;
+        }
+
         // All inches, rise returns 0 and fall returns 1
-        double backDistanceD = robot.backDistanceSensor.getDistance(DistanceUnit.INCH) - distance;
+        double backDistanceD = dis - distance;
 
         if (backDistanceD > threshold) {
-            //moveAtPower(0.0);
+            moveAtPower(0.0);
             return 1;
         } else if (backDistanceD < -threshold) {
-            //moveAtPower(0.0);
+            moveAtPower(0.0);
             return -1;
         } else {
-            //sideMoveAtPower(0.3);
+            sideMoveAtPower(power);
         }
 
         return 0;
